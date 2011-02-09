@@ -7,6 +7,7 @@
 //
 
 #import "Xcodeproj.h"
+#import <dlfcn.h>
 
 @implementation Xcodeproj
 
@@ -44,6 +45,14 @@ static Class PBXProject_ = Nil;
 		ddfprintf(stderr, @"The DevToolsCore framework failed to load: %@\n", err);
 		exit(EX_SOFTWARE);
 	}
+	
+	// XCInitializeCoreIfNeeded is called with NSClassFromString(@"NSApplication") != nil as argument in +[PBXProject projectWithFile:errorHandler:readOnly:]
+	// At that point, the AppKit framework is loaded, _includeUIPlugins is set to YES and all plugins are loaded, even those with XCPluginHasUI == NO
+	void *devToolsCore = dlopen([[devToolsCoreBundle executablePath] fileSystemRepresentation], RTLD_LAZY);
+	void(*XCInitializeCoreIfNeeded)(BOOL hasGUI) = dlsym(devToolsCore, "XCInitializeCoreIfNeeded");
+	if (XCInitializeCoreIfNeeded)
+		XCInitializeCoreIfNeeded(NO);
+	dlclose(devToolsCore);
 	
 	PBXProject_ = NSClassFromString(@"PBXProject");
 }
