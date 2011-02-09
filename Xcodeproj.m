@@ -16,6 +16,34 @@ static Class PBXProject_ = Nil;
 {
 	if (self != [Xcodeproj class])
 		return;
+
+	NSString *developerDir = [NSSearchPathForDirectoriesInDomains(NSDeveloperDirectory, NSLocalDomainMask, YES) lastObject];
+	@try
+	{
+		NSTask *xcode_select = [[[NSTask alloc] init] autorelease];
+		[xcode_select setLaunchPath:@"/usr/bin/xcode-select"];
+		[xcode_select setArguments:[NSArray arrayWithObject:@"-print-path"]];
+		[xcode_select setStandardInput:[NSPipe pipe]]; // Still want logs in Xcode? Use this! http://www.cocoadev.com/index.pl?NSTask
+		[xcode_select setStandardOutput:[NSPipe pipe]];
+		[xcode_select launch];
+		[xcode_select waitUntilExit];
+		NSData *developerDirData = [[[xcode_select standardOutput] fileHandleForReading] readDataToEndOfFile];
+		developerDir = [[[NSString alloc] initWithData:developerDirData encoding:NSUTF8StringEncoding] autorelease];
+		developerDir = [developerDir stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+	}
+	@catch (NSException *exception)
+	{
+		developerDir = @"/Developer";
+	}
+	
+	NSString *devToolsCorePath = [developerDir stringByAppendingPathComponent:@"Library/PrivateFrameworks/DevToolsCore.framework"];
+	NSBundle *devToolsCoreBundle = [NSBundle bundleWithPath:devToolsCorePath];
+	NSError *err = nil;
+	if (![devToolsCoreBundle loadAndReturnError:&err])
+	{
+		ddfprintf(stderr, @"The DevToolsCore framework failed to load: %@\n", err);
+		exit(EX_SOFTWARE);
+	}
 	
 	PBXProject_ = NSClassFromString(@"PBXProject");
 }
