@@ -2,14 +2,24 @@
 //  Xcodeproj.h
 //  xcodeproj
 //
-//  Created by CŽdric Luthi on 07.02.11.
-//  Copyright CŽdric Luthi 2011. All rights reserved.
+//  Created by CÃ©dric Luthi on 07.02.11.
+//  Copyright CÃ©dric Luthi 2011. All rights reserved.
 //
+
+#import "DDCommandLineInterface.h"
+
+#import <DevToolsCore/DevToolsCore.h>
 
 @interface Xcodeproj : NSObject <DDCliApplicationDelegate>
 {
-	NSString * _output;
-	BOOL _help;
+	// Options
+	id<PBXProject> project;
+	NSString *targetName;
+	BOOL help;
+	
+	id<PBXTarget> target;
 }
+
+- (void) printBuildPhases;
 
 @end

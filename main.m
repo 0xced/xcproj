@@ -2,8 +2,8 @@
 //  main.m
 //  xcodeproj
 //
-//  Created by CŽdric Luthi on 07.02.11.
-//  Copyright CŽdric Luthi 2011. All rights reserved.
+//  Created by CÃ©dric Luthi on 07.02.11.
+//  Copyright CÃ©dric Luthi 2011. All rights reserved.
 //
 
 #import "xcodeproj.h"
