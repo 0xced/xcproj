@@ -7,11 +7,24 @@
 //
 
 #import "Xcodeproj.h"
+
 #import <dlfcn.h>
+#import <objc/runtime.h>
+#import "CLUndocumentedChecker.h"
 
 @implementation Xcodeproj
 
-static Class PBXProject_ = Nil;
+static Class PBXProject = Nil;
+
++ (void) setPBXProject:(Class)class
+{
+	PBXProject = class;
+}
+
++ (void) setValue:(id)value forUndefinedKey:(NSString *)key
+{
+	// ignore
+}
 
 + (void) initialize
 {
@@ -39,10 +52,10 @@ static Class PBXProject_ = Nil;
 	
 	NSString *devToolsCorePath = [developerDir stringByAppendingPathComponent:@"Library/PrivateFrameworks/DevToolsCore.framework"];
 	NSBundle *devToolsCoreBundle = [NSBundle bundleWithPath:devToolsCorePath];
-	NSError *err = nil;
-	if (![devToolsCoreBundle loadAndReturnError:&err])
+	NSError *loadError = nil;
+	if (![devToolsCoreBundle loadAndReturnError:&loadError])
 	{
-		ddfprintf(stderr, @"The DevToolsCore framework failed to load: %@\n", err);
+		ddfprintf(stderr, @"The DevToolsCore framework failed to load: %@\n", loadError);
 		exit(EX_SOFTWARE);
 	}
 	
@@ -54,7 +67,22 @@ static Class PBXProject_ = Nil;
 		XCInitializeCoreIfNeeded(NO);
 	dlclose(devToolsCore);
 	
-	PBXProject_ = NSClassFromString(@"PBXProject");
+	BOOL isSafe = YES;
+	for (Protocol *protocol in [NSArray arrayWithObjects:@protocol(PBXBuildFile), @protocol(PBXBuildPhase), @protocol(PBXProject), @protocol(PBXTarget), nil])
+	{
+		NSError *classError = nil;
+		Class class = CLClassFromProtocol(protocol, &classError);
+		if (class)
+			[self setValue:class forKey:[NSString stringWithCString:protocol_getName(protocol) encoding:NSUTF8StringEncoding]];
+		else
+		{
+			isSafe = NO;
+			ddfprintf(stdout, @"%@\n%@\n", [classError localizedDescription], [classError userInfo]);
+		}
+	}
+	
+	if (!isSafe)
+		exit(EX_SOFTWARE);
 }
 
 - (void) application:(DDCliApplication *)app willParseOptions:(DDGetoptLongParser *)optionsParser
@@ -72,7 +100,7 @@ static Class PBXProject_ = Nil;
 
 - (void) setProject:(NSString *)projectName
 {
-	if (![PBXProject_ isProjectWrapperExtension:[projectName pathExtension]])
+	if (![PBXProject isProjectWrapperExtension:[projectName pathExtension]])
 		@throw [DDCliParseException parseExceptionWithReason:[NSString stringWithFormat:@"The project name %@ does not have a valid extension.", projectName] exitCode:EX_USAGE];
 	
 	NSString *projectPath = projectName;
@@ -83,7 +111,7 @@ static Class PBXProject_ = Nil;
 		@throw [DDCliParseException parseExceptionWithReason:[NSString stringWithFormat:@"The project %@ does not exist in this directory.", projectName] exitCode:EX_NOINPUT];
 	
 	[project release];
-	project = [[PBXProject_ projectWithFile:projectPath] retain];
+	project = [[PBXProject projectWithFile:projectPath] retain];
 }
 
 - (void) setTarget:(NSString *)aTargetName
@@ -109,7 +137,7 @@ static Class PBXProject_ = Nil;
 	{
 		for (NSString *fileName in [[NSFileManager defaultManager] contentsOfDirectoryAtPath:currentDirectoryPath error:NULL])
 		{
-			if ([PBXProject_ isProjectWrapperExtension:[fileName pathExtension]])
+			if ([PBXProject isProjectWrapperExtension:[fileName pathExtension]])
 			{
 				if (!project)
 					[self setProject:fileName];

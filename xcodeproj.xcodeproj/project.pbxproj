@@ -11,6 +11,7 @@
 		8DD76F9C0486AA7600D96B5E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08FB779EFE84155DC02AAC07 /* Foundation.framework */; };
 		DA1DC01010E59AED005A103B /* Xcodeproj.m in Sources */ = {isa = PBXBuildFile; fileRef = DA1DC00E10E59AED005A103B /* Xcodeproj.m */; };
 		DA524B56130081F700D04282 /* libddcli.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DA524B51130081E500D04282 /* libddcli.a */; };
+		DAFF25CC1303ECB100584E0E /* CLUndocumentedChecker.m in Sources */ = {isa = PBXBuildFile; fileRef = DAFF25CB1303ECB100584E0E /* CLUndocumentedChecker.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,6 +58,8 @@
 		DA8C9FFE1302AF93008B3560 /* PBXTarget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBXTarget.h; sourceTree = "<group>"; };
 		DA8CA0041302B0D9008B3560 /* DevToolsCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DevToolsCore.h; sourceTree = "<group>"; };
 		DA8CA0301302B27C008B3560 /* PBXBuildFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBXBuildFile.h; sourceTree = "<group>"; };
+		DAFF25CA1303ECB100584E0E /* CLUndocumentedChecker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CLUndocumentedChecker.h; sourceTree = "<group>"; };
+		DAFF25CB1303ECB100584E0E /* CLUndocumentedChecker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CLUndocumentedChecker.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,8 +92,10 @@
 			children = (
 				32A70AAB03705E1F00C91783 /* xcodeproj_Prefix.pch */,
 				08FB7796FE84155DC02AAC07 /* main.m */,
-				DA1DC00E10E59AED005A103B /* Xcodeproj.m */,
 				DA1DC00F10E59AED005A103B /* Xcodeproj.h */,
+				DA1DC00E10E59AED005A103B /* Xcodeproj.m */,
+				DAFF25CA1303ECB100584E0E /* CLUndocumentedChecker.h */,
+				DAFF25CB1303ECB100584E0E /* CLUndocumentedChecker.m */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -218,6 +223,7 @@
 			files = (
 				8DD76F9A0486AA7600D96B5E /* main.m in Sources */,
 				DA1DC01010E59AED005A103B /* Xcodeproj.m in Sources */,
+				DAFF25CC1303ECB100584E0E /* CLUndocumentedChecker.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
