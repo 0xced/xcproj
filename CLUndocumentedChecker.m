@@ -18,6 +18,64 @@ NSString *const CLUndocumentedCheckerMethodNameKey         = @"MethodName";
 NSString *const CLUndocumentedCheckerProtocolSignatureKey  = @"ProtocolSignature";
 NSString *const CLUndocumentedCheckerClassSignatureKey     = @"ClassSignature";
 
+
+static id typeCheck(id self, SEL _cmd, ...)
+{
+	NSString *returnType = nil;
+	struct objc_method_description *protocolMethods = NULL;
+	unsigned int protocolMethodCount = 0;
+	
+	Class class = [self class];
+	while (!returnType && class)
+	{
+		protocolMethods = protocol_copyMethodDescriptionList(objc_getProtocol(class_getName(class)), NO, !class_isMetaClass(self->isa), &protocolMethodCount);
+		for (unsigned int i = 0; i < protocolMethodCount; i++)
+		{
+			NSString *methodName = [NSString stringWithCString:sel_getName(protocolMethods[i].name) encoding:NSUTF8StringEncoding];
+			if ([methodName hasSuffix:[@"$" stringByAppendingString:NSStringFromSelector(_cmd)]])
+			{
+				returnType = [[methodName componentsSeparatedByString:@"$"] objectAtIndex:0];
+				break;
+			}
+		}
+		free(protocolMethods);
+		class = [class superclass];
+	}
+	
+	if (returnType == nil)
+		return nil;
+	
+	id result = nil;
+	@try
+	{
+		NSMethodSignature *methodSignature = [self methodSignatureForSelector:_cmd];
+		NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:methodSignature];
+		SEL selector = NSSelectorFromString([NSString stringWithFormat:@"%@$%s", returnType, _cmd]);
+		[invocation setTarget:self];
+		[invocation setSelector:selector];
+		va_list args;
+		va_start(args, _cmd);
+		for (unsigned i = 2; i < [methodSignature numberOfArguments]; i++)
+		{
+			// TODO: Handle non-id arguments, but how?
+			id arg = va_arg(args, id);
+			[invocation setArgument:&arg atIndex:i];
+		}
+		va_end(args);
+		[invocation invoke];
+		[invocation getReturnValue:&result];
+	}
+	@catch (NSException *exception)
+	{
+		result = nil;
+	}
+	
+	if (![result isKindOfClass:NSClassFromString(returnType)])
+		return nil;
+	
+	return result;
+}
+
 Class CLClassFromProtocol(Protocol *protocol, NSError **error)
 {
 	if (error)
@@ -62,36 +120,60 @@ Class CLClassFromProtocol(Protocol *protocol, NSError **error)
 	for (unsigned methodKind = 0; methodKind <= 1; methodKind++)
 	{
 		BOOL isInstanceMethod = (methodKind == 1);
-		protocolMethods = protocol_copyMethodDescriptionList(protocol, YES, isInstanceMethod, &protocolMethodCount);
-		for (unsigned int i = 0; i < protocolMethodCount; i++)
+		for (unsigned modalKind = 0; modalKind <= 1; modalKind++)
 		{
-			NSString *methodName = [NSString stringWithFormat:@"%c%s", isInstanceMethod ? '-':'+', sel_getName(protocolMethods[i].name)];
-			NSString *methodSignature = [methodSignatures objectForKey:methodName];
-			NSString *expectedSignature = [NSString stringWithUTF8String:protocolMethods[i].types];
-			BOOL signatureMatch = [expectedSignature isEqualToString:methodSignature];
-			if (!signatureMatch)
+			BOOL isRequiredMethod = (modalKind == 0);
+			protocolMethods = protocol_copyMethodDescriptionList(protocol, isRequiredMethod, isInstanceMethod, &protocolMethodCount);
+			for (unsigned int i = 0; i < protocolMethodCount; i++)
 			{
-				class = Nil;
-				NSDictionary *methodError = nil;
-				if (!methodSignature)
+				NSString *methodName = [NSString stringWithCString:sel_getName(protocolMethods[i].name) encoding:NSUTF8StringEncoding];
+				if (isRequiredMethod)
 				{
-					methodError = [NSDictionary dictionaryWithObjectsAndKeys:
-					               methodName, CLUndocumentedCheckerMethodNameKey,
-					               className, CLUndocumentedCheckerClassNameKey, nil];
-					[methodsNotFound addObject:methodError];
+					methodName = [isInstanceMethod ? @"-" : @"+" stringByAppendingString:methodName];
+					NSString *methodSignature = [methodSignatures objectForKey:methodName];
+					NSString *expectedSignature = [NSString stringWithUTF8String:protocolMethods[i].types];
+					BOOL signatureMatch = [expectedSignature isEqualToString:methodSignature];
+					if (!signatureMatch)
+					{
+						class = Nil;
+						NSDictionary *methodError = nil;
+						if (!methodSignature)
+						{
+							methodError = [NSDictionary dictionaryWithObjectsAndKeys:
+										   methodName, CLUndocumentedCheckerMethodNameKey,
+										   className, CLUndocumentedCheckerClassNameKey, nil];
+							[methodsNotFound addObject:methodError];
+						}
+						else
+						{
+							methodError = [NSDictionary dictionaryWithObjectsAndKeys:
+										   expectedSignature, CLUndocumentedCheckerProtocolSignatureKey,
+										   methodSignature, CLUndocumentedCheckerClassSignatureKey,
+										   methodName, CLUndocumentedCheckerMethodNameKey,
+										   className, CLUndocumentedCheckerClassNameKey, nil];
+							[methodsMismatch addObject:methodError];
+						}
+					}
 				}
 				else
 				{
-					methodError = [NSDictionary dictionaryWithObjectsAndKeys:
-					               expectedSignature, CLUndocumentedCheckerProtocolSignatureKey,
-					               methodSignature, CLUndocumentedCheckerClassSignatureKey,
-					               methodName, CLUndocumentedCheckerMethodNameKey,
-					               className, CLUndocumentedCheckerClassNameKey, nil];
-					[methodsMismatch addObject:methodError];
+					NSArray *components = [methodName componentsSeparatedByString:@"$"];
+					if ([components count] == 2)
+					{
+						NSString *fullMethodName = [[methodName copy] autorelease];
+						methodName = [components objectAtIndex:1];
+						Method method = isInstanceMethod ? class_getInstanceMethod(class, NSSelectorFromString(methodName)) : class_getClassMethod(class, NSSelectorFromString(methodName));
+						BOOL added = class_addMethod(isInstanceMethod ? class : class->isa, NSSelectorFromString(fullMethodName), typeCheck, method_getTypeEncoding(method));
+						if (added)
+						{
+							Method typeCheckMethod = isInstanceMethod ? class_getInstanceMethod(class, NSSelectorFromString(fullMethodName)) : class_getClassMethod(class, NSSelectorFromString(fullMethodName));
+							method_exchangeImplementations(method, typeCheckMethod);
+						}
+					}
 				}
 			}
+			free(protocolMethods);
 		}
-		free(protocolMethods);
 	}
 	
 	if (error)
