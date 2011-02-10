@@ -53,13 +53,20 @@ static id typeCheck(id self, SEL _cmd, ...)
 		SEL selector = NSSelectorFromString([NSString stringWithFormat:@"%@$%s", returnType, _cmd]);
 		[invocation setTarget:self];
 		[invocation setSelector:selector];
-		va_list args;
-		va_start(args, _cmd);
+		va_list ap;
+		va_start(ap, _cmd);
+		char* args = (char*)ap;
 		for (unsigned i = 2; i < [methodSignature numberOfArguments]; i++)
 		{
-			// TODO: Handle non-id arguments, but how?
-			id arg = va_arg(args, id);
-			[invocation setArgument:&arg atIndex:i];
+			// vararg trick from http://blog.jayway.com/2010/03/30/performing-any-selector-on-the-main-thread/
+			const char *type = [methodSignature getArgumentTypeAtIndex:i];
+			NSUInteger size, align;
+			NSGetSizeAndAlignment(type, &size, &align);
+			NSUInteger mod = (NSUInteger)args % align;
+			if (mod != 0)
+				args += (align - mod);
+			[invocation setArgument:args atIndex:i];
+			args += size;
 		}
 		va_end(args);
 		[invocation invoke];
