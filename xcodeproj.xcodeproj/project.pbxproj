@@ -60,6 +60,7 @@
 		DA8CA0301302B27C008B3560 /* PBXBuildFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBXBuildFile.h; sourceTree = "<group>"; };
 		DAFF25CA1303ECB100584E0E /* CLUndocumentedChecker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CLUndocumentedChecker.h; sourceTree = "<group>"; };
 		DAFF25CB1303ECB100584E0E /* CLUndocumentedChecker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CLUndocumentedChecker.m; sourceTree = "<group>"; };
+		DAFF2AD913055EF500584E0E /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,6 +80,7 @@
 			isa = PBXGroup;
 			children = (
 				DA1DBFA610E599F2005A103B /* ddcli.xcodeproj */,
+				DAFF2AD913055EF500584E0E /* Info.plist */,
 				DA8C9FFB1302AF93008B3560 /* DevToolsCore */,
 				08FB7795FE84155DC02AAC07 /* Source */,
 				08FB779DFE84155DC02AAC07 /* Frameworks */,
@@ -145,6 +147,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1DEB927408733DD40010E9CD /* Build configuration list for PBXNativeTarget "xcodeproj" */;
 			buildPhases = (
+				DAFF2ABD1305512000584E0E /* Check CLITool+InfoPlist */,
 				8DD76F990486AA7600D96B5E /* Sources */,
 				8DD76F9B0486AA7600D96B5E /* Frameworks */,
 			);
@@ -216,6 +219,23 @@
 		};
 /* End PBXReferenceProxy section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		DAFF2ABD1305512000584E0E /* Check CLITool+InfoPlist */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check CLITool+InfoPlist";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ -z \"$CLITOOL_INFOPLIST\" ]; then\n\techo \"error: CLITool+InfoPlist Xcode plugin is not installed, get it at http://github.com/0xced/CLITool-InfoPlist\"\n\texit 1\nfi";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		8DD76F990486AA7600D96B5E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -249,6 +269,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = xcodeproj_Prefix.pch;
+				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = /usr/local/bin;
 				PRODUCT_NAME = xcodeproj;
 			};
@@ -263,6 +284,7 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = xcodeproj_Prefix.pch;
+				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = /bin;
 				PRODUCT_NAME = xcodeproj;
 			};
@@ -272,6 +294,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CURRENT_PROJECT_VERSION = 0.1;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -291,6 +314,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CURRENT_PROJECT_VERSION = 0.1;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;

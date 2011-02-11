@@ -6,7 +6,7 @@
 //  Copyright Cédric Luthi 2011. All rights reserved.
 //
 
-#import "xcodeproj.h"
+#import "Xcodeproj.h"
 
 int main(int argc, char *const *argv)
 {
