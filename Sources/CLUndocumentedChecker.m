@@ -24,23 +24,12 @@ NSString *const CLUndocumentedCheckerClassSignatureKey     = @"ClassSignature";
 static id typeCheck(id self, SEL _cmd, ...)
 {
 	NSString *returnClass = nil;
-	Method *methods = NULL;
-	unsigned int methodCount = 0;
-	
 	Class class = object_getClass(self);
 	while (!returnClass && class)
 	{
-		methods = class_copyMethodList(class, &methodCount);
-		for (unsigned int i = 0; i < methodCount; i++)
-		{
-			NSString *methodName = [NSString stringWithCString:sel_getName(method_getName(methods[i])) encoding:NSUTF8StringEncoding];
-			if ([methodName hasSuffix:[TYPE_SEPARATOR stringByAppendingString:NSStringFromSelector(_cmd)]])
-			{
-				returnClass = [[methodName componentsSeparatedByString:TYPE_SEPARATOR] objectAtIndex:0];
-				break;
-			}
-		}
-		free(methods);
+		NSDictionary *classInfo = [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CLUndocumentedChecker"] objectForKey:@"Classes"];
+		NSDictionary *methodInfo = [classInfo objectForKey:NSStringFromClass(class)];
+		returnClass = [methodInfo objectForKey:[class_isMetaClass(class) ? @"+" : @"-" stringByAppendingString:NSStringFromSelector(_cmd)]];
 		class = class_getSuperclass(class);
 	}
 	
