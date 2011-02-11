@@ -18,5 +18,45 @@
 	<string>${CURRENT_PROJECT_VERSION}</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>${MACOSX_DEPLOYMENT_TARGET}</string>
+	<key>CLUndocumentedChecker</key>
+	<dict>
+		<key>Classes</key>
+		<dict>
+			<key>PBXBuildPhase</key>
+			<dict>
+				<key>-buildFiles</key>
+				<string>NSArray</string>
+			</dict>
+			<key>PBXBuildFile</key>
+			<dict>
+				<key>-absolutePath</key>
+				<string>NSString</string>
+			</dict>
+			<key>PBXProject</key>
+			<dict>
+				<key>+projectWithFile:</key>
+				<string>PBXProject</string>
+				<key>-activeTarget</key>
+				<string>PBXTarget</string>
+				<key>-targetNamed:</key>
+				<string>PBXTarget</string>
+				<key>-name</key>
+				<string>NSString</string>
+			</dict>
+			<key>PBXTarget</key>
+			<dict>
+				<key>-defaultFrameworksBuildPhase</key>
+				<string>PBXBuildPhase</string>
+				<key>-defaultLinkBuildPhase</key>
+				<string>PBXBuildPhase</string>
+				<key>-defaultSourceCodeBuildPhase</key>
+				<string>PBXBuildPhase</string>
+				<key>-defaultResourceBuildPhase</key>
+				<string>PBXBuildPhase</string>
+				<key>-defaultHeaderBuildPhase</key>
+				<string>PBXBuildPhase</string>
+			</dict>
+		</dict>
+	</dict>
 </dict>
 </plist>
