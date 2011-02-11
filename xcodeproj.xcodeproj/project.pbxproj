@@ -82,14 +82,14 @@
 				DA1DBFA610E599F2005A103B /* ddcli.xcodeproj */,
 				DAFF2AD913055EF500584E0E /* Info.plist */,
 				DA8C9FFB1302AF93008B3560 /* DevToolsCore */,
-				08FB7795FE84155DC02AAC07 /* Source */,
+				08FB7795FE84155DC02AAC07 /* Sources */,
 				08FB779DFE84155DC02AAC07 /* Frameworks */,
 				1AB674ADFE9D54B511CA2CBB /* Products */,
 			);
 			name = xcodeproj;
 			sourceTree = "<group>";
 		};
-		08FB7795FE84155DC02AAC07 /* Source */ = {
+		08FB7795FE84155DC02AAC07 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
 				32A70AAB03705E1F00C91783 /* xcodeproj_Prefix.pch */,
@@ -99,7 +99,7 @@
 				DAFF25CA1303ECB100584E0E /* CLUndocumentedChecker.h */,
 				DAFF25CB1303ECB100584E0E /* CLUndocumentedChecker.m */,
 			);
-			name = Source;
+			name = Sources;
 			sourceTree = "<group>";
 		};
 		08FB779DFE84155DC02AAC07 /* Frameworks */ = {
@@ -268,7 +268,7 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = xcodeproj_Prefix.pch;
+				GCC_PREFIX_HEADER = Sources/xcodeproj_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = /usr/local/bin;
 				PRODUCT_NAME = xcodeproj;
@@ -283,7 +283,7 @@
 				DEPLOYMENT_POSTPROCESSING = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = xcodeproj_Prefix.pch;
+				GCC_PREFIX_HEADER = Sources/xcodeproj_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = /bin;
 				PRODUCT_NAME = xcodeproj;
