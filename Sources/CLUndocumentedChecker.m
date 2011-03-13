@@ -161,7 +161,7 @@ Class CLClassFromProtocol(Protocol *protocol, NSError **error)
 				{
 					NSString *fullMethodName = [[returnClass stringByAppendingString:TYPE_SEPARATOR] stringByAppendingString:methodName];
 					Method method = isInstanceMethod ? class_getInstanceMethod(class, NSSelectorFromString(methodName)) : class_getClassMethod(class, NSSelectorFromString(methodName));
-					BOOL added = class_addMethod(isInstanceMethod ? class : class->isa, NSSelectorFromString(fullMethodName), typeCheck, method_getTypeEncoding(method));
+					BOOL added = class_addMethod(isInstanceMethod ? class : object_getClass(class), NSSelectorFromString(fullMethodName), typeCheck, method_getTypeEncoding(method));
 					if (added)
 					{
 						Method typeCheckMethod = isInstanceMethod ? class_getInstanceMethod(class, NSSelectorFromString(fullMethodName)) : class_getClassMethod(class, NSSelectorFromString(fullMethodName));
