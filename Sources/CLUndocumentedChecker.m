@@ -18,8 +18,8 @@ NSString *const CLUndocumentedCheckerMethodNameKey         = @"MethodName";
 NSString *const CLUndocumentedCheckerProtocolSignatureKey  = @"ProtocolSignature";
 NSString *const CLUndocumentedCheckerClassSignatureKey     = @"ClassSignature";
 
-// ❖ BLACK DIAMOND MINUS WHITE X
-#define TYPE_SEPARATOR @"\u2756"
+// ◈ WHITE DIAMOND CONTAINING BLACK SMALL DIAMOND
+#define TYPE_SEPARATOR @"\u25C8"
 
 static id typeCheck(id self, SEL _cmd, ...)
 {
