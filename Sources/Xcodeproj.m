@@ -68,9 +68,11 @@ static Class PBXProject = Nil;
 	dlclose(devToolsCore);
 	
 	BOOL isSafe = YES;
-	for (Protocol *protocol in [NSArray arrayWithObjects:@protocol(PBXBuildFile), @protocol(PBXBuildPhase), @protocol(PBXProject), @protocol(PBXTarget), nil])
+	NSDictionary *classInfo = [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CLUndocumentedChecker"] objectForKey:@"Classes"];
+	for (NSString *protocolName in [classInfo allKeys])
 	{
 		NSError *classError = nil;
+		Protocol *protocol = NSProtocolFromString(protocolName);
 		Class class = CLClassFromProtocol(protocol, &classError);
 		if (class)
 			[self setValue:class forKey:[NSString stringWithCString:protocol_getName(protocol) encoding:NSUTF8StringEncoding]];
