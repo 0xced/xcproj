@@ -37,9 +37,11 @@ static id typeCheck(id self, SEL _cmd, ...)
 		return nil;
 	
 	id result = nil;
+	BOOL returnsObject = NO;
 	@try
 	{
 		NSMethodSignature *methodSignature = [self methodSignatureForSelector:_cmd];
+		returnsObject = [methodSignature methodReturnType][0] == _C_ID;
 		NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:methodSignature];
 		SEL selector = NSSelectorFromString([[returnClass stringByAppendingString:TYPE_SEPARATOR] stringByAppendingString:NSStringFromSelector(_cmd)]);
 		[invocation setTarget:self];
@@ -61,14 +63,16 @@ static id typeCheck(id self, SEL _cmd, ...)
 		}
 		va_end(args);
 		[invocation invoke];
-		[invocation getReturnValue:&result];
+		NSUInteger methodReturnLength = [methodSignature methodReturnLength];
+		if (methodReturnLength > 0 && methodReturnLength <= sizeof(id))
+			[invocation getReturnValue:&result];
 	}
 	@catch (NSException *exception)
 	{
 		result = nil;
 	}
 	
-	if (![result isKindOfClass:NSClassFromString(returnClass)])
+	if (returnsObject && ![result isKindOfClass:NSClassFromString(returnClass)])
 		return nil;
 	
 	return result;
@@ -150,23 +154,19 @@ Class CLClassFromProtocol(Protocol *protocol, NSError **error)
 				}
 			}
 			
-			const char *expectedReturnType = [[NSMethodSignature signatureWithObjCTypes:protocolMethods[i].types] methodReturnType];
-			if (expectedReturnType[0] == _C_ID)
+			NSString *returnClass = [methodInfo objectForKey:methodName];
+			methodName = [methodName substringFromIndex:1];
+			if (!returnClass)
+				fprintf(stderr, "WARNING: No return type information found for %c[%s %s]\n", isInstanceMethod ? '-' : '+', [className UTF8String], [methodName UTF8String]);
+			else
 			{
-				NSString *returnClass = [methodInfo objectForKey:methodName];
-				methodName = [methodName substringFromIndex:1];
-				if (!returnClass)
-					fprintf(stderr, "WARNING: No return type information found for %c[%s %s]\n", isInstanceMethod ? '-' : '+', [className UTF8String], [methodName UTF8String]);
-				else
+				NSString *fullMethodName = [[returnClass stringByAppendingString:TYPE_SEPARATOR] stringByAppendingString:methodName];
+				Method method = isInstanceMethod ? class_getInstanceMethod(class, NSSelectorFromString(methodName)) : class_getClassMethod(class, NSSelectorFromString(methodName));
+				BOOL added = class_addMethod(isInstanceMethod ? class : object_getClass(class), NSSelectorFromString(fullMethodName), typeCheck, method_getTypeEncoding(method));
+				if (added)
 				{
-					NSString *fullMethodName = [[returnClass stringByAppendingString:TYPE_SEPARATOR] stringByAppendingString:methodName];
-					Method method = isInstanceMethod ? class_getInstanceMethod(class, NSSelectorFromString(methodName)) : class_getClassMethod(class, NSSelectorFromString(methodName));
-					BOOL added = class_addMethod(isInstanceMethod ? class : object_getClass(class), NSSelectorFromString(fullMethodName), typeCheck, method_getTypeEncoding(method));
-					if (added)
-					{
-						Method typeCheckMethod = isInstanceMethod ? class_getInstanceMethod(class, NSSelectorFromString(fullMethodName)) : class_getClassMethod(class, NSSelectorFromString(fullMethodName));
-						method_exchangeImplementations(method, typeCheckMethod);
-					}
+					Method typeCheckMethod = isInstanceMethod ? class_getInstanceMethod(class, NSSelectorFromString(fullMethodName)) : class_getClassMethod(class, NSSelectorFromString(fullMethodName));
+					method_exchangeImplementations(method, typeCheckMethod);
 				}
 			}
 		}
