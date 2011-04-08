@@ -9,7 +9,7 @@ def buildClasses(headers):
             className = None
             for line in f:
                 protocolMatch = re.search(r"@protocol\s+(\w+)", line)
-                methodMatch = re.search(r"\s*([+-])\s*\(\s*((\w+)\s?\*|id\s*<(\w+)>)\s*\)\s*(.*);", line)
+                methodMatch = re.search(r"\s*([+-])\s*\(\s*((\w+)\s?\*?|id\s*<(\w+)>)\s*\)\s*(.*);", line)
                 if protocolMatch:
                     className = protocolMatch.group(1)
                     classes[className] = dict()
