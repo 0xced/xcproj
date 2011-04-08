@@ -30,8 +30,29 @@
 				<key>-buildFiles</key>
 				<string>NSArray</string>
 			</dict>
+			<key>PBXContainer</key>
+			<dict>
+				<key>-rootGroup</key>
+				<string>PBXGroup</string>
+			</dict>
+			<key>PBXFileReference</key>
+			<dict>
+			</dict>
+			<key>PBXGroup</key>
+			<dict>
+				<key>+groupWithName:</key>
+				<string>PBXGroup</string>
+				<key>-addFiles:copy:createGroupsRecursively:</key>
+				<string>NSArray</string>
+				<key>-children</key>
+				<string>NSArray</string>
+				<key>-insertItem:atIndex:</key>
+				<string>void</string>
+			</dict>
 			<key>PBXProject</key>
 			<dict>
+				<key>+isProjectWrapperExtension:</key>
+				<string>BOOL</string>
 				<key>+projectWithFile:</key>
 				<string>PBXProject</string>
 				<key>-activeTarget</key>
@@ -40,6 +61,15 @@
 				<string>NSString</string>
 				<key>-targetNamed:</key>
 				<string>PBXTarget</string>
+				<key>-writeToFileSystemProjectFile:userFile:checkNeedsRevert:</key>
+				<string>BOOL</string>
+			</dict>
+			<key>PBXReference</key>
+			<dict>
+				<key>-name</key>
+				<string>NSString</string>
+				<key>-sourceTree</key>
+				<string>NSString</string>
 			</dict>
 			<key>PBXTarget</key>
 			<dict>
