@@ -27,6 +27,7 @@
 - (void) printBuildPhases;
 
 - (BOOL) addGroup:(NSString *)groupName beforeGroup:(NSString *)otherGroupName;
+- (BOOL) addGroup:(NSString *)groupName inGroup:(NSString *)otherGroupName;
 - (BOOL) addFileAtPath:(NSString *)filePath inGroup:(NSString *)groupName;
 
 @end

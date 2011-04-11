@@ -180,6 +180,7 @@ static Class PBXReference = Nil;
 	else if (developTest)
 	{
 		[self addGroup:@"Configurations" beforeGroup:@"Frameworks"];
+		[self addGroup:@"Bundles" inGroup:@"Frameworks"];
 		NSString *xcconfigPath = [[[NSFileManager defaultManager] currentDirectoryPath] stringByAppendingPathComponent:@"Configurations/test.xcconfig"];
 		[self addFileAtPath:xcconfigPath inGroup:@"Configurations"];		
 	}
@@ -259,6 +260,22 @@ static Class PBXReference = Nil;
 	
 	id<PBXGroup> group = [PBXGroup groupWithName:groupName];
 	[parentGroup insertItem:group atIndex:otherGroupIndex];
+	
+	return [project writeToFileSystemProjectFile:YES userFile:NO checkNeedsRevert:NO];
+}
+
+- (BOOL) addGroup:(NSString *)groupName inGroup:(NSString *)otherGroupName
+{
+	id<PBXGroup> otherGroup = [self groupNamed:otherGroupName parentGroup:NULL];
+	
+	for (id<PBXGroup> group in [otherGroup children])
+	{
+		if ([group isKindOfClass:[PBXGroup class]] && [[group name] isEqualToString:otherGroupName])
+			return YES;
+	}
+	
+	id<PBXGroup> group = [PBXGroup groupWithName:groupName];
+	[otherGroup insertItem:group atIndex:0];
 	
 	return [project writeToFileSystemProjectFile:YES userFile:NO checkNeedsRevert:NO];
 }
