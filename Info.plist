@@ -96,6 +96,8 @@
 			</dict>
 			<key>XCBuildConfiguration</key>
 			<dict>
+				<key>+fileReference:isValidBaseConfigurationFile:</key>
+				<string>BOOL</string>
 				<key>-baseConfigurationReference</key>
 				<string>PBXFileReference</string>
 				<key>-setBaseConfigurationReference:</key>

@@ -17,10 +17,12 @@
 static Class PBXGroup = Nil;
 static Class PBXProject = Nil;
 static Class PBXReference = Nil;
+static Class XCBuildConfiguration = Nil;
 
-+ (void) setPBXGroup:(Class)class     { PBXGroup = class; }
-+ (void) setPBXProject:(Class)class   { PBXProject = class; }
-+ (void) setPBXReference:(Class)class { PBXReference = class; }
++ (void) setPBXGroup:(Class)class             { PBXGroup = class; }
++ (void) setPBXProject:(Class)class           { PBXProject = class; }
++ (void) setPBXReference:(Class)class         { PBXReference = class; }
++ (void) setXCBuildConfiguration:(Class)class { XCBuildConfiguration = class; }
 + (void) setValue:(id)value forUndefinedKey:(NSString *)key { /* ignore */ }
 
 + (void) initialize
@@ -182,7 +184,9 @@ static Class PBXReference = Nil;
 		[self addGroup:@"Configurations" beforeGroup:@"Frameworks"];
 		[self addGroup:@"Bundles" inGroup:@"Frameworks"];
 		NSString *xcconfigPath = [[[NSFileManager defaultManager] currentDirectoryPath] stringByAppendingPathComponent:@"Configurations/test.xcconfig"];
-		[self addFileAtPath:xcconfigPath inGroup:@"Configurations"];		
+		NSString *testBundlePath = [[[NSFileManager defaultManager] currentDirectoryPath] stringByAppendingPathComponent:@"Resources/v$(TEST_VERSION)/test.bundle"];
+		[self addFileAtPath:xcconfigPath inGroup:@"Configurations"];
+		[self addFileAtPath:testBundlePath inGroup:@"Bundles"];
 	}
 	else
 	{
@@ -287,8 +291,11 @@ static Class PBXReference = Nil;
 	if (!fileReference)
 		return NO;
 	
-	for (id<XCBuildConfiguration> configuration in [target buildConfigurations])
-		[configuration setBaseConfigurationReference:fileReference];
+	if ([XCBuildConfiguration fileReference:fileReference isValidBaseConfigurationFile:NULL])
+	{
+		for (id<XCBuildConfiguration> configuration in [target buildConfigurations])
+			[configuration setBaseConfigurationReference:fileReference];
+	}
 	
 	id<PBXGroup> group = [self groupNamed:groupName parentGroup:NULL];
 	if (!group)
