@@ -253,7 +253,7 @@ static Class PBXReference = Nil;
 	if (otherGroupIndex == NSNotFound)
 		otherGroupIndex = 0;
 	
-	id<PBXGroup> previousGroup = [[parentGroup children] objectAtIndex:MAX(otherGroupIndex - 1, 0)];
+	id<PBXGroup> previousGroup = [[parentGroup children] objectAtIndex:MAX((NSInteger)(otherGroupIndex) - 1, 0)];
 	if ([[previousGroup name] isEqualToString:groupName])
 		return YES;
 	
