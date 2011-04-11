@@ -244,9 +244,12 @@ static Class PBXReference = Nil;
 - (BOOL) addFileAtPath:(NSString *)filePath inGroup:(NSString *)groupName
 {
 	NSArray *references = [[project rootGroup] addFiles:[NSArray arrayWithObject:filePath] copy:NO createGroupsRecursively:NO];
-	id<PBXReference> fileReference = [references lastObject];
+	id<PBXFileReference> fileReference = [references lastObject];
 	if (!fileReference)
 		return NO;
+	
+	for (id<XCBuildConfiguration> configuration in [target buildConfigurations])
+		[configuration setBaseConfigurationReference:fileReference];
 	
 	id<PBXGroup> group = [self groupNamed:groupName];
 	if (!group)

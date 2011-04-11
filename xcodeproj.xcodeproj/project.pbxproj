@@ -53,6 +53,7 @@
 		DA7A044B134F2EBF00F89E9B /* Protocols.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Protocols.m; path = Sources/Protocols.m; sourceTree = "<group>"; };
 		DA7A08AD134F4C1600F89E9B /* PBXFileReference.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBXFileReference.h; sourceTree = "<group>"; };
 		DA7A0C9B1352F8B500F89E9B /* libddcli.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libddcli.a; path = Externals/ddcli/lib/libddcli.a; sourceTree = "<group>"; };
+		DA7A0D4F135304F000F89E9B /* XCBuildConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XCBuildConfiguration.h; sourceTree = "<group>"; };
 		DA8C9FFC1302AF93008B3560 /* PBXBuildPhase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBXBuildPhase.h; sourceTree = "<group>"; };
 		DA8C9FFD1302AF93008B3560 /* PBXProject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBXProject.h; sourceTree = "<group>"; };
 		DA8C9FFE1302AF93008B3560 /* PBXTarget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBXTarget.h; sourceTree = "<group>"; };
@@ -131,6 +132,7 @@
 				DA8C9FFD1302AF93008B3560 /* PBXProject.h */,
 				DA7A0218134F06FF00F89E9B /* PBXReference.h */,
 				DA8C9FFE1302AF93008B3560 /* PBXTarget.h */,
+				DA7A0D4F135304F000F89E9B /* XCBuildConfiguration.h */,
 			);
 			path = DevToolsCore;
 			sourceTree = "<group>";

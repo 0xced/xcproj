@@ -43,7 +43,7 @@
 				<key>+groupWithName:</key>
 				<string>PBXGroup</string>
 				<key>-addFiles:copy:createGroupsRecursively:</key>
-				<string>NSArray.PBXReference</string>
+				<string>NSArray.PBXFileReference</string>
 				<key>-children</key>
 				<string>NSArray.PBXReference</string>
 				<key>-insertItem:atIndex:</key>
@@ -57,6 +57,8 @@
 				<string>PBXProject</string>
 				<key>-activeTarget</key>
 				<string>PBXTarget</string>
+				<key>-buildConfigurations</key>
+				<string>NSArray.XCBuildConfiguration</string>
 				<key>-name</key>
 				<string>NSString</string>
 				<key>-targetNamed:</key>
@@ -75,6 +77,8 @@
 			</dict>
 			<key>PBXTarget</key>
 			<dict>
+				<key>-buildConfigurations</key>
+				<string>NSArray.XCBuildConfiguration</string>
 				<key>-defaultFrameworksBuildPhase</key>
 				<string>PBXBuildPhase</string>
 				<key>-defaultHeaderBuildPhase</key>
@@ -87,6 +91,13 @@
 				<string>PBXBuildPhase</string>
 				<key>-name</key>
 				<string>NSString</string>
+			</dict>
+			<key>XCBuildConfiguration</key>
+			<dict>
+				<key>-baseConfigurationReference</key>
+				<string>PBXFileReference</string>
+				<key>-setBaseConfigurationReference:</key>
+				<string>void</string>
 			</dict>
 		</dict>
 	</dict>

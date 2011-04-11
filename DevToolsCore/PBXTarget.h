@@ -4,6 +4,8 @@
 
 - (NSString *) name;
 
+- (NSArray *) buildConfigurations; // XCBuildConfiguration
+
 - (id<PBXBuildPhase>) defaultFrameworksBuildPhase;
 - (id<PBXBuildPhase>) defaultLinkBuildPhase;
 - (id<PBXBuildPhase>) defaultSourceCodeBuildPhase;
