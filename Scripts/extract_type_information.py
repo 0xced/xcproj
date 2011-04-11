@@ -8,7 +8,10 @@ def buildClasses(headers):
         with open(header) as f:
             className = None
             for line in f:
-                protocolMatch = re.search(r"@protocol\s+(\w+)", line)
+                line = line.strip()
+                protocolMatch = re.match(r"@protocol\s+(\w+)", line)
+                if protocolMatch and line.endswith(";"):
+                    protocolMatch = None
                 methodMatch = re.search(r"\s*([+-])\s*\(\s*((\w+)\s?\*?|id\s*<(\w+)>)\s*\)\s*(.*);(\s*//\s*(.*))?", line)
                 if protocolMatch:
                     className = protocolMatch.group(1)
