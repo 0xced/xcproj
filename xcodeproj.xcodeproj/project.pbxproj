@@ -198,7 +198,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "./Scripts/extract_type_information.py Info.plist DevToolsCore/*";
+			shellScript = "export PATH=\"/opt/local/bin:$PATH\"\n./Scripts/extract_type_information.py Info.plist DevToolsCore/*";
 		};
 		DA7A0444134F2DEB00F89E9B /* Embed Protocols */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -212,7 +212,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "./Scripts/embed_protocols.py Info.plist Sources/Protocols.m";
+			shellScript = "export PATH=\"/opt/local/bin:$PATH\"\n./Scripts/embed_protocols.py Info.plist Sources/Protocols.m";
 		};
 		DAFF2ABD1305512000584E0E /* Check CLITool+InfoPlist */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -335,6 +335,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				PRODUCT_NAME = "Run Scripts";
+				SDKROOT = macosx10.6;
 			};
 			name = Debug;
 		};
@@ -342,6 +343,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				PRODUCT_NAME = "Run Scripts";
+				SDKROOT = macosx10.6;
 			};
 			name = Release;
 		};
