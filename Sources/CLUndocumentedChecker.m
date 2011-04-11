@@ -24,7 +24,7 @@ NSString *const CLUndocumentedCheckerClassSignatureKey     = @"ClassSignature";
 static id typeCheck(id self, SEL _cmd, ...)
 {
 	NSString *returnClassName = nil;
-	Class collectionClass = nil;
+	NSString *collectionElementsClassName = nil;
 	Class class = object_getClass(self);
 	while (!returnClassName && class)
 	{
@@ -34,7 +34,7 @@ static id typeCheck(id self, SEL _cmd, ...)
 		NSArray *returnComponents = [returnInfo componentsSeparatedByString:@"."];
 		returnClassName = [returnComponents objectAtIndex:0];
 		if ([returnComponents count] == 2)
-			collectionClass = NSClassFromString([returnComponents objectAtIndex:1]);
+			collectionElementsClassName = [returnComponents objectAtIndex:1];
 		class = class_getSuperclass(class);
 	}
 	
@@ -82,11 +82,12 @@ static id typeCheck(id self, SEL _cmd, ...)
 		if (![result isKindOfClass:NSClassFromString(returnClassName)])
 			return nil;
 		
-		if (collectionClass && [result isKindOfClass:[NSArray class]])
+		if (collectionElementsClassName && [result isKindOfClass:[NSArray class]])
 		{
+			Class collectionElementsClass = NSClassFromString(collectionElementsClassName);
 			for (id item in result)
 			{
-				if (![item isKindOfClass:collectionClass])
+				if (![item isKindOfClass:collectionElementsClass])
 					return nil;
 			}
 		}
