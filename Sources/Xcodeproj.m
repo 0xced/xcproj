@@ -270,7 +270,7 @@ static Class PBXReference = Nil;
 	
 	for (id<PBXGroup> group in [otherGroup children])
 	{
-		if ([group isKindOfClass:[PBXGroup class]] && [[group name] isEqualToString:otherGroupName])
+		if ([group isKindOfClass:[PBXGroup class]] && [[group name] isEqualToString:groupName])
 			return YES;
 	}
 	
