@@ -212,31 +212,49 @@ static Class PBXReference = Nil;
 	}
 }
 
-- (id<PBXGroup>) groupNamed:(NSString *)groupName
+- (id<PBXGroup>) groupNamed:(NSString *)groupName inGroup:(id<PBXGroup>)rootGroup parentGroup:(id<PBXGroup> *) parentGroup
 {
-	id<PBXGroup> group = nil;
-	for (id<PBXGroup> item in [[project rootGroup] children])
+	for (id<PBXGroup> group in [rootGroup children])
 	{
-		if ([item isKindOfClass:NSClassFromString(@"PBXGroup")] && [[item name] isEqualToString:groupName])
+		if ([group isKindOfClass:[PBXGroup class]])
 		{
-			group = item;
-			break;
+			if (parentGroup)
+				*parentGroup = rootGroup;
+			
+			if ([[group name] isEqualToString:groupName])
+			{
+				return group;
+			}
+			else
+			{
+				id<PBXGroup> subGroup = [self groupNamed:groupName inGroup:group parentGroup:parentGroup];
+				if (subGroup)
+					return subGroup;
+			}
 		}
 	}
 	
-	return group;
+	if (parentGroup)
+		*parentGroup = nil;
+	return nil;
+}
+
+- (id<PBXGroup>) groupNamed:(NSString *)groupName parentGroup:(id<PBXGroup> *) parentGroup
+{
+	return [self groupNamed:groupName inGroup:[project rootGroup] parentGroup:parentGroup];
 }
 
 - (BOOL) addGroup:(NSString *)groupName beforeGroup:(NSString *)otherGroupName
 {
-	id<PBXGroup> otherGroup = [self groupNamed:otherGroupName];
-	NSUInteger otherGroupIndex = [[[project rootGroup] children] indexOfObjectIdenticalTo:otherGroup];
+	id<PBXGroup> parentGroup = nil;
+	id<PBXGroup> otherGroup = [self groupNamed:otherGroupName parentGroup:&parentGroup];
+	NSUInteger otherGroupIndex = [[parentGroup children] indexOfObjectIdenticalTo:otherGroup];
 	
 	if (otherGroupIndex == NSNotFound)
 		otherGroupIndex = 0;
 	
 	id<PBXGroup> group = [PBXGroup groupWithName:groupName];
-	[[project rootGroup] insertItem:group atIndex:otherGroupIndex];
+	[parentGroup insertItem:group atIndex:otherGroupIndex];
 	
 	return [project writeToFileSystemProjectFile:YES userFile:NO checkNeedsRevert:NO];
 }
@@ -251,7 +269,7 @@ static Class PBXReference = Nil;
 	for (id<XCBuildConfiguration> configuration in [target buildConfigurations])
 		[configuration setBaseConfigurationReference:fileReference];
 	
-	id<PBXGroup> group = [self groupNamed:groupName];
+	id<PBXGroup> group = [self groupNamed:groupName parentGroup:NULL];
 	if (!group)
 		group = [project rootGroup];
 	
