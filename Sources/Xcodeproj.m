@@ -187,6 +187,7 @@ static Class XCBuildConfiguration = Nil;
 		NSString *testBundlePath = [[[NSFileManager defaultManager] currentDirectoryPath] stringByAppendingPathComponent:@"Resources/v$(TEST_VERSION)/test.bundle"];
 		[self addFileAtPath:xcconfigPath inGroup:@"Configurations"];
 		[self addFileAtPath:testBundlePath inGroup:@"Bundles"];
+		[self addFileAtPath:testBundlePath toBuildPhase:@"Resources"];
 	}
 	else
 	{
@@ -286,8 +287,12 @@ static Class XCBuildConfiguration = Nil;
 
 - (BOOL) addFileAtPath:(NSString *)filePath inGroup:(NSString *)groupName
 {
-	NSArray *references = [[project rootGroup] addFiles:[NSArray arrayWithObject:filePath] copy:NO createGroupsRecursively:NO];
-	id<PBXFileReference> fileReference = [references lastObject];
+	id<PBXFileReference> fileReference = [project fileReferenceForPath:filePath];
+	if (!fileReference)
+	{
+		NSArray *references = [[project rootGroup] addFiles:[NSArray arrayWithObject:filePath] copy:NO createGroupsRecursively:NO];
+		fileReference = [references lastObject];
+	}
 	if (!fileReference)
 		return NO;
 	
@@ -305,6 +310,28 @@ static Class XCBuildConfiguration = Nil;
 		return YES;
 	
 	[group insertItem:fileReference atIndex:0];
+	
+	return [project writeToFileSystemProjectFile:YES userFile:NO checkNeedsRevert:NO];
+}
+
+- (BOOL) addFileAtPath:(NSString *)filePath toBuildPhase:(NSString *)buildPhaseName
+{
+	Class buildPhaseClass = NSClassFromString([NSString stringWithFormat:@"PBX%@BuildPhase", buildPhaseName]);
+	id<PBXBuildPhase> buildPhase = [target buildPhaseOfClass:buildPhaseClass];
+	if (!buildPhase)
+	{
+		if ([buildPhaseClass respondsToSelector:@selector(buildPhase)])
+		{
+			buildPhase = [buildPhaseClass performSelector:@selector(buildPhase)];
+			[target addBuildPhase:buildPhase];
+		}
+	}
+	
+	id<PBXFileReference> reference = [project fileReferenceForPath:filePath];
+	if ([buildPhase containsFileReferenceIdenticalTo:reference])
+		return YES;
+	
+	[buildPhase addReference:reference];
 	
 	return [project writeToFileSystemProjectFile:YES userFile:NO checkNeedsRevert:NO];
 }

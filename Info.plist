@@ -27,11 +27,19 @@
 			</dict>
 			<key>PBXBuildPhase</key>
 			<dict>
+				<key>+buildPhase</key>
+				<string>PBXBuildPhase</string>
+				<key>-addReference:</key>
+				<string>BOOL</string>
 				<key>-buildFiles</key>
 				<string>NSArray.PBXBuildFile</string>
+				<key>-containsFileReferenceIdenticalTo:</key>
+				<string>BOOL</string>
 			</dict>
 			<key>PBXContainer</key>
 			<dict>
+				<key>-fileReferenceForPath:</key>
+				<string>PBXFileReference</string>
 				<key>-rootGroup</key>
 				<string>PBXGroup</string>
 			</dict>
@@ -79,8 +87,12 @@
 			</dict>
 			<key>PBXTarget</key>
 			<dict>
+				<key>-addBuildPhase:</key>
+				<string>void</string>
 				<key>-buildConfigurations</key>
 				<string>NSArray.XCBuildConfiguration</string>
+				<key>-buildPhaseOfClass:</key>
+				<string>PBXBuildPhase</string>
 				<key>-defaultFrameworksBuildPhase</key>
 				<string>PBXBuildPhase</string>
 				<key>-defaultHeaderBuildPhase</key>
