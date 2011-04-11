@@ -70,6 +70,8 @@
 			</dict>
 			<key>PBXReference</key>
 			<dict>
+				<key>-allReferencesForGroup:</key>
+				<string>NSArray.PBXReference</string>
 				<key>-name</key>
 				<string>NSString</string>
 				<key>-sourceTree</key>

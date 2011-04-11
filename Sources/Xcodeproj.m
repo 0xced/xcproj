@@ -253,6 +253,10 @@ static Class PBXReference = Nil;
 	if (otherGroupIndex == NSNotFound)
 		otherGroupIndex = 0;
 	
+	id<PBXGroup> previousGroup = [[parentGroup children] objectAtIndex:MAX(otherGroupIndex - 1, 0)];
+	if ([[previousGroup name] isEqualToString:groupName])
+		return YES;
+	
 	id<PBXGroup> group = [PBXGroup groupWithName:groupName];
 	[parentGroup insertItem:group atIndex:otherGroupIndex];
 	
@@ -272,6 +276,9 @@ static Class PBXReference = Nil;
 	id<PBXGroup> group = [self groupNamed:groupName parentGroup:NULL];
 	if (!group)
 		group = [project rootGroup];
+	
+	if ([[fileReference allReferencesForGroup:group] count] > 0)
+		return YES;
 	
 	[group insertItem:fileReference atIndex:0];
 	
