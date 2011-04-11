@@ -14,17 +14,14 @@
 
 @implementation Xcodeproj
 
+static Class PBXGroup = Nil;
 static Class PBXProject = Nil;
+static Class PBXReference = Nil;
 
-+ (void) setPBXProject:(Class)class
-{
-	PBXProject = class;
-}
-
-+ (void) setValue:(id)value forUndefinedKey:(NSString *)key
-{
-	// ignore
-}
++ (void) setPBXGroup:(Class)class     { PBXGroup = class; }
++ (void) setPBXProject:(Class)class   { PBXProject = class; }
++ (void) setPBXReference:(Class)class { PBXReference = class; }
++ (void) setValue:(id)value forUndefinedKey:(NSString *)key { /* ignore */ }
 
 + (void) initialize
 {
@@ -91,10 +88,12 @@ static Class PBXProject = Nil;
 {
 	DDGetoptOption optionTable[] = 
 	{
-		// Long       Short  Argument options
-		{@"project",  'p',   DDGetoptRequiredArgument},
-		{@"target",   't',   DDGetoptRequiredArgument},
-		{@"help",     'h',   DDGetoptNoArgument},
+		// Long           Short  Argument options
+		{@"project",      'p',   DDGetoptRequiredArgument},
+		{@"target",       't',   DDGetoptRequiredArgument},
+		{@"help",         'h',   DDGetoptNoArgument},
+		{@"list-targets", 'l',   DDGetoptNoArgument},
+		{@"develop-test", 'd',   DDGetoptNoArgument},
 		{nil,          0,    0},
 	};
 	[optionsParser addOptionsFromTable:optionTable];
@@ -125,13 +124,16 @@ static Class PBXProject = Nil;
 	targetName = [aTargetName retain];
 }
 
+- (void) printUsage:(DDCliApplication *)app exitCode:(int)exitCode
+{
+	ddprintf(@"Usage: %@ ...\n", app);
+	exit(exitCode);
+}
+
 - (int) application:(DDCliApplication *)app runWithArguments:(NSArray *)arguments
 {
 	if (help)
-	{
-		ddprintf(@"Usage: %@ ...\n", app);
-		return EX_OK;
-	}
+		[self printUsage:app exitCode:EX_OK];
 	
 	NSString *currentDirectoryPath = [[NSFileManager defaultManager] currentDirectoryPath];
 	
@@ -171,9 +173,28 @@ static Class PBXProject = Nil;
 			@throw [DDCliParseException parseExceptionWithReason:[NSString stringWithFormat:@"The project %@ does not contain any target.", [project name]] exitCode:EX_DATAERR];
 	}
 	
-	[self printBuildPhases];
+	if (listTargets)
+	{
+		[self printTargets];
+	}
+	else if (developTest)
+	{
+		[self addGroup:@"Configurations" beforeGroup:@"Frameworks"];
+		NSString *xcconfigPath = [[[NSFileManager defaultManager] currentDirectoryPath] stringByAppendingPathComponent:@"Configurations/test.xcconfig"];
+		[self addFileAtPath:xcconfigPath inGroup:@"Configurations"];		
+	}
+	else
+	{
+		[self printUsage:app exitCode:EX_USAGE];
+	}
 	
 	return EX_OK;
+}
+
+- (void) printTargets
+{
+	for (id<PBXTarget> aTarget in [project targets])
+		ddprintf(@"%@\n", [aTarget name]);
 }
 
 - (void) printBuildPhases
@@ -189,6 +210,51 @@ static Class PBXProject = Nil;
 		}
 		ddprintf(@"\n");
 	}
+}
+
+- (id<PBXGroup>) groupNamed:(NSString *)groupName
+{
+	id<PBXGroup> group = nil;
+	for (id<PBXGroup> item in [[project rootGroup] children])
+	{
+		if ([item isKindOfClass:NSClassFromString(@"PBXGroup")] && [[item name] isEqualToString:groupName])
+		{
+			group = item;
+			break;
+		}
+	}
+	
+	return group;
+}
+
+- (BOOL) addGroup:(NSString *)groupName beforeGroup:(NSString *)otherGroupName
+{
+	id<PBXGroup> otherGroup = [self groupNamed:otherGroupName];
+	NSUInteger otherGroupIndex = [[[project rootGroup] children] indexOfObjectIdenticalTo:otherGroup];
+	
+	if (otherGroupIndex == NSNotFound)
+		otherGroupIndex = 0;
+	
+	id<PBXGroup> group = [PBXGroup groupWithName:groupName];
+	[[project rootGroup] insertItem:group atIndex:otherGroupIndex];
+	
+	return [project writeToFileSystemProjectFile:YES userFile:NO checkNeedsRevert:NO];
+}
+
+- (BOOL) addFileAtPath:(NSString *)filePath inGroup:(NSString *)groupName
+{
+	NSArray *references = [[project rootGroup] addFiles:[NSArray arrayWithObject:filePath] copy:NO createGroupsRecursively:NO];
+	id<PBXReference> fileReference = [references lastObject];
+	if (!fileReference)
+		return NO;
+	
+	id<PBXGroup> group = [self groupNamed:groupName];
+	if (!group)
+		group = [project rootGroup];
+	
+	[group insertItem:fileReference atIndex:0];
+	
+	return [project writeToFileSystemProjectFile:YES userFile:NO checkNeedsRevert:NO];
 }
 
 @end

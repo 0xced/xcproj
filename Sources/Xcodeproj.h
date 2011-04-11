@@ -16,10 +16,17 @@
 	id<PBXProject> project;
 	NSString *targetName;
 	BOOL help;
+	// Actions
+	BOOL listTargets;
+	BOOL developTest;
 	
 	id<PBXTarget> target;
 }
 
+- (void) printTargets;
 - (void) printBuildPhases;
+
+- (BOOL) addGroup:(NSString *)groupName beforeGroup:(NSString *)otherGroupName;
+- (BOOL) addFileAtPath:(NSString *)filePath inGroup:(NSString *)groupName;
 
 @end
