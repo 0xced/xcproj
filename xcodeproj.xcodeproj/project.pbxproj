@@ -25,40 +25,12 @@
 		8DD76F9A0486AA7600D96B5E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 08FB7796FE84155DC02AAC07 /* main.m */; settings = {ATTRIBUTES = (); }; };
 		8DD76F9C0486AA7600D96B5E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08FB779EFE84155DC02AAC07 /* Foundation.framework */; };
 		DA1DC01010E59AED005A103B /* Xcodeproj.m in Sources */ = {isa = PBXBuildFile; fileRef = DA1DC00E10E59AED005A103B /* Xcodeproj.m */; };
-		DA524B56130081F700D04282 /* libddcli.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DA524B51130081E500D04282 /* libddcli.a */; };
 		DA7A044C134F2EBF00F89E9B /* Protocols.m in Sources */ = {isa = PBXBuildFile; fileRef = DA7A044B134F2EBF00F89E9B /* Protocols.m */; };
+		DA7A0C9C1352F8B500F89E9B /* libddcli.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DA7A0C9B1352F8B500F89E9B /* libddcli.a */; };
 		DAFF25CC1303ECB100584E0E /* CLUndocumentedChecker.m in Sources */ = {isa = PBXBuildFile; fileRef = DAFF25CB1303ECB100584E0E /* CLUndocumentedChecker.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		DA524B4C130081E500D04282 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = DA1DBFA610E599F2005A103B /* ddcli.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8DD76FA10486AA7600D96B5E;
-			remoteInfo = example;
-		};
-		DA524B4E130081E500D04282 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = DA1DBFA610E599F2005A103B /* ddcli.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 55CCE9760C1380C900FA06C6;
-			remoteInfo = simple;
-		};
-		DA524B50130081E500D04282 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = DA1DBFA610E599F2005A103B /* ddcli.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 55CCE92E0C137F7D00FA06C6;
-			remoteInfo = ddcli;
-		};
-		DA524B54130081EB00D04282 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = DA1DBFA610E599F2005A103B /* ddcli.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 55CCE92D0C137F7D00FA06C6;
-			remoteInfo = ddcli;
-		};
 		DA7A01E5134F037300F89E9B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
@@ -73,7 +45,6 @@
 		08FB779EFE84155DC02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32A70AAB03705E1F00C91783 /* xcodeproj_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xcodeproj_Prefix.pch; path = Sources/xcodeproj_Prefix.pch; sourceTree = "<group>"; };
 		8DD76FA10486AA7600D96B5E /* xcodeproj */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = xcodeproj; sourceTree = BUILT_PRODUCTS_DIR; };
-		DA1DBFA610E599F2005A103B /* ddcli.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ddcli.xcodeproj; path = Sources/ddcli/ddcli.xcodeproj; sourceTree = DEVELOPER_DIR; };
 		DA1DC00E10E59AED005A103B /* Xcodeproj.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Xcodeproj.m; path = Sources/Xcodeproj.m; sourceTree = "<group>"; };
 		DA1DC00F10E59AED005A103B /* Xcodeproj.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Xcodeproj.h; path = Sources/Xcodeproj.h; sourceTree = "<group>"; };
 		DA7A018E134F015F00F89E9B /* PBXContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBXContainer.h; sourceTree = "<group>"; };
@@ -81,6 +52,7 @@
 		DA7A0218134F06FF00F89E9B /* PBXReference.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBXReference.h; sourceTree = "<group>"; };
 		DA7A044B134F2EBF00F89E9B /* Protocols.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Protocols.m; path = Sources/Protocols.m; sourceTree = "<group>"; };
 		DA7A08AD134F4C1600F89E9B /* PBXFileReference.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBXFileReference.h; sourceTree = "<group>"; };
+		DA7A0C9B1352F8B500F89E9B /* libddcli.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libddcli.a; path = Externals/ddcli/lib/libddcli.a; sourceTree = "<group>"; };
 		DA8C9FFC1302AF93008B3560 /* PBXBuildPhase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBXBuildPhase.h; sourceTree = "<group>"; };
 		DA8C9FFD1302AF93008B3560 /* PBXProject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBXProject.h; sourceTree = "<group>"; };
 		DA8C9FFE1302AF93008B3560 /* PBXTarget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBXTarget.h; sourceTree = "<group>"; };
@@ -96,8 +68,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DA524B56130081F700D04282 /* libddcli.a in Frameworks */,
 				8DD76F9C0486AA7600D96B5E /* Foundation.framework in Frameworks */,
+				DA7A0C9C1352F8B500F89E9B /* libddcli.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -107,7 +79,6 @@
 		08FB7794FE84155DC02AAC07 /* xcodeproj */ = {
 			isa = PBXGroup;
 			children = (
-				DA1DBFA610E599F2005A103B /* ddcli.xcodeproj */,
 				DAFF2AD913055EF500584E0E /* Info.plist */,
 				DA8C9FFB1302AF93008B3560 /* DevToolsCore */,
 				08FB7795FE84155DC02AAC07 /* Sources */,
@@ -135,6 +106,7 @@
 			isa = PBXGroup;
 			children = (
 				08FB779EFE84155DC02AAC07 /* Foundation.framework */,
+				DA7A0C9B1352F8B500F89E9B /* libddcli.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -143,16 +115,6 @@
 			isa = PBXGroup;
 			children = (
 				8DD76FA10486AA7600D96B5E /* xcodeproj */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		DA524B46130081E500D04282 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				DA524B4D130081E500D04282 /* example */,
-				DA524B4F130081E500D04282 /* simple */,
-				DA524B51130081E500D04282 /* libddcli.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -188,7 +150,6 @@
 			);
 			dependencies = (
 				DA7A01E6134F037300F89E9B /* PBXTargetDependency */,
-				DA524B55130081EB00D04282 /* PBXTargetDependency */,
 			);
 			name = xcodeproj;
 			productInstallPath = "$(HOME)/bin";
@@ -216,12 +177,6 @@
 			);
 			mainGroup = 08FB7794FE84155DC02AAC07 /* xcodeproj */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = DA524B46130081E500D04282 /* Products */;
-					ProjectRef = DA1DBFA610E599F2005A103B /* ddcli.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				8DD76F960486AA7600D96B5E /* xcodeproj */,
@@ -229,30 +184,6 @@
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXReferenceProxy section */
-		DA524B4D130081E500D04282 /* example */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			path = example;
-			remoteRef = DA524B4C130081E500D04282 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		DA524B4F130081E500D04282 /* simple */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			path = simple;
-			remoteRef = DA524B4E130081E500D04282 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		DA524B51130081E500D04282 /* libddcli.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libddcli.a;
-			remoteRef = DA524B50130081E500D04282 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
 
 /* Begin PBXShellScriptBuildPhase section */
 		DA7A01D9134F033800F89E9B /* Extract Type Information */ = {
@@ -314,11 +245,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		DA524B55130081EB00D04282 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = ddcli;
-			targetProxy = DA524B54130081EB00D04282 /* PBXContainerItemProxy */;
-		};
 		DA7A01E6134F037300F89E9B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = DA7A01DA134F033800F89E9B /* Run Scripts */;
@@ -371,11 +297,12 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					"$(DEVELOPER_DIR)/Sources/ddcli-1.0/lib",
-					.,
+					"\"$(SRCROOT)/Externals/ddcli/include\"",
+					"\"$(SRCROOT)\"",
 				);
 				INSTALL_PATH = /usr/bin;
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../Library/PrivateFrameworks/";
+				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)/Externals/ddcli/lib\"";
 				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
 				SDKROOT = macosx10.5;
@@ -393,11 +320,12 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					"$(DEVELOPER_DIR)/Sources/ddcli-1.0/lib",
-					.,
+					"\"$(SRCROOT)/Externals/ddcli/include\"",
+					"\"$(SRCROOT)\"",
 				);
 				INSTALL_PATH = /usr/bin;
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../Library/PrivateFrameworks/";
+				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)/Externals/ddcli/lib\"";
 				PREBINDING = NO;
 				SDKROOT = macosx10.5;
 			};
