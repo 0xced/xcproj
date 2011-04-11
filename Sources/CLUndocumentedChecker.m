@@ -23,17 +23,22 @@ NSString *const CLUndocumentedCheckerClassSignatureKey     = @"ClassSignature";
 
 static id typeCheck(id self, SEL _cmd, ...)
 {
-	NSString *returnClass = nil;
+	NSString *returnClassName = nil;
+	Class collectionClass = nil;
 	Class class = object_getClass(self);
-	while (!returnClass && class)
+	while (!returnClassName && class)
 	{
 		NSDictionary *classInfo = [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CLUndocumentedChecker"] objectForKey:@"Classes"];
 		NSDictionary *methodInfo = [classInfo objectForKey:NSStringFromClass(class)];
-		returnClass = [methodInfo objectForKey:[class_isMetaClass(class) ? @"+" : @"-" stringByAppendingString:NSStringFromSelector(_cmd)]];
+		NSString *returnInfo = [methodInfo objectForKey:[class_isMetaClass(class) ? @"+" : @"-" stringByAppendingString:NSStringFromSelector(_cmd)]];
+		NSArray *returnComponents = [returnInfo componentsSeparatedByString:@"."];
+		returnClassName = [returnComponents objectAtIndex:0];
+		if ([returnComponents count] == 2)
+			collectionClass = NSClassFromString([returnComponents objectAtIndex:1]);
 		class = class_getSuperclass(class);
 	}
 	
-	if (returnClass == nil)
+	if (returnClassName == nil)
 		return nil;
 	
 	id result = nil;
@@ -43,7 +48,7 @@ static id typeCheck(id self, SEL _cmd, ...)
 		NSMethodSignature *methodSignature = [self methodSignatureForSelector:_cmd];
 		returnsObject = [methodSignature methodReturnType][0] == _C_ID;
 		NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:methodSignature];
-		SEL selector = NSSelectorFromString([[returnClass stringByAppendingString:TYPE_SEPARATOR] stringByAppendingString:NSStringFromSelector(_cmd)]);
+		SEL selector = NSSelectorFromString([[returnClassName stringByAppendingString:TYPE_SEPARATOR] stringByAppendingString:NSStringFromSelector(_cmd)]);
 		[invocation setTarget:self];
 		[invocation setSelector:selector];
 		va_list ap;
@@ -72,8 +77,20 @@ static id typeCheck(id self, SEL _cmd, ...)
 		result = nil;
 	}
 	
-	if (returnsObject && ![result isKindOfClass:NSClassFromString(returnClass)])
-		return nil;
+	if (returnsObject)
+	{
+		if (![result isKindOfClass:NSClassFromString(returnClassName)])
+			return nil;
+		
+		if (collectionClass && [result isKindOfClass:[NSArray class]])
+		{
+			for (id item in result)
+			{
+				if (![item isKindOfClass:collectionClass])
+					return nil;
+			}
+		}
+	}
 	
 	return result;
 }
@@ -154,13 +171,14 @@ Class CLClassFromProtocol(Protocol *protocol, NSError **error)
 				}
 			}
 			
-			NSString *returnClass = [methodInfo objectForKey:methodName];
+			NSString *returnInfo = [methodInfo objectForKey:methodName];
+			NSString *returnClassName = [[returnInfo componentsSeparatedByString:@"."] objectAtIndex:0];
 			methodName = [methodName substringFromIndex:1];
-			if (!returnClass)
+			if (!returnClassName)
 				fprintf(stderr, "WARNING: No return type information found for %c[%s %s]\n", isInstanceMethod ? '-' : '+', [className UTF8String], [methodName UTF8String]);
 			else
 			{
-				NSString *fullMethodName = [[returnClass stringByAppendingString:TYPE_SEPARATOR] stringByAppendingString:methodName];
+				NSString *fullMethodName = [[returnClassName stringByAppendingString:TYPE_SEPARATOR] stringByAppendingString:methodName];
 				Method method = isInstanceMethod ? class_getInstanceMethod(class, NSSelectorFromString(methodName)) : class_getClassMethod(class, NSSelectorFromString(methodName));
 				BOOL added = class_addMethod(isInstanceMethod ? class : object_getClass(class), NSSelectorFromString(fullMethodName), typeCheck, method_getTypeEncoding(method));
 				if (added)

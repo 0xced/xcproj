@@ -9,7 +9,7 @@ def buildClasses(headers):
             className = None
             for line in f:
                 protocolMatch = re.search(r"@protocol\s+(\w+)", line)
-                methodMatch = re.search(r"\s*([+-])\s*\(\s*((\w+)\s?\*?|id\s*<(\w+)>)\s*\)\s*(.*);", line)
+                methodMatch = re.search(r"\s*([+-])\s*\(\s*((\w+)\s?\*?|id\s*<(\w+)>)\s*\)\s*(.*);(\s*//\s*(.*))?", line)
                 if protocolMatch:
                     className = protocolMatch.group(1)
                     classes[className] = dict()
@@ -18,6 +18,9 @@ def buildClasses(headers):
                     methodKind = methodMatch.group(1)
                     returnType = methodMatch.group(3) or methodMatch.group(4)
                     method = methodMatch.group(5)
+                    collectionType = methodMatch.group(7)
+                    if collectionType != None:
+                        returnType = returnType + "." + collectionType
                     selector = ""
                     for match in re.finditer(r"((\w+:)\s*\([^)]+\)\s*\w*)+", method):
                         selector = selector + match.group(2)

@@ -1,6 +1,6 @@
 
 @protocol PBXBuildPhase <NSObject>
 
-- (NSArray *) buildFiles;
+- (NSArray *) buildFiles; // PBXBuildFile
 
 @end
