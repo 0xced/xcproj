@@ -101,7 +101,7 @@ Class CLClassFromProtocol(Protocol *protocol, NSError **error)
 	if (error)
 		*error = nil;
 	
-	NSString *className = [NSString stringWithCString:protocol_getName(protocol) encoding:NSUTF8StringEncoding];
+	NSString *className = protocol ? [NSString stringWithCString:protocol_getName(protocol) encoding:NSUTF8StringEncoding] : @"nil";
 	Class class = NSClassFromString(className);
 	if (!class)
 	{
