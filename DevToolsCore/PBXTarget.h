@@ -2,6 +2,8 @@
 
 @protocol PBXTarget <NSObject>
 
+- (NSString *) name;
+
 - (id<PBXBuildPhase>) defaultFrameworksBuildPhase;
 - (id<PBXBuildPhase>) defaultLinkBuildPhase;
 - (id<PBXBuildPhase>) defaultSourceCodeBuildPhase;

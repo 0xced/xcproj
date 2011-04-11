@@ -61,6 +61,8 @@
 				<string>NSString</string>
 				<key>-targetNamed:</key>
 				<string>PBXTarget</string>
+				<key>-targets</key>
+				<string>NSArray</string>
 				<key>-writeToFileSystemProjectFile:userFile:checkNeedsRevert:</key>
 				<string>BOOL</string>
 			</dict>
@@ -83,6 +85,8 @@
 				<string>PBXBuildPhase</string>
 				<key>-defaultSourceCodeBuildPhase</key>
 				<string>PBXBuildPhase</string>
+				<key>-name</key>
+				<string>NSString</string>
 			</dict>
 		</dict>
 	</dict>
