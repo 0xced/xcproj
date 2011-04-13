@@ -18,17 +18,21 @@
 	BOOL help;
 	// Actions
 	BOOL listTargets;
-	BOOL developTest;
+	
+	BOOL shouldWriteProject;
 	
 	id<PBXTarget> target;
+	id<PBXFileReference> xcconfig;
+	NSMutableArray *resourcesBundles;
 }
 
 - (void) printTargets;
 - (void) printBuildPhases;
 
-- (BOOL) addGroup:(NSString *)groupName beforeGroup:(NSString *)otherGroupName;
-- (BOOL) addGroup:(NSString *)groupName inGroup:(NSString *)otherGroupName;
-- (BOOL) addFileAtPath:(NSString *)filePath inGroup:(NSString *)groupName;
-- (BOOL) addFileAtPath:(NSString *)filePath toBuildPhase:(NSString *)buildPhaseName;
+- (void) addGroupNamed:(NSString *)groupName beforeGroupNamed:(NSString *)otherGroupName;
+- (void) addGroupNamed:(NSString *)groupName inGroupNamed:(NSString *)otherGroupName;
+- (id<PBXFileReference>) addFileAtPath:(NSString *)filePath;
+- (BOOL) addFileReference:(id<PBXFileReference>)fileReference inGroupNamed:(NSString *)groupName;
+- (BOOL) addFileReference:(id<PBXFileReference>)fileReference toBuildPhase:(NSString *)buildPhaseName;
 
 @end

@@ -90,13 +90,14 @@ static Class XCBuildConfiguration = Nil;
 {
 	DDGetoptOption optionTable[] = 
 	{
-		// Long           Short  Argument options
-		{@"project",      'p',   DDGetoptRequiredArgument},
-		{@"target",       't',   DDGetoptRequiredArgument},
-		{@"help",         'h',   DDGetoptNoArgument},
-		{@"list-targets", 'l',   DDGetoptNoArgument},
-		{@"develop-test", 'd',   DDGetoptNoArgument},
-		{nil,          0,    0},
+		// Long                     Short  Argument options
+		{@"project",                'p',   DDGetoptRequiredArgument},
+		{@"target",                 't',   DDGetoptRequiredArgument},
+		{@"help",                   'h',   DDGetoptNoArgument},
+		{@"list-targets",           'l',   DDGetoptNoArgument},
+		{@"add-xcconfig",           'c',   DDGetoptRequiredArgument},
+		{@"add-resources-bundle",   'b',   DDGetoptRequiredArgument},
+		{nil,                        0,    0},
 	};
 	[optionsParser addOptionsFromTable:optionTable];
 }
@@ -115,6 +116,33 @@ static Class XCBuildConfiguration = Nil;
 	
 	[project release];
 	project = [[PBXProject projectWithFile:projectPath] retain];
+}
+
+- (void) setAddXcconfig:(NSString *)xcconfigPath
+{
+	if (xcconfig)
+		return;
+	
+	if (![[NSFileManager defaultManager] fileExistsAtPath:xcconfigPath])
+		@throw [DDCliParseException parseExceptionWithReason:[NSString stringWithFormat:@"The configuration file %@ does not exist in this directory.", xcconfigPath] exitCode:EX_NOINPUT];
+	
+	xcconfig = [[self addFileAtPath:xcconfigPath] retain];
+	
+	NSError *error = nil;
+	if (![XCBuildConfiguration fileReference:xcconfig isValidBaseConfigurationFile:&error])
+		@throw [DDCliParseException parseExceptionWithReason:[NSString stringWithFormat:@"The configuration file %@ is not valid. %@", xcconfigPath, [error localizedDescription]] exitCode:EX_USAGE];
+	
+	for (id<XCBuildConfiguration> configuration in [project buildConfigurations])
+		[configuration setBaseConfigurationReference:xcconfig];
+}
+
+- (void) setAddResourcesBundle:(NSString *)resourcesBundlePath
+{
+	if (!resourcesBundles)
+		resourcesBundles = [[NSMutableArray alloc] init];
+	
+	id<PBXFileReference> bundleReference = [self addFileAtPath:resourcesBundlePath];
+	[resourcesBundles addObject:bundleReference];
 }
 
 - (void) setTarget:(NSString *)aTargetName
@@ -178,23 +206,40 @@ static Class XCBuildConfiguration = Nil;
 	if (listTargets)
 	{
 		[self printTargets];
-	}
-	else if (developTest)
-	{
-		[self addGroup:@"Configurations" beforeGroup:@"Frameworks"];
-		[self addGroup:@"Bundles" inGroup:@"Frameworks"];
-		NSString *xcconfigPath = [[[NSFileManager defaultManager] currentDirectoryPath] stringByAppendingPathComponent:@"Configurations/test.xcconfig"];
-		NSString *testBundlePath = [[[NSFileManager defaultManager] currentDirectoryPath] stringByAppendingPathComponent:@"Resources/v$(TEST_VERSION)/test.bundle"];
-		[self addFileAtPath:xcconfigPath inGroup:@"Configurations"];
-		[self addFileAtPath:testBundlePath inGroup:@"Bundles"];
-		[self addFileAtPath:testBundlePath toBuildPhase:@"Resources"];
+		return EX_OK;
 	}
 	else
 	{
-		[self printUsage:app exitCode:EX_USAGE];
+		if (xcconfig)
+		{
+			[self addGroupNamed:@"Configurations" beforeGroupNamed:@"Frameworks"];
+			[self addFileReference:xcconfig inGroupNamed:@"Configurations"];
+		}
+		
+		if (resourcesBundles)
+		{
+			for (id<PBXFileReference> bundleReference in resourcesBundles)
+			{
+				[self addGroupNamed:@"Bundles" inGroupNamed:@"Frameworks"];
+				[self addFileReference:bundleReference inGroupNamed:@"Bundles"];
+				[self addFileReference:bundleReference toBuildPhase:@"Resources"];
+			}
+		}
 	}
 	
-	return EX_OK;
+	if (shouldWriteProject)
+	{
+		BOOL written = [project writeToFileSystemProjectFile:YES userFile:NO checkNeedsRevert:NO];
+		if (!written)
+		{
+			ddfprintf(stderr, @"Could not write '%@' to file system.", project);
+			return EX_IOERR;
+		}
+		return EX_OK;
+	}
+	
+	[self printUsage:app exitCode:EX_USAGE];
+	return EX_USAGE;
 }
 
 - (void) printTargets
@@ -250,7 +295,7 @@ static Class XCBuildConfiguration = Nil;
 	return [self groupNamed:groupName inGroup:[project rootGroup] parentGroup:parentGroup];
 }
 
-- (BOOL) addGroup:(NSString *)groupName beforeGroup:(NSString *)otherGroupName
+- (void) addGroupNamed:(NSString *)groupName beforeGroupNamed:(NSString *)otherGroupName
 {
 	id<PBXGroup> parentGroup = nil;
 	id<PBXGroup> otherGroup = [self groupNamed:otherGroupName parentGroup:&parentGroup];
@@ -261,47 +306,46 @@ static Class XCBuildConfiguration = Nil;
 	
 	id<PBXGroup> previousGroup = [[parentGroup children] objectAtIndex:MAX((NSInteger)(otherGroupIndex) - 1, 0)];
 	if ([[previousGroup name] isEqualToString:groupName])
-		return YES;
+		return;
 	
 	id<PBXGroup> group = [PBXGroup groupWithName:groupName];
 	[parentGroup insertItem:group atIndex:otherGroupIndex];
 	
-	return [project writeToFileSystemProjectFile:YES userFile:NO checkNeedsRevert:NO];
+	shouldWriteProject = YES;
 }
 
-- (BOOL) addGroup:(NSString *)groupName inGroup:(NSString *)otherGroupName
+- (void) addGroupNamed:(NSString *)groupName inGroupNamed:(NSString *)otherGroupName
 {
 	id<PBXGroup> otherGroup = [self groupNamed:otherGroupName parentGroup:NULL];
 	
 	for (id<PBXGroup> group in [otherGroup children])
 	{
 		if ([group isKindOfClass:[PBXGroup class]] && [[group name] isEqualToString:groupName])
-			return YES;
+			return;
 	}
 	
 	id<PBXGroup> group = [PBXGroup groupWithName:groupName];
-	[otherGroup insertItem:group atIndex:0];
+	[otherGroup addItem:group];
 	
-	return [project writeToFileSystemProjectFile:YES userFile:NO checkNeedsRevert:NO];
+	shouldWriteProject = YES;
 }
 
-- (BOOL) addFileAtPath:(NSString *)filePath inGroup:(NSString *)groupName
+- (id<PBXFileReference>) addFileAtPath:(NSString *)filePath
 {
+	if (![filePath hasPrefix:@"/"])
+		filePath = [[[NSFileManager defaultManager] currentDirectoryPath] stringByAppendingPathComponent:filePath];
+	
 	id<PBXFileReference> fileReference = [project fileReferenceForPath:filePath];
 	if (!fileReference)
 	{
 		NSArray *references = [[project rootGroup] addFiles:[NSArray arrayWithObject:filePath] copy:NO createGroupsRecursively:NO];
 		fileReference = [references lastObject];
 	}
-	if (!fileReference)
-		return NO;
-	
-	if ([XCBuildConfiguration fileReference:fileReference isValidBaseConfigurationFile:NULL])
-	{
-		for (id<XCBuildConfiguration> configuration in [project buildConfigurations])
-			[configuration setBaseConfigurationReference:fileReference];
-	}
-	
+	return fileReference;
+}
+
+- (BOOL) addFileReference:(id<PBXFileReference>)fileReference inGroupNamed:(NSString *)groupName
+{
 	id<PBXGroup> group = [self groupNamed:groupName parentGroup:NULL];
 	if (!group)
 		group = [project rootGroup];
@@ -309,12 +353,14 @@ static Class XCBuildConfiguration = Nil;
 	if ([[fileReference allReferencesForGroup:group] count] > 0)
 		return YES;
 	
-	[group insertItem:fileReference atIndex:0];
+	[group addItem:fileReference];
 	
-	return [project writeToFileSystemProjectFile:YES userFile:NO checkNeedsRevert:NO];
+	shouldWriteProject = YES;
+	
+	return YES;
 }
 
-- (BOOL) addFileAtPath:(NSString *)filePath toBuildPhase:(NSString *)buildPhaseName
+- (BOOL) addFileReference:(id<PBXFileReference>)fileReference toBuildPhase:(NSString *)buildPhaseName
 {
 	Class buildPhaseClass = NSClassFromString([NSString stringWithFormat:@"PBX%@BuildPhase", buildPhaseName]);
 	id<PBXBuildPhase> buildPhase = [target buildPhaseOfClass:buildPhaseClass];
@@ -327,13 +373,15 @@ static Class XCBuildConfiguration = Nil;
 		}
 	}
 	
-	id<PBXFileReference> reference = [project fileReferenceForPath:filePath];
-	if ([buildPhase containsFileReferenceIdenticalTo:reference])
+	if ([buildPhase containsFileReferenceIdenticalTo:fileReference])
 		return YES;
 	
-	[buildPhase addReference:reference];
+	BOOL added = [buildPhase addReference:fileReference];
 	
-	return [project writeToFileSystemProjectFile:YES userFile:NO checkNeedsRevert:NO];
+	if (added)
+		shouldWriteProject = YES;
+	
+	return added;
 }
 
 @end

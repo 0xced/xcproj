@@ -52,6 +52,8 @@
 				<string>PBXGroup</string>
 				<key>-addFiles:copy:createGroupsRecursively:</key>
 				<string>NSArray.PBXFileReference</string>
+				<key>-addItem:</key>
+				<string>void</string>
 				<key>-children</key>
 				<string>NSArray.PBXReference</string>
 				<key>-insertItem:atIndex:</key>
