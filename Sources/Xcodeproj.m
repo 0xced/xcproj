@@ -298,7 +298,7 @@ static Class XCBuildConfiguration = Nil;
 	
 	if ([XCBuildConfiguration fileReference:fileReference isValidBaseConfigurationFile:NULL])
 	{
-		for (id<XCBuildConfiguration> configuration in [target buildConfigurations])
+		for (id<XCBuildConfiguration> configuration in [project buildConfigurations])
 			[configuration setBaseConfigurationReference:fileReference];
 	}
 	
