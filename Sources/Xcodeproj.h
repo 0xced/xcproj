@@ -18,12 +18,12 @@
 	BOOL help;
 	// Actions
 	BOOL listTargets;
+	NSString *xcconfigPath;
+	NSMutableArray *resourcesBundlePaths;
 	
 	BOOL shouldWriteProject;
 	
 	id<PBXTarget> target;
-	id<PBXFileReference> xcconfig;
-	NSMutableArray *resourcesBundles;
 }
 
 - (void) printTargets;

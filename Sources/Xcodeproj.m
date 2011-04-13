@@ -118,31 +118,21 @@ static Class XCBuildConfiguration = Nil;
 	project = [[PBXProject projectWithFile:projectPath] retain];
 }
 
-- (void) setAddXcconfig:(NSString *)xcconfigPath
+- (void) setAddXcconfig:(NSString *)aXcconfigPath
 {
-	if (xcconfig)
+	if (xcconfigPath == aXcconfigPath)
 		return;
 	
-	if (![[NSFileManager defaultManager] fileExistsAtPath:xcconfigPath])
-		@throw [DDCliParseException parseExceptionWithReason:[NSString stringWithFormat:@"The configuration file %@ does not exist in this directory.", xcconfigPath] exitCode:EX_NOINPUT];
-	
-	xcconfig = [[self addFileAtPath:xcconfigPath] retain];
-	
-	NSError *error = nil;
-	if (![XCBuildConfiguration fileReference:xcconfig isValidBaseConfigurationFile:&error])
-		@throw [DDCliParseException parseExceptionWithReason:[NSString stringWithFormat:@"The configuration file %@ is not valid. %@", xcconfigPath, [error localizedDescription]] exitCode:EX_USAGE];
-	
-	for (id<XCBuildConfiguration> configuration in [project buildConfigurations])
-		[configuration setBaseConfigurationReference:xcconfig];
+	[xcconfigPath release];
+	xcconfigPath = [aXcconfigPath retain];
 }
 
 - (void) setAddResourcesBundle:(NSString *)resourcesBundlePath
 {
-	if (!resourcesBundles)
-		resourcesBundles = [[NSMutableArray alloc] init];
+	if (!resourcesBundlePaths)
+		resourcesBundlePaths = [[NSMutableArray alloc] init];
 	
-	id<PBXFileReference> bundleReference = [self addFileAtPath:resourcesBundlePath];
-	[resourcesBundles addObject:bundleReference];
+	[resourcesBundlePaths addObject:resourcesBundlePath];
 }
 
 - (void) setTarget:(NSString *)aTargetName
@@ -210,16 +200,29 @@ static Class XCBuildConfiguration = Nil;
 	}
 	else
 	{
-		if (xcconfig)
+		if (xcconfigPath)
 		{
+			if (![[NSFileManager defaultManager] fileExistsAtPath:xcconfigPath])
+				@throw [DDCliParseException parseExceptionWithReason:[NSString stringWithFormat:@"The configuration file %@ does not exist in this directory.", xcconfigPath] exitCode:EX_NOINPUT];
+			
+			id<PBXFileReference> xcconfig = [self addFileAtPath:xcconfigPath];
+			
+			NSError *error = nil;
+			if (![XCBuildConfiguration fileReference:xcconfig isValidBaseConfigurationFile:&error])
+				@throw [DDCliParseException parseExceptionWithReason:[NSString stringWithFormat:@"The configuration file %@ is not valid. %@", xcconfigPath, [error localizedDescription]] exitCode:EX_USAGE];
+			
+			for (id<XCBuildConfiguration> configuration in [project buildConfigurations])
+				[configuration setBaseConfigurationReference:xcconfig];
+			
 			[self addGroupNamed:@"Configurations" beforeGroupNamed:@"Frameworks"];
 			[self addFileReference:xcconfig inGroupNamed:@"Configurations"];
 		}
 		
-		if (resourcesBundles)
+		if (resourcesBundlePaths)
 		{
-			for (id<PBXFileReference> bundleReference in resourcesBundles)
+			for (NSString *resourcesBundlePath in resourcesBundlePaths)
 			{
+				id<PBXFileReference> bundleReference = [self addFileAtPath:resourcesBundlePath];
 				[self addGroupNamed:@"Bundles" inGroupNamed:@"Frameworks"];
 				[self addFileReference:bundleReference inGroupNamed:@"Bundles"];
 				[self addFileReference:bundleReference toBuildPhase:@"Resources"];
