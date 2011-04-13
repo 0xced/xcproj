@@ -6,6 +6,8 @@
 
 - (NSArray *) children; // PBXReference
 
+- (BOOL) containsItem:(id<PBXReference>)item;
+
 - (void) addItem:(id<PBXReference>)item;
 - (void) insertItem:(id<PBXReference>)item atIndex:(NSUInteger)index;
 

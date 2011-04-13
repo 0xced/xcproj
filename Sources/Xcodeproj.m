@@ -220,10 +220,10 @@ static Class XCBuildConfiguration = Nil;
 		
 		if (resourcesBundlePaths)
 		{
+			[self addGroupNamed:@"Bundles" inGroupNamed:@"Frameworks"];
 			for (NSString *resourcesBundlePath in resourcesBundlePaths)
 			{
 				id<PBXFileReference> bundleReference = [self addFileAtPath:resourcesBundlePath];
-				[self addGroupNamed:@"Bundles" inGroupNamed:@"Frameworks"];
 				[self addFileReference:bundleReference inGroupNamed:@"Bundles"];
 				[self addFileReference:bundleReference toBuildPhase:@"Resources"];
 			}
@@ -353,7 +353,7 @@ static Class XCBuildConfiguration = Nil;
 	if (!group)
 		group = [project rootGroup];
 	
-	if ([[fileReference allReferencesForGroup:group] count] > 0)
+	if ([group containsItem:fileReference])
 		return YES;
 	
 	[group addItem:fileReference];

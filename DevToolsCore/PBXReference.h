@@ -6,6 +6,4 @@
 - (NSString *) name;
 - (NSString *) sourceTree;
 
-- (NSArray *) allReferencesForGroup:(id<PBXGroup>)group; // PBXReference
-
 @end
