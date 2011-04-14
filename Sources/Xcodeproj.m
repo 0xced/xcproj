@@ -90,14 +90,15 @@ static Class XCBuildConfiguration = Nil;
 {
 	DDGetoptOption optionTable[] = 
 	{
-		// Long                     Short  Argument options
-		{@"project",                'p',   DDGetoptRequiredArgument},
-		{@"target",                 't',   DDGetoptRequiredArgument},
-		{@"help",                   'h',   DDGetoptNoArgument},
-		{@"list-targets",           'l',   DDGetoptNoArgument},
-		{@"add-xcconfig",           'c',   DDGetoptRequiredArgument},
-		{@"add-resources-bundle",   'b',   DDGetoptRequiredArgument},
-		{nil,                        0,    0},
+		// Long                      Short  Argument options
+		{@"project",                 'p',   DDGetoptRequiredArgument},
+		{@"target",                  't',   DDGetoptRequiredArgument},
+		{@"help",                    'h',   DDGetoptNoArgument},
+		{@"list-targets",            'l',   DDGetoptNoArgument},
+		{@"build-setting",           's',   DDGetoptRequiredArgument},
+		{@"add-xcconfig",            'c',   DDGetoptRequiredArgument},
+		{@"add-resources-bundle",    'b',   DDGetoptRequiredArgument},
+		{nil,                         0,    0},
 	};
 	[optionsParser addOptionsFromTable:optionTable];
 }
@@ -196,6 +197,14 @@ static Class XCBuildConfiguration = Nil;
 	if (listTargets)
 	{
 		[self printTargets];
+		return EX_OK;
+	}
+	else if (buildSetting)
+	{
+		NSString *settingString = [NSString stringWithFormat:@"$(%@)", buildSetting];
+		NSString *expandedString = [targetName ? target : project expandedValueForString:settingString];
+		if ([expandedString length] > 0)
+			ddprintf(@"%@\n", expandedString);
 		return EX_OK;
 	}
 	else

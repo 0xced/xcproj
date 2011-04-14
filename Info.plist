@@ -71,6 +71,8 @@
 				<string>PBXTarget</string>
 				<key>-buildConfigurations</key>
 				<string>NSArray.XCBuildConfiguration</string>
+				<key>-expandedValueForString:</key>
+				<string>NSString</string>
 				<key>-name</key>
 				<string>NSString</string>
 				<key>-targetNamed:</key>
@@ -105,6 +107,8 @@
 				<string>PBXBuildPhase</string>
 				<key>-defaultSourceCodeBuildPhase</key>
 				<string>PBXBuildPhase</string>
+				<key>-expandedValueForString:</key>
+				<string>NSString</string>
 				<key>-name</key>
 				<string>NSString</string>
 			</dict>

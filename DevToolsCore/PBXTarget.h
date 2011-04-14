@@ -6,6 +6,8 @@
 
 - (NSArray *) buildConfigurations; // XCBuildConfiguration
 
+- (NSString *) expandedValueForString:(NSString *)string;
+
 - (id<PBXBuildPhase>) buildPhaseOfClass:(Class)buildPhaseClass;
 - (void) addBuildPhase:(id<PBXBuildPhase>)buildPhase;
 - (id<PBXBuildPhase>) defaultFrameworksBuildPhase;
