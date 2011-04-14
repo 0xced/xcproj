@@ -77,7 +77,7 @@ static id typeCheck(id self, SEL _cmd, ...)
 		result = nil;
 	}
 	
-	if (returnsObject)
+	if (returnsObject && ![returnClassName isEqualToString:@"id"])
 	{
 		if (![result isKindOfClass:NSClassFromString(returnClassName)])
 			return nil;
