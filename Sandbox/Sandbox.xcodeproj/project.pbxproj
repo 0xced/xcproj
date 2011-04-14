@@ -167,6 +167,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				CURRENT_PROJECT_VERSION = "$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH)";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -174,6 +175,9 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
 				SDKROOT = macosx10.6;
+				VERSION_MAJOR = 1;
+				VERSION_MINOR = 2;
+				VERSION_PATCH = 3;
 			};
 			name = Debug;
 		};
@@ -181,11 +185,15 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				CURRENT_PROJECT_VERSION = "$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH)";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				PREBINDING = NO;
 				SDKROOT = macosx10.6;
+				VERSION_MAJOR = 1;
+				VERSION_MINOR = 2;
+				VERSION_PATCH = 3;
 			};
 			name = Release;
 		};
