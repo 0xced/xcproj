@@ -211,7 +211,7 @@ static Class XCBuildConfiguration = Nil;
 			if (![XCBuildConfiguration fileReference:xcconfig isValidBaseConfigurationFile:&error])
 				@throw [DDCliParseException parseExceptionWithReason:[NSString stringWithFormat:@"The configuration file %@ is not valid. %@", xcconfigPath, [error localizedDescription]] exitCode:EX_USAGE];
 			
-			for (id<XCBuildConfiguration> configuration in [project buildConfigurations])
+			for (id<XCBuildConfiguration> configuration in [targetName ? target : project buildConfigurations])
 				[configuration setBaseConfigurationReference:xcconfig];
 			
 			[self addGroupNamed:@"Configurations" beforeGroupNamed:@"Frameworks"];
