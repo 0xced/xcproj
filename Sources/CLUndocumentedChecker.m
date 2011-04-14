@@ -10,13 +10,14 @@
 
 #import <objc/runtime.h>
 
-NSString *const CLUndocumentedCheckerErrorDomain           = @"CLUndocumentedChecker";
-NSString *const CLUndocumentedCheckerMissingMethodsKey     = @"MissingMethods";
-NSString *const CLUndocumentedCheckerMismatchingMethodsKey = @"MismatchingMethods";
-NSString *const CLUndocumentedCheckerClassNameKey          = @"ClassName";
-NSString *const CLUndocumentedCheckerMethodNameKey         = @"MethodName";
-NSString *const CLUndocumentedCheckerProtocolSignatureKey  = @"ProtocolSignature";
-NSString *const CLUndocumentedCheckerClassSignatureKey     = @"ClassSignature";
+NSString *const CLUndocumentedCheckerErrorDomain             = @"CLUndocumentedChecker";
+NSString *const CLUndocumentedCheckerMismatchingHierarchyKey = @"MismatchingHierarchy";
+NSString *const CLUndocumentedCheckerMissingMethodsKey       = @"MissingMethods";
+NSString *const CLUndocumentedCheckerMismatchingMethodsKey   = @"MismatchingMethods";
+NSString *const CLUndocumentedCheckerClassNameKey            = @"ClassName";
+NSString *const CLUndocumentedCheckerMethodNameKey           = @"MethodName";
+NSString *const CLUndocumentedCheckerProtocolSignatureKey    = @"ProtocolSignature";
+NSString *const CLUndocumentedCheckerClassSignatureKey       = @"ClassSignature";
 
 // ◈ WHITE DIAMOND CONTAINING BLACK SMALL DIAMOND
 #define TYPE_SEPARATOR @"\u25C8"
@@ -98,6 +99,7 @@ static id typeCheck(id self, SEL _cmd, ...)
 
 Class CLClassFromProtocol(Protocol *protocol, NSError **error)
 {
+	BOOL hasError = NO;
 	if (error)
 		*error = nil;
 	
@@ -112,8 +114,29 @@ Class CLClassFromProtocol(Protocol *protocol, NSError **error)
 			                           className, CLUndocumentedCheckerClassNameKey, nil];
 			*error = [NSError errorWithDomain:CLUndocumentedCheckerErrorDomain code:CLUndocumentedCheckerClassNotFound userInfo:errorInfo];
 		}
-		return nil;
+		return Nil;
 	}
+	
+	NSMutableArray *superClasses = [NSMutableArray array];
+	Class superClass = class;
+	while ((superClass = [superClass superclass]))
+		[superClasses addObject:superClass];
+	
+	NSMutableArray *hierarchyMismatch = [NSMutableArray array];
+	unsigned int protocolCount = 0;
+	Protocol **adoptedProtocols = protocol_copyProtocolList(protocol, &protocolCount);
+	for (unsigned int i = 0; i < protocolCount; i++)
+	{
+		Protocol *adoptedProtocol = adoptedProtocols[i];
+		NSString *superClassName = NSStringFromProtocol(adoptedProtocol);
+		superClass = NSClassFromString(superClassName);
+		if (![superClasses containsObject:superClass])
+		{
+			hasError = YES;
+			[hierarchyMismatch addObject:superClassName];
+		}
+	}
+	free(adoptedProtocols);
 	
 	NSMutableDictionary *methodSignatures = [NSMutableDictionary dictionary];
 	
@@ -152,7 +175,7 @@ Class CLClassFromProtocol(Protocol *protocol, NSError **error)
 			BOOL signatureMatch = [expectedSignature isEqualToString:methodSignature];
 			if (!signatureMatch)
 			{
-				class = Nil;
+				hasError = YES;
 				NSDictionary *methodError = nil;
 				if (!methodSignature)
 				{
@@ -199,6 +222,8 @@ Class CLClassFromProtocol(Protocol *protocol, NSError **error)
 			[errorInfo setObject:methodsNotFound forKey:CLUndocumentedCheckerMissingMethodsKey];
 		if ([methodsMismatch count] > 0)
 			[errorInfo setObject:methodsMismatch forKey:CLUndocumentedCheckerMismatchingMethodsKey];
+		if ([hierarchyMismatch count] > 0)
+			[errorInfo setObject:hierarchyMismatch forKey:CLUndocumentedCheckerMismatchingHierarchyKey];
 		
 		if ([errorInfo count] > 0)
 		{
@@ -207,5 +232,5 @@ Class CLClassFromProtocol(Protocol *protocol, NSError **error)
 		}
 	}
 	
-	return class;
+	return hasError ? Nil : class;
 }

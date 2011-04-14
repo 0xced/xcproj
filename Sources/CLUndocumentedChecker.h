@@ -14,6 +14,7 @@ enum {
 };
 
 extern NSString *const CLUndocumentedCheckerErrorDomain;
+extern NSString *const CLUndocumentedCheckerMismatchingHierarchyKey;
 extern NSString *const CLUndocumentedCheckerMissingMethodsKey;
 extern NSString *const CLUndocumentedCheckerMismatchingMethodsKey;
 extern NSString *const CLUndocumentedCheckerClassNameKey;
