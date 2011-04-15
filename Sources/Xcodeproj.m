@@ -86,20 +86,18 @@ static Class XCBuildConfiguration = Nil;
 		exit(EX_SOFTWARE);
 }
 
+// MARK: -
+// MARK: Options
+
 - (void) application:(DDCliApplication *)app willParseOptions:(DDGetoptLongParser *)optionsParser
 {
 	DDGetoptOption optionTable[] = 
 	{
-		// Long                      Short  Argument options
-		{@"project",                 'p',   DDGetoptRequiredArgument},
-		{@"target",                  't',   DDGetoptRequiredArgument},
-		{@"help",                    'h',   DDGetoptNoArgument},
-		{@"list-targets",            'l',   DDGetoptNoArgument},
-		{@"list-headers",            'H',   DDGetoptOptionalArgument},
-		{@"build-setting",           's',   DDGetoptRequiredArgument},
-		{@"add-xcconfig",            'c',   DDGetoptRequiredArgument},
-		{@"add-resources-bundle",    'b',   DDGetoptRequiredArgument},
-		{nil,                         0,    0},
+		// Long        Short  Argument options
+		{@"project",   'p',   DDGetoptRequiredArgument},
+		{@"target",    't',   DDGetoptRequiredArgument},
+		{@"help",      'h',   DDGetoptNoArgument},
+		{nil,           0,    0},
 	};
 	[optionsParser addOptionsFromTable:optionTable];
 }
@@ -120,23 +118,6 @@ static Class XCBuildConfiguration = Nil;
 	project = [[PBXProject projectWithFile:projectPath] retain];
 }
 
-- (void) setAddXcconfig:(NSString *)aXcconfigPath
-{
-	if (xcconfigPath == aXcconfigPath)
-		return;
-	
-	[xcconfigPath release];
-	xcconfigPath = [aXcconfigPath retain];
-}
-
-- (void) setAddResourcesBundle:(NSString *)resourcesBundlePath
-{
-	if (!resourcesBundlePaths)
-		resourcesBundlePaths = [[NSMutableArray alloc] init];
-	
-	[resourcesBundlePaths addObject:resourcesBundlePath];
-}
-
 - (void) setTarget:(NSString *)aTargetName
 {
 	if (targetName == aTargetName)
@@ -146,29 +127,126 @@ static Class XCBuildConfiguration = Nil;
 	targetName = [aTargetName retain];
 }
 
-- (void) setListHeaders:(NSString *)aHeaderRole
+// MARK: -
+// MARK: Actions
+
+- (NSArray *) allowedActions
 {
-	if (aHeaderRole && headerRole == aHeaderRole)
-		return;
+	return [NSArray arrayWithObjects:@"list-targets", @"list-headers", @"read-build-setting", @"add-xcconfig", @"add-resources-bundle", nil];
+}
+
+- (void) printUsage:(int)exitCode
+{
+	ddprintf(@"Usage: %@ ...\n", [[NSBundle mainBundle] objectForInfoDictionaryKey:(id)kCFBundleExecutableKey]);
+	exit(exitCode);
+}
+
+- (int) listTargets:(NSArray *)arguments
+{
+	if ([arguments count] > 0)
+		[self printUsage:EX_USAGE];
 	
-	[headerRole release];
-	headerRole = aHeaderRole ? [[aHeaderRole capitalizedString] retain] : @"Public";
+	for (id<PBXTarget> aTarget in [project targets])
+		ddprintf(@"%@\n", [aTarget name]);
+	
+	return [[project targets] count] > 0 ? EX_OK : EX_SOFTWARE;
+}
+
+- (int) listHeaders:(NSArray *)arguments
+{
+	if ([arguments count] > 1)
+		[self printUsage:EX_USAGE];
+	
+	NSString *headerRole = @"Public";
+	if ([arguments count] == 1)
+		headerRole = [[arguments objectAtIndex:0] capitalizedString];
 	
 	NSArray *allowedValues = [NSArray arrayWithObjects:@"All", @"Public", @"Project", @"Private", nil];
 	if (![allowedValues containsObject:headerRole])
-		@throw [DDCliParseException parseExceptionWithReason:[NSString stringWithFormat:@"--list-headers argument must be one of {%@}.", [allowedValues componentsJoinedByString:@", "]] exitCode:EX_USAGE];
+		@throw [DDCliParseException parseExceptionWithReason:[NSString stringWithFormat:@"list-headers argument must be one of {%@}.", [allowedValues componentsJoinedByString:@", "]] exitCode:EX_USAGE];
+	
+	id<PBXBuildPhase> headerBuildPhase = [target defaultHeaderBuildPhase];
+	for (id<PBXBuildFile> buildFile in [headerBuildPhase buildFiles])
+	{
+		NSArray *attributes = [buildFile settingsArrayForKey:@"ATTRIBUTES"];
+		if ([attributes containsObject:headerRole] || [headerRole isEqualToString:@"All"])
+			ddprintf(@"%@\n", [buildFile absolutePath]);
+	}
+	
+	return EX_OK;
 }
 
-- (void) printUsage:(DDCliApplication *)app exitCode:(int)exitCode
+- (int) readBuildSetting:(NSArray *)arguments
 {
-	ddprintf(@"Usage: %@ ...\n", app);
-	exit(exitCode);
+	if ([arguments count] != 1)
+		[self printUsage:EX_USAGE];
+	
+	NSString *buildSetting = [arguments objectAtIndex:0];
+	NSString *settingString = [NSString stringWithFormat:@"$(%@)", buildSetting];
+	NSString *expandedString = [targetName ? target : project expandedValueForString:settingString];
+	if ([expandedString length] > 0)
+		ddprintf(@"%@\n", expandedString);
+	
+	return EX_OK;
 }
+
+- (int) writeProject
+{
+	BOOL written = [project writeToFileSystemProjectFile:YES userFile:NO checkNeedsRevert:NO];
+	if (!written)
+	{
+		ddfprintf(stderr, @"Could not write '%@' to file system.", project);
+		return EX_IOERR;
+	}
+	return EX_OK;
+}
+
+- (int) addXcconfig:(NSArray *)arguments
+{
+	if ([arguments count] != 1)
+		[self printUsage:EX_USAGE];
+	
+	NSString *xcconfigPath = [arguments objectAtIndex:0];
+
+	if (![[NSFileManager defaultManager] fileExistsAtPath:xcconfigPath])
+		@throw [DDCliParseException parseExceptionWithReason:[NSString stringWithFormat:@"The configuration file %@ does not exist in this directory.", xcconfigPath] exitCode:EX_NOINPUT];
+	
+	id<PBXFileReference> xcconfig = [self addFileAtPath:xcconfigPath];
+	
+	NSError *error = nil;
+	if (![XCBuildConfiguration fileReference:xcconfig isValidBaseConfigurationFile:&error])
+		@throw [DDCliParseException parseExceptionWithReason:[NSString stringWithFormat:@"The configuration file %@ is not valid. %@", xcconfigPath, [error localizedDescription]] exitCode:EX_USAGE];
+	
+	for (id<XCBuildConfiguration> configuration in [targetName ? target : project buildConfigurations])
+		[configuration setBaseConfigurationReference:xcconfig];
+	
+	[self addGroupNamed:@"Configurations" beforeGroupNamed:@"Frameworks"];
+	[self addFileReference:xcconfig inGroupNamed:@"Configurations"];
+	
+	return [self writeProject];
+}
+
+- (int) addResourcesBundle:(NSArray *)arguments
+{
+	[self addGroupNamed:@"Bundles" inGroupNamed:@"Frameworks"];
+	
+	for (NSString *resourcesBundlePath in arguments)
+	{
+		id<PBXFileReference> bundleReference = [self addFileAtPath:resourcesBundlePath];
+		[self addFileReference:bundleReference inGroupNamed:@"Bundles"];
+		[self addFileReference:bundleReference toBuildPhase:@"Resources"];
+	}
+	
+	return [self writeProject];
+}
+
+// MARK: -
+// MARK: App run
 
 - (int) application:(DDCliApplication *)app runWithArguments:(NSArray *)arguments
 {
 	if (help)
-		[self printUsage:app exitCode:EX_OK];
+		[self printUsage:EX_OK];
 	
 	NSString *currentDirectoryPath = [[NSFileManager defaultManager] currentDirectoryPath];
 	
@@ -208,83 +286,33 @@ static Class XCBuildConfiguration = Nil;
 			@throw [DDCliParseException parseExceptionWithReason:[NSString stringWithFormat:@"The project %@ does not contain any target.", [project name]] exitCode:EX_DATAERR];
 	}
 	
-	if (listTargets)
+	if ([arguments count] < 1)
 	{
-		[self printTargets];
-		return EX_OK;
-	}
-	else if (headerRole)
-	{
-		id<PBXBuildPhase> headerBuildPhase = [target defaultHeaderBuildPhase];
-		for (id<PBXBuildFile> buildFile in [headerBuildPhase buildFiles])
-		{
-			NSArray *attributes = [buildFile settingsArrayForKey:@"ATTRIBUTES"];
-			if ([attributes containsObject:headerRole] || [headerRole isEqualToString:@"All"])
-				ddprintf(@"%@\n", [buildFile absolutePath]);
-		}
-		return EX_OK;
-	}
-	else if (buildSetting)
-	{
-		NSString *settingString = [NSString stringWithFormat:@"$(%@)", buildSetting];
-		NSString *expandedString = [targetName ? target : project expandedValueForString:settingString];
-		if ([expandedString length] > 0)
-			ddprintf(@"%@\n", expandedString);
-		return EX_OK;
+		[self printUsage:EX_USAGE];
+		return EX_USAGE;
 	}
 	else
 	{
-		if (xcconfigPath)
-		{
-			if (![[NSFileManager defaultManager] fileExistsAtPath:xcconfigPath])
-				@throw [DDCliParseException parseExceptionWithReason:[NSString stringWithFormat:@"The configuration file %@ does not exist in this directory.", xcconfigPath] exitCode:EX_NOINPUT];
-			
-			id<PBXFileReference> xcconfig = [self addFileAtPath:xcconfigPath];
-			
-			NSError *error = nil;
-			if (![XCBuildConfiguration fileReference:xcconfig isValidBaseConfigurationFile:&error])
-				@throw [DDCliParseException parseExceptionWithReason:[NSString stringWithFormat:@"The configuration file %@ is not valid. %@", xcconfigPath, [error localizedDescription]] exitCode:EX_USAGE];
-			
-			for (id<XCBuildConfiguration> configuration in [targetName ? target : project buildConfigurations])
-				[configuration setBaseConfigurationReference:xcconfig];
-			
-			[self addGroupNamed:@"Configurations" beforeGroupNamed:@"Frameworks"];
-			[self addFileReference:xcconfig inGroupNamed:@"Configurations"];
-		}
+		NSString *action = [arguments objectAtIndex:0];
+		if (![[self allowedActions] containsObject:action])
+			[self printUsage:EX_USAGE];
 		
-		if (resourcesBundlePaths)
-		{
-			[self addGroupNamed:@"Bundles" inGroupNamed:@"Frameworks"];
-			for (NSString *resourcesBundlePath in resourcesBundlePaths)
-			{
-				id<PBXFileReference> bundleReference = [self addFileAtPath:resourcesBundlePath];
-				[self addFileReference:bundleReference inGroupNamed:@"Bundles"];
-				[self addFileReference:bundleReference toBuildPhase:@"Resources"];
-			}
-		}
+		NSArray *actionArguments = nil;
+		if ([arguments count] >= 2)
+			actionArguments = [arguments subarrayWithRange:NSMakeRange(1, [arguments count] - 1)];
+		else
+			actionArguments = [NSArray array];
+		
+		NSArray *actionParts = [[action componentsSeparatedByString:@"-"] valueForKeyPath:@"capitalizedString"];
+		NSMutableString *selectorString = [NSMutableString stringWithString:[actionParts componentsJoinedByString:@""]];
+		[selectorString replaceCharactersInRange:NSMakeRange(0, 1) withString:[[selectorString substringToIndex:1] lowercaseString]];
+		[selectorString appendString:@":"];
+		SEL actionSelector = NSSelectorFromString(selectorString);
+		return (int)[self performSelector:actionSelector withObject:actionArguments];
 	}
-	
-	if (shouldWriteProject)
-	{
-		BOOL written = [project writeToFileSystemProjectFile:YES userFile:NO checkNeedsRevert:NO];
-		if (!written)
-		{
-			ddfprintf(stderr, @"Could not write '%@' to file system.", project);
-			return EX_IOERR;
-		}
-		return EX_OK;
-	}
-	
-	[self printUsage:app exitCode:EX_USAGE];
-	return EX_USAGE;
 }
 
-- (void) printTargets
-{
-	for (id<PBXTarget> aTarget in [project targets])
-		ddprintf(@"%@\n", [aTarget name]);
-}
-
+/*
 - (void) printBuildPhases
 {
 	for (NSString *buildPhase in [NSArray arrayWithObjects:@"Frameworks", @"Link", @"SourceCode", @"Resource", @"Header", nil])
@@ -299,6 +327,10 @@ static Class XCBuildConfiguration = Nil;
 		ddprintf(@"\n");
 	}
 }
+*/
+
+// MARK: -
+// MARK: Xcode project manipulation
 
 - (id<PBXGroup>) groupNamed:(NSString *)groupName inGroup:(id<PBXGroup>)rootGroup parentGroup:(id<PBXGroup> *) parentGroup
 {
@@ -347,8 +379,6 @@ static Class XCBuildConfiguration = Nil;
 	
 	id<PBXGroup> group = [PBXGroup groupWithName:groupName];
 	[parentGroup insertItem:group atIndex:otherGroupIndex];
-	
-	shouldWriteProject = YES;
 }
 
 - (void) addGroupNamed:(NSString *)groupName inGroupNamed:(NSString *)otherGroupName
@@ -363,8 +393,6 @@ static Class XCBuildConfiguration = Nil;
 	
 	id<PBXGroup> group = [PBXGroup groupWithName:groupName];
 	[otherGroup addItem:group];
-	
-	shouldWriteProject = YES;
 }
 
 - (id<PBXFileReference>) addFileAtPath:(NSString *)filePath
@@ -392,8 +420,6 @@ static Class XCBuildConfiguration = Nil;
 	
 	[group addItem:fileReference];
 	
-	shouldWriteProject = YES;
-	
 	return YES;
 }
 
@@ -413,12 +439,7 @@ static Class XCBuildConfiguration = Nil;
 	if ([buildPhase containsFileReferenceIdenticalTo:fileReference])
 		return YES;
 	
-	BOOL added = [buildPhase addReference:fileReference];
-	
-	if (added)
-		shouldWriteProject = YES;
-	
-	return added;
+	return [buildPhase addReference:fileReference];
 }
 
 @end

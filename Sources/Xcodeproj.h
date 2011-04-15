@@ -16,20 +16,9 @@
 	id<PBXProject> project;
 	NSString *targetName;
 	BOOL help;
-	// Actions
-	BOOL listTargets;
-	NSString *headerRole;
-	NSString *buildSetting;
-	NSString *xcconfigPath;
-	NSMutableArray *resourcesBundlePaths;
-	
-	BOOL shouldWriteProject;
 	
 	id<PBXTarget> target;
 }
-
-- (void) printTargets;
-- (void) printBuildPhases;
 
 - (void) addGroupNamed:(NSString *)groupName beforeGroupNamed:(NSString *)otherGroupName;
 - (void) addGroupNamed:(NSString *)groupName inGroupNamed:(NSString *)otherGroupName;
