@@ -95,6 +95,7 @@ static Class XCBuildConfiguration = Nil;
 		{@"target",                  't',   DDGetoptRequiredArgument},
 		{@"help",                    'h',   DDGetoptNoArgument},
 		{@"list-targets",            'l',   DDGetoptNoArgument},
+		{@"list-headers",            'H',   DDGetoptOptionalArgument},
 		{@"build-setting",           's',   DDGetoptRequiredArgument},
 		{@"add-xcconfig",            'c',   DDGetoptRequiredArgument},
 		{@"add-resources-bundle",    'b',   DDGetoptRequiredArgument},
@@ -143,6 +144,19 @@ static Class XCBuildConfiguration = Nil;
 	
 	[targetName release];
 	targetName = [aTargetName retain];
+}
+
+- (void) setListHeaders:(NSString *)aHeaderRole
+{
+	if (aHeaderRole && headerRole == aHeaderRole)
+		return;
+	
+	[headerRole release];
+	headerRole = aHeaderRole ? [[aHeaderRole capitalizedString] retain] : @"Public";
+	
+	NSArray *allowedValues = [NSArray arrayWithObjects:@"All", @"Public", @"Project", @"Private", nil];
+	if (![allowedValues containsObject:headerRole])
+		@throw [DDCliParseException parseExceptionWithReason:[NSString stringWithFormat:@"--list-headers argument must be one of {%@}.", [allowedValues componentsJoinedByString:@", "]] exitCode:EX_USAGE];
 }
 
 - (void) printUsage:(DDCliApplication *)app exitCode:(int)exitCode
@@ -197,6 +211,17 @@ static Class XCBuildConfiguration = Nil;
 	if (listTargets)
 	{
 		[self printTargets];
+		return EX_OK;
+	}
+	else if (headerRole)
+	{
+		id<PBXBuildPhase> headerBuildPhase = [target defaultHeaderBuildPhase];
+		for (id<PBXBuildFile> buildFile in [headerBuildPhase buildFiles])
+		{
+			NSArray *attributes = [buildFile settingsArrayForKey:@"ATTRIBUTES"];
+			if ([attributes containsObject:headerRole] || [headerRole isEqualToString:@"All"])
+				ddprintf(@"%@\n", [buildFile absolutePath]);
+		}
 		return EX_OK;
 	}
 	else if (buildSetting)

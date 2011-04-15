@@ -18,6 +18,7 @@
 	BOOL help;
 	// Actions
 	BOOL listTargets;
+	NSString *headerRole;
 	NSString *buildSetting;
 	NSString *xcconfigPath;
 	NSMutableArray *resourcesBundlePaths;
