@@ -22,6 +22,10 @@ NSString *const CLUndocumentedCheckerClassSignatureKey       = @"ClassSignature"
 // ◈ WHITE DIAMOND CONTAINING BLACK SMALL DIAMOND
 #define TYPE_SEPARATOR @"\u25C8"
 
+#if defined(__LP64__) && !defined(__clang__)
+#error Troubles ahead. See gist.github.com/937908 and twitter.com/gparker/status/61720641199546368
+#endif
+
 static id typeCheck(id self, SEL _cmd, ...)
 {
 	NSString *returnClassName = nil;
@@ -55,6 +59,9 @@ static id typeCheck(id self, SEL _cmd, ...)
 		va_list ap;
 		va_start(ap, _cmd);
 		char* args = (char*)ap;
+#if !defined(__i386__)
+#error The vararg trick will most probably not work.
+#endif
 		for (unsigned i = 2; i < [methodSignature numberOfArguments]; i++)
 		{
 			// vararg trick from http://blog.jayway.com/2010/03/30/performing-any-selector-on-the-main-thread/
