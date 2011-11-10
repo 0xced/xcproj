@@ -2,15 +2,15 @@
 
 // For the compiler to "embed" the protocols in the binary
 
-static void protocols()
+void protocols()
 {
-	@protocol(PBXBuildFile);
-	@protocol(PBXBuildPhase);
-	@protocol(PBXContainer);
-	@protocol(PBXFileReference);
-	@protocol(PBXGroup);
-	@protocol(PBXProject);
-	@protocol(PBXReference);
-	@protocol(PBXTarget);
-	@protocol(XCBuildConfiguration);
+	(void)@protocol(PBXBuildFile);
+	(void)@protocol(PBXBuildPhase);
+	(void)@protocol(PBXContainer);
+	(void)@protocol(PBXFileReference);
+	(void)@protocol(PBXGroup);
+	(void)@protocol(PBXProject);
+	(void)@protocol(PBXReference);
+	(void)@protocol(PBXTarget);
+	(void)@protocol(XCBuildConfiguration);
 }

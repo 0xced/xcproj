@@ -20,9 +20,9 @@ def main():
     with open(sys.argv[2], "w") as f:
         f.write("#import <DevToolsCore/DevToolsCore.h>\n\n")
         f.write("// For the compiler to \"embed\" the protocols in the binary\n\n")
-        f.write("static void protocols()\n{\n")
+        f.write("void protocols()\n{\n")
         for className in sorted(plist["CLUndocumentedChecker"]["Classes"].keys()):
-            f.write("\t@protocol(%s);\n" % className)
+            f.write("\t(void)@protocol(%s);\n" % className)
         f.write("}\n")
     
 if __name__ == '__main__':

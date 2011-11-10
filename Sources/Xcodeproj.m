@@ -183,7 +183,7 @@ static Class XCBuildConfiguration = Nil;
 	
 	NSString *buildSetting = [arguments objectAtIndex:0];
 	NSString *settingString = [NSString stringWithFormat:@"$(%@)", buildSetting];
-	NSString *expandedString = [targetName ? target : project expandedValueForString:settingString];
+	NSString *expandedString = [targetName ? (id)target : (id)project expandedValueForString:settingString];
 	if ([expandedString length] > 0)
 		ddprintf(@"%@\n", expandedString);
 	
@@ -217,7 +217,7 @@ static Class XCBuildConfiguration = Nil;
 	if (![XCBuildConfiguration fileReference:xcconfig isValidBaseConfigurationFile:&error])
 		@throw [DDCliParseException parseExceptionWithReason:[NSString stringWithFormat:@"The configuration file %@ is not valid. %@", xcconfigPath, [error localizedDescription]] exitCode:EX_USAGE];
 	
-	for (id<XCBuildConfiguration> configuration in [targetName ? target : project buildConfigurations])
+	for (id<XCBuildConfiguration> configuration in [targetName ? (id)target : (id)project buildConfigurations])
 		[configuration setBaseConfigurationReference:xcconfig];
 	
 	[self addGroupNamed:@"Configurations" beforeGroupNamed:@"Frameworks"];
