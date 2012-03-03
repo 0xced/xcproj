@@ -21,7 +21,7 @@ def main():
         f.write("#import <DevToolsCore/DevToolsCore.h>\n\n")
         f.write("// For the compiler to \"embed\" the protocols in the binary\n\n")
         f.write("void protocols()\n{\n")
-        for className in sorted(plist["CLUndocumentedChecker"]["Classes"].keys()):
+        for className in sorted(plist["XCDUndocumentedChecker"]["Classes"].keys()):
             f.write("\t(void)@protocol(%s);\n" % className)
         f.write("}\n")
     

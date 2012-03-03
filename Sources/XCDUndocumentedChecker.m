@@ -1,24 +1,24 @@
 //
-//  CLUndocumentedChecker.m
+//  XCDUndocumentedChecker.m
 //  xcodeproj
 //
 //  Created by Cédric Luthi on 2011-02-09.
 //  Copyright 2011 Cédric Luthi. All rights reserved.
 //
 
-#import "CLUndocumentedChecker.h"
+#import "XCDUndocumentedChecker.h"
 
 #import <objc/message.h>
 #import <objc/runtime.h>
 
-NSString *const CLUndocumentedCheckerErrorDomain             = @"CLUndocumentedChecker";
-NSString *const CLUndocumentedCheckerMismatchingHierarchyKey = @"MismatchingHierarchy";
-NSString *const CLUndocumentedCheckerMissingMethodsKey       = @"MissingMethods";
-NSString *const CLUndocumentedCheckerMismatchingMethodsKey   = @"MismatchingMethods";
-NSString *const CLUndocumentedCheckerClassNameKey            = @"ClassName";
-NSString *const CLUndocumentedCheckerMethodNameKey           = @"MethodName";
-NSString *const CLUndocumentedCheckerProtocolSignatureKey    = @"ProtocolSignature";
-NSString *const CLUndocumentedCheckerClassSignatureKey       = @"ClassSignature";
+NSString *const XCDUndocumentedCheckerErrorDomain             = @"XCDUndocumentedChecker";
+NSString *const XCDUndocumentedCheckerMismatchingHierarchyKey = @"MismatchingHierarchy";
+NSString *const XCDUndocumentedCheckerMissingMethodsKey       = @"MissingMethods";
+NSString *const XCDUndocumentedCheckerMismatchingMethodsKey   = @"MismatchingMethods";
+NSString *const XCDUndocumentedCheckerClassNameKey            = @"ClassName";
+NSString *const XCDUndocumentedCheckerMethodNameKey           = @"MethodName";
+NSString *const XCDUndocumentedCheckerProtocolSignatureKey    = @"ProtocolSignature";
+NSString *const XCDUndocumentedCheckerClassSignatureKey       = @"ClassSignature";
 
 // ◈ WHITE DIAMOND CONTAINING BLACK SMALL DIAMOND
 #define TYPE_SEPARATOR @"\u25C8"
@@ -30,7 +30,7 @@ static void forwardInvocationTypeCheck(id self, SEL _cmd, NSInvocation *invocati
 	Class class = object_getClass([invocation target]);
 	while (!returnClassName && class)
 	{
-		NSDictionary *classInfo = [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CLUndocumentedChecker"] objectForKey:@"Classes"];
+		NSDictionary *classInfo = [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"XCDUndocumentedChecker"] objectForKey:@"Classes"];
 		NSDictionary *methodInfo = [classInfo objectForKey:NSStringFromClass(class)];
 		NSString *returnInfo = [methodInfo objectForKey:[class_isMetaClass(class) ? @"+" : @"-" stringByAppendingString:NSStringFromSelector([invocation selector])]];
 		NSArray *returnComponents = [returnInfo componentsSeparatedByString:@"."];
@@ -85,7 +85,7 @@ static void forwardInvocationTypeCheck(id self, SEL _cmd, NSInvocation *invocati
 	}
 }
 
-Class CLClassFromProtocol(Protocol *protocol, NSError **error)
+Class XCDClassFromProtocol(Protocol *protocol, NSError **error)
 {
 	BOOL hasError = NO;
 	if (error)
@@ -99,8 +99,8 @@ Class CLClassFromProtocol(Protocol *protocol, NSError **error)
 		{
 			NSDictionary *errorInfo = [NSDictionary dictionaryWithObjectsAndKeys:
 			                           [NSString stringWithFormat:@"Class %@ not found", className], NSLocalizedDescriptionKey,
-			                           className, CLUndocumentedCheckerClassNameKey, nil];
-			*error = [NSError errorWithDomain:CLUndocumentedCheckerErrorDomain code:CLUndocumentedCheckerClassNotFound userInfo:errorInfo];
+			                           className, XCDUndocumentedCheckerClassNameKey, nil];
+			*error = [NSError errorWithDomain:XCDUndocumentedCheckerErrorDomain code:XCDUndocumentedCheckerClassNotFound userInfo:errorInfo];
 		}
 		return Nil;
 	}
@@ -148,7 +148,7 @@ Class CLClassFromProtocol(Protocol *protocol, NSError **error)
 	NSMutableArray *methodsNotFound = [NSMutableArray array];
 	NSMutableArray *methodsMismatch = [NSMutableArray array];
 	
-	NSDictionary *classInfo = [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CLUndocumentedChecker"] objectForKey:@"Classes"];
+	NSDictionary *classInfo = [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"XCDUndocumentedChecker"] objectForKey:@"Classes"];
 	NSDictionary *methodInfo = [classInfo objectForKey:className];
 	
 	for (unsigned methodKind = 0; methodKind <= 1; methodKind++)
@@ -174,17 +174,17 @@ Class CLClassFromProtocol(Protocol *protocol, NSError **error)
 				if (!methodSignature)
 				{
 					methodError = [NSDictionary dictionaryWithObjectsAndKeys:
-					               methodName, CLUndocumentedCheckerMethodNameKey,
-					               className, CLUndocumentedCheckerClassNameKey, nil];
+					               methodName, XCDUndocumentedCheckerMethodNameKey,
+					               className, XCDUndocumentedCheckerClassNameKey, nil];
 					[methodsNotFound addObject:methodError];
 				}
 				else
 				{
 					methodError = [NSDictionary dictionaryWithObjectsAndKeys:
-					               expectedSignature, CLUndocumentedCheckerProtocolSignatureKey,
-					               methodSignature, CLUndocumentedCheckerClassSignatureKey,
-					               methodName, CLUndocumentedCheckerMethodNameKey,
-					               className, CLUndocumentedCheckerClassNameKey, nil];
+					               expectedSignature, XCDUndocumentedCheckerProtocolSignatureKey,
+					               methodSignature, XCDUndocumentedCheckerClassSignatureKey,
+					               methodName, XCDUndocumentedCheckerMethodNameKey,
+					               className, XCDUndocumentedCheckerClassNameKey, nil];
 					[methodsMismatch addObject:methodError];
 				}
 			}
@@ -213,16 +213,16 @@ Class CLClassFromProtocol(Protocol *protocol, NSError **error)
 	{
 		NSMutableDictionary *errorInfo = [NSMutableDictionary dictionary];
 		if ([methodsNotFound count] > 0)
-			[errorInfo setObject:methodsNotFound forKey:CLUndocumentedCheckerMissingMethodsKey];
+			[errorInfo setObject:methodsNotFound forKey:XCDUndocumentedCheckerMissingMethodsKey];
 		if ([methodsMismatch count] > 0)
-			[errorInfo setObject:methodsMismatch forKey:CLUndocumentedCheckerMismatchingMethodsKey];
+			[errorInfo setObject:methodsMismatch forKey:XCDUndocumentedCheckerMismatchingMethodsKey];
 		if ([hierarchyMismatch count] > 0)
-			[errorInfo setObject:hierarchyMismatch forKey:CLUndocumentedCheckerMismatchingHierarchyKey];
+			[errorInfo setObject:hierarchyMismatch forKey:XCDUndocumentedCheckerMismatchingHierarchyKey];
 		
 		if ([errorInfo count] > 0)
 		{
 			[errorInfo setObject:[NSString stringWithFormat:@"Methods of class %@ do not match %@ protocol", className, NSStringFromProtocol(protocol)] forKey:NSLocalizedDescriptionKey];
-			*error = [NSError errorWithDomain:CLUndocumentedCheckerErrorDomain code:CLUndocumentedCheckerMethodMismatch userInfo:errorInfo];
+			*error = [NSError errorWithDomain:XCDUndocumentedCheckerErrorDomain code:XCDUndocumentedCheckerMethodMismatch userInfo:errorInfo];
 		}
 	}
 	

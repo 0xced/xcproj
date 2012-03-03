@@ -27,7 +27,7 @@
 		DA1DC01010E59AED005A103B /* Xcodeproj.m in Sources */ = {isa = PBXBuildFile; fileRef = DA1DC00E10E59AED005A103B /* Xcodeproj.m */; };
 		DA7A044C134F2EBF00F89E9B /* Protocols.m in Sources */ = {isa = PBXBuildFile; fileRef = DA7A044B134F2EBF00F89E9B /* Protocols.m */; };
 		DA7A0C9C1352F8B500F89E9B /* libddcli.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DA7A0C9B1352F8B500F89E9B /* libddcli.a */; };
-		DAFF25CC1303ECB100584E0E /* CLUndocumentedChecker.m in Sources */ = {isa = PBXBuildFile; fileRef = DAFF25CB1303ECB100584E0E /* CLUndocumentedChecker.m */; };
+		DAFF25CC1303ECB100584E0E /* XCDUndocumentedChecker.m in Sources */ = {isa = PBXBuildFile; fileRef = DAFF25CB1303ECB100584E0E /* XCDUndocumentedChecker.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -45,7 +45,7 @@
 		08FB779EFE84155DC02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32A70AAB03705E1F00C91783 /* xcodeproj_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xcodeproj_Prefix.pch; path = Sources/xcodeproj_Prefix.pch; sourceTree = "<group>"; };
 		8DD76FA10486AA7600D96B5E /* xcodeproj */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = xcodeproj; sourceTree = BUILT_PRODUCTS_DIR; };
-		DA1DC00E10E59AED005A103B /* Xcodeproj.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Xcodeproj.m; path = Sources/Xcodeproj.m; sourceTree = "<group>"; };
+		DA1DC00E10E59AED005A103B /* Xcodeproj.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = Xcodeproj.m; path = Sources/Xcodeproj.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		DA1DC00F10E59AED005A103B /* Xcodeproj.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Xcodeproj.h; path = Sources/Xcodeproj.h; sourceTree = "<group>"; };
 		DA7A018E134F015F00F89E9B /* PBXContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBXContainer.h; sourceTree = "<group>"; };
 		DA7A018F134F01DE00F89E9B /* PBXGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBXGroup.h; sourceTree = "<group>"; };
@@ -59,8 +59,8 @@
 		DA8C9FFE1302AF93008B3560 /* PBXTarget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBXTarget.h; sourceTree = "<group>"; };
 		DA8CA0041302B0D9008B3560 /* DevToolsCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DevToolsCore.h; sourceTree = "<group>"; };
 		DA8CA0301302B27C008B3560 /* PBXBuildFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBXBuildFile.h; sourceTree = "<group>"; };
-		DAFF25CA1303ECB100584E0E /* CLUndocumentedChecker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CLUndocumentedChecker.h; path = Sources/CLUndocumentedChecker.h; sourceTree = "<group>"; };
-		DAFF25CB1303ECB100584E0E /* CLUndocumentedChecker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CLUndocumentedChecker.m; path = Sources/CLUndocumentedChecker.m; sourceTree = "<group>"; };
+		DAFF25CA1303ECB100584E0E /* XCDUndocumentedChecker.h */ = {isa = PBXFileReference; fileEncoding = 4; lineEnding = 0; name = XCDUndocumentedChecker.h; path = Sources/XCDUndocumentedChecker.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		DAFF25CB1303ECB100584E0E /* XCDUndocumentedChecker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = XCDUndocumentedChecker.m; path = Sources/XCDUndocumentedChecker.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		DAFF2AD913055EF500584E0E /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -97,8 +97,8 @@
 				DA7A044B134F2EBF00F89E9B /* Protocols.m */,
 				DA1DC00F10E59AED005A103B /* Xcodeproj.h */,
 				DA1DC00E10E59AED005A103B /* Xcodeproj.m */,
-				DAFF25CA1303ECB100584E0E /* CLUndocumentedChecker.h */,
-				DAFF25CB1303ECB100584E0E /* CLUndocumentedChecker.m */,
+				DAFF25CA1303ECB100584E0E /* XCDUndocumentedChecker.h */,
+				DAFF25CB1303ECB100584E0E /* XCDUndocumentedChecker.m */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -239,7 +239,7 @@
 			files = (
 				8DD76F9A0486AA7600D96B5E /* main.m in Sources */,
 				DA1DC01010E59AED005A103B /* Xcodeproj.m in Sources */,
-				DAFF25CC1303ECB100584E0E /* CLUndocumentedChecker.m in Sources */,
+				DAFF25CC1303ECB100584E0E /* XCDUndocumentedChecker.m in Sources */,
 				DA7A044C134F2EBF00F89E9B /* Protocols.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

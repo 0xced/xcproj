@@ -16,7 +16,9 @@
 	<string>${CURRENT_PROJECT_VERSION}</string>
 	<key>CFBundleVersion</key>
 	<string>${CURRENT_PROJECT_VERSION}</string>
-	<key>CLUndocumentedChecker</key>
+	<key>LSMinimumSystemVersion</key>
+	<string>${MACOSX_DEPLOYMENT_TARGET}</string>
+	<key>XCDUndocumentedChecker</key>
 	<dict>
 		<key>Classes</key>
 		<dict>
@@ -125,7 +127,5 @@
 			</dict>
 		</dict>
 	</dict>
-	<key>LSMinimumSystemVersion</key>
-	<string>${MACOSX_DEPLOYMENT_TARGET}</string>
 </dict>
 </plist>

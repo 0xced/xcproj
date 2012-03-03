@@ -49,7 +49,7 @@ def main():
         print >> sys.stderr, "%s is not a valid Info.plist file" % infoPlist
         exit(1)
     
-    plist["CLUndocumentedChecker"]["Classes"] = buildClasses(sys.argv[2:])
+    plist["XCDUndocumentedChecker"]["Classes"] = buildClasses(sys.argv[2:])
     
     plistlib.writePlist(plist, infoPlist)
 

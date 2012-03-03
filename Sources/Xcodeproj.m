@@ -10,7 +10,7 @@
 
 #import <dlfcn.h>
 #import <objc/runtime.h>
-#import "CLUndocumentedChecker.h"
+#import "XCDUndocumentedChecker.h"
 
 @implementation Xcodeproj
 
@@ -67,12 +67,12 @@ static Class XCBuildConfiguration = Nil;
 	dlclose(devToolsCore);
 	
 	BOOL isSafe = YES;
-	NSDictionary *classInfo = [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CLUndocumentedChecker"] objectForKey:@"Classes"];
+	NSDictionary *classInfo = [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"XCDUndocumentedChecker"] objectForKey:@"Classes"];
 	for (NSString *protocolName in [classInfo allKeys])
 	{
 		NSError *classError = nil;
 		Protocol *protocol = NSProtocolFromString(protocolName);
-		Class class = CLClassFromProtocol(protocol, &classError);
+		Class class = XCDClassFromProtocol(protocol, &classError);
 		if (class)
 			[self setValue:class forKey:[NSString stringWithCString:protocol_getName(protocol) encoding:NSUTF8StringEncoding]];
 		else
