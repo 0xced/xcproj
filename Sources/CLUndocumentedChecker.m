@@ -8,6 +8,7 @@
 
 #import "CLUndocumentedChecker.h"
 
+#import <objc/message.h>
 #import <objc/runtime.h>
 
 NSString *const CLUndocumentedCheckerErrorDomain             = @"CLUndocumentedChecker";
@@ -22,20 +23,16 @@ NSString *const CLUndocumentedCheckerClassSignatureKey       = @"ClassSignature"
 // ◈ WHITE DIAMOND CONTAINING BLACK SMALL DIAMOND
 #define TYPE_SEPARATOR @"\u25C8"
 
-#if defined(__LP64__) && !defined(__clang__)
-#error Troubles ahead. See gist.github.com/937908 and twitter.com/gparker/status/61720641199546368
-#endif
-
-static id typeCheck(id self, SEL _cmd, ...)
+static void forwardInvocationTypeCheck(id self, SEL _cmd, NSInvocation *invocation)
 {
 	NSString *returnClassName = nil;
 	NSString *collectionElementsClassName = nil;
-	Class class = object_getClass(self);
+	Class class = object_getClass([invocation target]);
 	while (!returnClassName && class)
 	{
 		NSDictionary *classInfo = [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CLUndocumentedChecker"] objectForKey:@"Classes"];
 		NSDictionary *methodInfo = [classInfo objectForKey:NSStringFromClass(class)];
-		NSString *returnInfo = [methodInfo objectForKey:[class_isMetaClass(class) ? @"+" : @"-" stringByAppendingString:NSStringFromSelector(_cmd)]];
+		NSString *returnInfo = [methodInfo objectForKey:[class_isMetaClass(class) ? @"+" : @"-" stringByAppendingString:NSStringFromSelector([invocation selector])]];
 		NSArray *returnComponents = [returnInfo componentsSeparatedByString:@"."];
 		returnClassName = [returnComponents objectAtIndex:0];
 		if ([returnComponents count] == 2)
@@ -43,65 +40,49 @@ static id typeCheck(id self, SEL _cmd, ...)
 		class = class_getSuperclass(class);
 	}
 	
-	if (returnClassName == nil)
-		return nil;
-	
-	id result = nil;
-	BOOL returnsObject = NO;
+	NSMethodSignature *methodSignature = [invocation methodSignature];
+	NSUInteger methodReturnLength = [methodSignature methodReturnLength];
 	@try
 	{
-		NSMethodSignature *methodSignature = [self methodSignatureForSelector:_cmd];
-		returnsObject = [methodSignature methodReturnType][0] == _C_ID;
-		NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:methodSignature];
-		SEL selector = NSSelectorFromString([[returnClassName stringByAppendingString:TYPE_SEPARATOR] stringByAppendingString:NSStringFromSelector(_cmd)]);
-		[invocation setTarget:self];
+		id result = nil;
+		SEL selector = NSSelectorFromString([[returnClassName stringByAppendingString:TYPE_SEPARATOR] stringByAppendingString:NSStringFromSelector([invocation selector])]);
+		BOOL returnsObject = [methodSignature methodReturnType][0] == _C_ID;
 		[invocation setSelector:selector];
-		va_list ap;
-		va_start(ap, _cmd);
-		char* args = (char*)ap;
-#if !defined(__i386__)
-#error The vararg trick will most probably not work.
-#endif
-		for (unsigned i = 2; i < [methodSignature numberOfArguments]; i++)
-		{
-			// vararg trick from http://blog.jayway.com/2010/03/30/performing-any-selector-on-the-main-thread/
-			const char *type = [methodSignature getArgumentTypeAtIndex:i];
-			NSUInteger size, align;
-			NSGetSizeAndAlignment(type, &size, &align);
-			NSUInteger mod = (NSUInteger)args % align;
-			if (mod != 0)
-				args += (align - mod);
-			[invocation setArgument:args atIndex:i];
-			args += size;
-		}
-		va_end(args);
 		[invocation invoke];
-		NSUInteger methodReturnLength = [methodSignature methodReturnLength];
-		if (methodReturnLength > 0 && methodReturnLength <= sizeof(id))
-			[invocation getReturnValue:&result];
-	}
-	@catch (NSException *exception)
-	{
-		result = nil;
-	}
-	
-	if (returnsObject && ![returnClassName isEqualToString:@"id"])
-	{
-		if (![result isKindOfClass:NSClassFromString(returnClassName)])
-			return nil;
 		
-		if (collectionElementsClassName && [result isKindOfClass:[NSArray class]])
+		if (returnsObject && methodReturnLength == sizeof(id))
 		{
-			Class collectionElementsClass = NSClassFromString(collectionElementsClassName);
-			for (id item in result)
+			[invocation getReturnValue:&result];
+			
+			if (result && ![returnClassName isEqualToString:@"id"])
 			{
-				if (![item isKindOfClass:collectionElementsClass])
-					return nil;
+				if (![result isKindOfClass:NSClassFromString(returnClassName)])
+				{
+					[invocation setReturnValue:&(id){nil}];
+					return;
+				}
+				
+				if (collectionElementsClassName && [result isKindOfClass:[NSArray class]])
+				{
+					Class collectionElementsClass = NSClassFromString(collectionElementsClassName);
+					for (id item in result)
+					{
+						if (![item isKindOfClass:collectionElementsClass])
+						{
+							[invocation setReturnValue:&(id){nil}];
+							return;
+						}
+					}
+				}
 			}
 		}
 	}
-	
-	return result;
+	@catch (NSException *exception)
+	{
+		uint8_t result[methodReturnLength];
+		bzero(result, sizeof(result));
+		[invocation setReturnValue:result];
+	}
 }
 
 Class CLClassFromProtocol(Protocol *protocol, NSError **error)
@@ -173,6 +154,12 @@ Class CLClassFromProtocol(Protocol *protocol, NSError **error)
 	for (unsigned methodKind = 0; methodKind <= 1; methodKind++)
 	{
 		BOOL isInstanceMethod = (methodKind == 1);
+		
+		Method forwardInvocation = class_getInstanceMethod([NSObject class], @selector(forwardInvocation:));
+		BOOL added = class_addMethod(isInstanceMethod ? class : object_getClass(class), @selector(forwardInvocation:), (IMP)forwardInvocationTypeCheck, method_getTypeEncoding(forwardInvocation));
+		if (!added)
+			fprintf(stderr, "WARNING: %s already implements the forwardInvocation: method.", [className UTF8String]);
+		
 		protocolMethods = protocol_copyMethodDescriptionList(protocol, YES, isInstanceMethod, &protocolMethodCount);
 		for (unsigned int i = 0; i < protocolMethodCount; i++)
 		{
@@ -211,7 +198,7 @@ Class CLClassFromProtocol(Protocol *protocol, NSError **error)
 			{
 				NSString *fullMethodName = [[returnClassName stringByAppendingString:TYPE_SEPARATOR] stringByAppendingString:methodName];
 				Method method = isInstanceMethod ? class_getInstanceMethod(class, NSSelectorFromString(methodName)) : class_getClassMethod(class, NSSelectorFromString(methodName));
-				BOOL added = class_addMethod(isInstanceMethod ? class : object_getClass(class), NSSelectorFromString(fullMethodName), typeCheck, method_getTypeEncoding(method));
+				BOOL added = class_addMethod(isInstanceMethod ? class : object_getClass(class), NSSelectorFromString(fullMethodName), _objc_msgForward, method_getTypeEncoding(method));
 				if (added)
 				{
 					Method typeCheckMethod = isInstanceMethod ? class_getInstanceMethod(class, NSSelectorFromString(fullMethodName)) : class_getClassMethod(class, NSSelectorFromString(fullMethodName));
