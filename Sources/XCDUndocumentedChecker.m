@@ -151,11 +151,12 @@ Class XCDClassFromProtocol(Protocol *protocol, NSError **error)
 	for (unsigned methodKind = 0; methodKind <= 1; methodKind++)
 	{
 		BOOL isInstanceMethod = (methodKind == 1);
+		protocolMethods = protocol_copyMethodDescriptionList(protocol, YES, isInstanceMethod, &protocolMethodCount);
 		Method (*class_getMethod)(Class cls, SEL name) = isInstanceMethod ? class_getInstanceMethod : class_getClassMethod;
 		
 		Method forwardInvocation = class_getInstanceMethod([NSObject class], @selector(forwardInvocation:));
 		BOOL added = class_addMethod(isInstanceMethod ? class : object_getClass(class), @selector(forwardInvocation:), (IMP)XCDUndocumentedChecker_forwardInvocation, method_getTypeEncoding(forwardInvocation));
-		if (!added)
+		if (!added && protocolMethodCount > 0)
 		{
 			if (error)
 			{
@@ -164,10 +165,10 @@ Class XCDClassFromProtocol(Protocol *protocol, NSError **error)
 				                           className, XCDUndocumentedCheckerClassNameKey, nil];
 				*error = [NSError errorWithDomain:XCDUndocumentedCheckerErrorDomain code:XCDUndocumentedCheckerUnsupportedClass userInfo:errorInfo];
 			}
+			free(protocolMethods);
 			return Nil;
 		}
 		
-		protocolMethods = protocol_copyMethodDescriptionList(protocol, YES, isInstanceMethod, &protocolMethodCount);
 		for (unsigned int i = 0; i < protocolMethodCount; i++)
 		{
 			NSString *methodName = [isInstanceMethod ? @"-" : @"+" stringByAppendingFormat:@"%s", sel_getName(protocolMethods[i].name)];
