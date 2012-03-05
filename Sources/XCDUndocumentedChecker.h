@@ -11,6 +11,7 @@
 enum {
 	XCDUndocumentedCheckerClassNotFound  = 1,
 	XCDUndocumentedCheckerMethodMismatch = 2,
+	XCDUndocumentedCheckerUnsupportedClass = 3,
 };
 
 extern NSString *const XCDUndocumentedCheckerErrorDomain;

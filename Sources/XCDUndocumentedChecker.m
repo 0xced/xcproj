@@ -158,7 +158,16 @@ Class XCDClassFromProtocol(Protocol *protocol, NSError **error)
 		Method forwardInvocation = class_getInstanceMethod([NSObject class], @selector(forwardInvocation:));
 		BOOL added = class_addMethod(isInstanceMethod ? class : object_getClass(class), @selector(forwardInvocation:), (IMP)forwardInvocationTypeCheck, method_getTypeEncoding(forwardInvocation));
 		if (!added)
-			fprintf(stderr, "WARNING: %s already implements the forwardInvocation: method.", [className UTF8String]);
+		{
+			if (error)
+			{
+				NSDictionary *errorInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+				                           [NSString stringWithFormat:@"%@ already implements the forwardInvocation: method.", className], NSLocalizedDescriptionKey,
+				                           className, XCDUndocumentedCheckerClassNameKey, nil];
+				*error = [NSError errorWithDomain:XCDUndocumentedCheckerErrorDomain code:XCDUndocumentedCheckerUnsupportedClass userInfo:errorInfo];
+			}
+			return Nil;
+		}
 		
 		protocolMethods = protocol_copyMethodDescriptionList(protocol, YES, isInstanceMethod, &protocolMethodCount);
 		for (unsigned int i = 0; i < protocolMethodCount; i++)
