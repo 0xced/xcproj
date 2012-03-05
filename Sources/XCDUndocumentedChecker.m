@@ -20,10 +20,7 @@ NSString *const XCDUndocumentedCheckerMethodNameKey           = @"MethodName";
 NSString *const XCDUndocumentedCheckerProtocolSignatureKey    = @"ProtocolSignature";
 NSString *const XCDUndocumentedCheckerClassSignatureKey       = @"ClassSignature";
 
-// ◈ WHITE DIAMOND CONTAINING BLACK SMALL DIAMOND
-#define TYPE_SEPARATOR @"\u25C8"
-
-static void forwardInvocationTypeCheck(id self, SEL _cmd, NSInvocation *invocation)
+static void XCDUndocumentedChecker_forwardInvocation(id self, SEL _cmd, NSInvocation *invocation)
 {
 	NSString *returnClassName = nil;
 	NSString *collectionElementsClassName = nil;
@@ -45,7 +42,7 @@ static void forwardInvocationTypeCheck(id self, SEL _cmd, NSInvocation *invocati
 	@try
 	{
 		id result = nil;
-		SEL selector = NSSelectorFromString([[returnClassName stringByAppendingString:TYPE_SEPARATOR] stringByAppendingString:NSStringFromSelector([invocation selector])]);
+		SEL selector = NSSelectorFromString([@"XCDUndocumentedChecker_" stringByAppendingString:NSStringFromSelector([invocation selector])]);
 		BOOL returnsObject = [methodSignature methodReturnType][0] == _C_ID;
 		[invocation setSelector:selector];
 		[invocation invoke];
@@ -154,9 +151,10 @@ Class XCDClassFromProtocol(Protocol *protocol, NSError **error)
 	for (unsigned methodKind = 0; methodKind <= 1; methodKind++)
 	{
 		BOOL isInstanceMethod = (methodKind == 1);
+		Method (*class_getMethod)(Class cls, SEL name) = isInstanceMethod ? class_getInstanceMethod : class_getClassMethod;
 		
 		Method forwardInvocation = class_getInstanceMethod([NSObject class], @selector(forwardInvocation:));
-		BOOL added = class_addMethod(isInstanceMethod ? class : object_getClass(class), @selector(forwardInvocation:), (IMP)forwardInvocationTypeCheck, method_getTypeEncoding(forwardInvocation));
+		BOOL added = class_addMethod(isInstanceMethod ? class : object_getClass(class), @selector(forwardInvocation:), (IMP)XCDUndocumentedChecker_forwardInvocation, method_getTypeEncoding(forwardInvocation));
 		if (!added)
 		{
 			if (error)
@@ -202,16 +200,18 @@ Class XCDClassFromProtocol(Protocol *protocol, NSError **error)
 			NSString *returnClassName = [[returnInfo componentsSeparatedByString:@"."] objectAtIndex:0];
 			methodName = [methodName substringFromIndex:1];
 			if (!returnClassName)
+			{
 				fprintf(stderr, "WARNING: No return type information found for %c[%s %s]\n", isInstanceMethod ? '-' : '+', [className UTF8String], [methodName UTF8String]);
+			}
 			else
 			{
-				NSString *fullMethodName = [[returnClassName stringByAppendingString:TYPE_SEPARATOR] stringByAppendingString:methodName];
-				Method method = isInstanceMethod ? class_getInstanceMethod(class, NSSelectorFromString(methodName)) : class_getClassMethod(class, NSSelectorFromString(methodName));
-				BOOL added = class_addMethod(isInstanceMethod ? class : object_getClass(class), NSSelectorFromString(fullMethodName), _objc_msgForward, method_getTypeEncoding(method));
+				NSString *forwardMethodName = [@"XCDUndocumentedChecker_" stringByAppendingString:methodName];
+				Method method = class_getMethod(class, NSSelectorFromString(methodName));
+				BOOL added = class_addMethod(isInstanceMethod ? class : object_getClass(class), NSSelectorFromString(forwardMethodName), _objc_msgForward, method_getTypeEncoding(method));
 				if (added)
 				{
-					Method typeCheckMethod = isInstanceMethod ? class_getInstanceMethod(class, NSSelectorFromString(fullMethodName)) : class_getClassMethod(class, NSSelectorFromString(fullMethodName));
-					method_exchangeImplementations(method, typeCheckMethod);
+					Method forwardMethod = class_getMethod(class, NSSelectorFromString(forwardMethodName));
+					method_exchangeImplementations(method, forwardMethod);
 				}
 			}
 		}
