@@ -59,7 +59,7 @@
 		DA8C9FFE1302AF93008B3560 /* PBXTarget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBXTarget.h; sourceTree = "<group>"; };
 		DA8CA0041302B0D9008B3560 /* DevToolsCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DevToolsCore.h; sourceTree = "<group>"; };
 		DA8CA0301302B27C008B3560 /* PBXBuildFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBXBuildFile.h; sourceTree = "<group>"; };
-		DAFF25CA1303ECB100584E0E /* XCDUndocumentedChecker.h */ = {isa = PBXFileReference; fileEncoding = 4; lineEnding = 0; name = XCDUndocumentedChecker.h; path = Sources/XCDUndocumentedChecker.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		DAFF25CA1303ECB100584E0E /* XCDUndocumentedChecker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = XCDUndocumentedChecker.h; path = Sources/XCDUndocumentedChecker.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		DAFF25CB1303ECB100584E0E /* XCDUndocumentedChecker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = XCDUndocumentedChecker.m; path = Sources/XCDUndocumentedChecker.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		DAFF2AD913055EF500584E0E /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -289,7 +289,7 @@
 		1DEB927908733DD40010E9CD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				CURRENT_PROJECT_VERSION = 0.1;
 				DEPLOYMENT_LOCATION = YES;
 				DSTROOT = "$(DEVELOPER_DIR)";
@@ -312,7 +312,7 @@
 		1DEB927A08733DD40010E9CD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				CURRENT_PROJECT_VERSION = 0.1;
 				DEPLOYMENT_LOCATION = YES;
 				DSTROOT = "$(DEVELOPER_DIR)";
