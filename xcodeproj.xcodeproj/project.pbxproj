@@ -59,6 +59,7 @@
 		DA8C9FFE1302AF93008B3560 /* PBXTarget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBXTarget.h; sourceTree = "<group>"; };
 		DA8CA0041302B0D9008B3560 /* DevToolsCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DevToolsCore.h; sourceTree = "<group>"; };
 		DA8CA0301302B27C008B3560 /* PBXBuildFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBXBuildFile.h; sourceTree = "<group>"; };
+		DAF6DA9515076749002AFA90 /* XCConfigurationList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XCConfigurationList.h; sourceTree = "<group>"; };
 		DAFF25CA1303ECB100584E0E /* XCDUndocumentedChecker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = XCDUndocumentedChecker.h; path = Sources/XCDUndocumentedChecker.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		DAFF25CB1303ECB100584E0E /* XCDUndocumentedChecker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = XCDUndocumentedChecker.m; path = Sources/XCDUndocumentedChecker.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		DAFF2AD913055EF500584E0E /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -133,6 +134,7 @@
 				DA7A0218134F06FF00F89E9B /* PBXReference.h */,
 				DA8C9FFE1302AF93008B3560 /* PBXTarget.h */,
 				DA7A0D4F135304F000F89E9B /* XCBuildConfiguration.h */,
+				DAF6DA9515076749002AFA90 /* XCConfigurationList.h */,
 			);
 			path = DevToolsCore;
 			sourceTree = "<group>";
@@ -294,6 +296,7 @@
 				DEPLOYMENT_LOCATION = YES;
 				DSTROOT = "$(DEVELOPER_DIR)";
 				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_ENABLE_OBJC_GC = required;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -302,7 +305,7 @@
 					"\"$(SRCROOT)\"",
 				);
 				INSTALL_PATH = /usr/bin;
-				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../Library/PrivateFrameworks/";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../Library/Xcode/PrivatePlugIns/Xcode3Core.ideplugin/Contents/Frameworks @loader_path/../../Library/PrivateFrameworks/";
 				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)/Externals/ddcli/lib\"";
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
@@ -317,6 +320,7 @@
 				DEPLOYMENT_LOCATION = YES;
 				DSTROOT = "$(DEVELOPER_DIR)";
 				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_ENABLE_OBJC_GC = required;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
@@ -324,7 +328,7 @@
 					"\"$(SRCROOT)\"",
 				);
 				INSTALL_PATH = /usr/bin;
-				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../Library/PrivateFrameworks/";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../Library/Xcode/PrivatePlugIns/Xcode3Core.ideplugin/Contents/Frameworks @loader_path/../../Library/PrivateFrameworks/";
 				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)/Externals/ddcli/lib\"";
 				SDKROOT = macosx;
 			};

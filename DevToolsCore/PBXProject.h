@@ -1,4 +1,5 @@
 #import "PBXTarget.h"
+#import "XCConfigurationList.h"
 
 @protocol PBXProject <PBXContainer, NSObject>
 
@@ -11,9 +12,9 @@
 
 - (NSString *) name;
 
-- (NSArray *) buildConfigurations; // XCBuildConfiguration
+- (id<XCConfigurationList>) buildConfigurationList;
 
-- (NSString *) expandedValueForString:(NSString *)string;
+- (NSString *) expandedValueForString:(NSString *)string forBuildParameters:(id)buildParameters;
 
 - (BOOL) writeToFileSystemProjectFile:(BOOL)projectWrite userFile:(BOOL)userWrite checkNeedsRevert:(BOOL)checkNeedsRevert;
 

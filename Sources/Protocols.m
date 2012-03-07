@@ -13,4 +13,5 @@ void protocols()
 	(void)@protocol(PBXReference);
 	(void)@protocol(PBXTarget);
 	(void)@protocol(XCBuildConfiguration);
+	(void)@protocol(XCConfigurationList);
 }

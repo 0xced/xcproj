@@ -50,12 +50,12 @@ static Class XCBuildConfiguration = Nil;
 	}
 	
 	// Xcode < 4.3
-	NSString *devToolsCorePath = [developerDir stringByAppendingPathComponent:@"Library/PrivateFrameworks/DevToolsCore.framework"];
+	NSString *devToolsCorePath = [developerDir stringByAppendingPathComponent:@"Library/Xcode/PrivatePlugIns/Xcode3Core.ideplugin/Contents/Frameworks/DevToolsCore.framework"];
 	NSBundle *devToolsCoreBundle = [NSBundle bundleWithPath:devToolsCorePath];
 	if (!devToolsCoreBundle)
 	{
 		// Xcode >= 4.3
-		devToolsCorePath = [developerDir stringByAppendingPathComponent:@"../OtherFrameworks/DevToolsCore.framework"];
+		devToolsCorePath = [developerDir stringByAppendingPathComponent:@"../PlugIns/Xcode3Core.ideplugin/Contents/Frameworks/DevToolsCore.framework"];
 		devToolsCoreBundle = [NSBundle bundleWithPath:devToolsCorePath];
 	}
 	NSError *loadError = nil;
@@ -65,13 +65,26 @@ static Class XCBuildConfiguration = Nil;
 		exit(EX_SOFTWARE);
 	}
 	
+	for (NSBundle *framework in [NSBundle allFrameworks])
+	{
+		if ([[[framework executableURL] lastPathComponent] isEqualToString:@"IDEFoundation"])
+		{
+			void *IDEFoundation = dlopen([[framework executablePath] fileSystemRepresentation], RTLD_LAZY);
+			void(*IDEInitialize)(void) = dlsym(IDEFoundation, "IDEInitialize");
+			if (IDEInitialize)
+				IDEInitialize();
+			dlclose(IDEFoundation);
+			break;
+		}
+	}
+	
 	// XCInitializeCoreIfNeeded is called with NSClassFromString(@"NSApplication") != nil as argument in +[PBXProject projectWithFile:errorHandler:readOnly:]
 	// At that point, the AppKit framework is loaded, _includeUIPlugins is set to YES and all plugins are loaded, even those with XCPluginHasUI == NO
-	void *devToolsCore = dlopen([[devToolsCoreBundle executablePath] fileSystemRepresentation], RTLD_LAZY);
-	void(*XCInitializeCoreIfNeeded)(BOOL hasGUI) = dlsym(devToolsCore, "XCInitializeCoreIfNeeded");
+	void *DevToolsCore = dlopen([[devToolsCoreBundle executablePath] fileSystemRepresentation], RTLD_LAZY);
+	void(*XCInitializeCoreIfNeeded)(BOOL hasGUI) = dlsym(DevToolsCore, "XCInitializeCoreIfNeeded");
 	if (XCInitializeCoreIfNeeded)
 		XCInitializeCoreIfNeeded(NO);
-	dlclose(devToolsCore);
+	dlclose(DevToolsCore);
 	
 	BOOL isSafe = YES;
 	NSDictionary *classInfo = [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"XCDUndocumentedChecker"] objectForKey:@"Classes"];
@@ -190,7 +203,7 @@ static Class XCBuildConfiguration = Nil;
 	
 	NSString *buildSetting = [arguments objectAtIndex:0];
 	NSString *settingString = [NSString stringWithFormat:@"$(%@)", buildSetting];
-	NSString *expandedString = [targetName ? (id)target : (id)project expandedValueForString:settingString];
+	NSString *expandedString = [target expandedValueForString:settingString forBuildParameters:nil];
 	if ([expandedString length] > 0)
 		ddprintf(@"%@\n", expandedString);
 	
@@ -224,7 +237,9 @@ static Class XCBuildConfiguration = Nil;
 	if (![XCBuildConfiguration fileReference:xcconfig isValidBaseConfigurationFile:&error])
 		@throw [DDCliParseException parseExceptionWithReason:[NSString stringWithFormat:@"The configuration file %@ is not valid. %@", xcconfigPath, [error localizedDescription]] exitCode:EX_USAGE];
 	
-	for (id<XCBuildConfiguration> configuration in [targetName ? (id)target : (id)project buildConfigurations])
+	id<XCConfigurationList> buildConfigurationList = [project buildConfigurationList];
+	NSArray *buildConfigurations = [buildConfigurationList buildConfigurations];
+	for (id<XCBuildConfiguration> configuration in buildConfigurations)
 		[configuration setBaseConfigurationReference:xcconfig];
 	
 	[self addGroupNamed:@"Configurations" beforeGroupNamed:@"Frameworks"];

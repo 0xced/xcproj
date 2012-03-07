@@ -1,12 +1,13 @@
 #import "PBXBuildPhase.h"
+#import "XCConfigurationList.h"
 
 @protocol PBXTarget <NSObject>
 
 - (NSString *) name;
 
-- (NSArray *) buildConfigurations; // XCBuildConfiguration
+- (id<XCConfigurationList>) buildConfigurationList;
 
-- (NSString *) expandedValueForString:(NSString *)string;
+- (NSString *) expandedValueForString:(NSString *)string forBuildParameters:(id)buildParameters;
 
 - (id<PBXBuildPhase>) buildPhaseOfClass:(Class)buildPhaseClass;
 - (void) addBuildPhase:(id<PBXBuildPhase>)buildPhase;
