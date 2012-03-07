@@ -49,12 +49,19 @@ static Class XCBuildConfiguration = Nil;
 		developerDir = @"/Developer";
 	}
 	
+	// Xcode < 4.3
 	NSString *devToolsCorePath = [developerDir stringByAppendingPathComponent:@"Library/PrivateFrameworks/DevToolsCore.framework"];
 	NSBundle *devToolsCoreBundle = [NSBundle bundleWithPath:devToolsCorePath];
+	if (!devToolsCoreBundle)
+	{
+		// Xcode >= 4.3
+		devToolsCorePath = [developerDir stringByAppendingPathComponent:@"../OtherFrameworks/DevToolsCore.framework"];
+		devToolsCoreBundle = [NSBundle bundleWithPath:devToolsCorePath];
+	}
 	NSError *loadError = nil;
 	if (![devToolsCoreBundle loadAndReturnError:&loadError])
 	{
-		ddfprintf(stderr, @"The DevToolsCore framework failed to load: %@\n", loadError);
+		ddfprintf(stderr, @"The DevToolsCore framework failed to load: %@\n", devToolsCoreBundle ? loadError : @"DevToolsCore.framework not found");
 		exit(EX_SOFTWARE);
 	}
 	
