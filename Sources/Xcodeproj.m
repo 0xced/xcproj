@@ -12,6 +12,13 @@
 #import <objc/runtime.h>
 #import "XCDUndocumentedChecker.h"
 
+
+@interface Xcodeproj ()
+- (void) printUsage:(int)exitCode;
+- (NSArray *) allowedActions;
+@end
+
+
 @implementation Xcodeproj
 
 static Class PBXGroup = Nil;
@@ -106,8 +113,7 @@ static Class XCBuildConfiguration = Nil;
 		exit(EX_SOFTWARE);
 }
 
-// MARK: -
-// MARK: Options
+// MARK: - Options
 
 - (void) application:(DDCliApplication *)app willParseOptions:(DDGetoptLongParser *)optionsParser
 {
@@ -147,8 +153,78 @@ static Class XCBuildConfiguration = Nil;
 	targetName = [aTargetName retain];
 }
 
-// MARK: -
-// MARK: Actions
+// MARK: - App run
+
+- (int) application:(DDCliApplication *)app runWithArguments:(NSArray *)arguments
+{
+	if (help)
+		[self printUsage:EX_OK];
+	
+	NSString *currentDirectoryPath = [[NSFileManager defaultManager] currentDirectoryPath];
+	
+	if (!project)
+	{
+		for (NSString *fileName in [[NSFileManager defaultManager] contentsOfDirectoryAtPath:currentDirectoryPath error:NULL])
+		{
+			if ([PBXProject isProjectWrapperExtension:[fileName pathExtension]])
+			{
+				if (!project)
+					[self setProject:fileName];
+				else
+				{
+					ddfprintf(stderr, @"%@: The directory %@ contains more than one Xcode project. You will need to specify the project with the --project option.\n", app, currentDirectoryPath);
+					return EX_USAGE;
+				}
+			}
+		}
+	}
+	
+	if (!project)
+	{
+		ddfprintf(stderr, @"%@: The directory %@ does not contain an Xcode project.\n", app, currentDirectoryPath);
+		return EX_USAGE;
+	}
+	
+	if (targetName)
+	{
+		target = [[project targetNamed:targetName] retain];
+		if (!target)
+			@throw [DDCliParseException parseExceptionWithReason:[NSString stringWithFormat:@"The target %@ does not exist in this project.", targetName] exitCode:EX_DATAERR];
+	}
+	else
+	{
+		target = [[project activeTarget] retain];
+		if (!target)
+			@throw [DDCliParseException parseExceptionWithReason:[NSString stringWithFormat:@"The project %@ does not contain any target.", [project name]] exitCode:EX_DATAERR];
+	}
+	
+	if ([arguments count] < 1)
+	{
+		[self printUsage:EX_USAGE];
+		return EX_USAGE;
+	}
+	else
+	{
+		NSString *action = [arguments objectAtIndex:0];
+		if (![[self allowedActions] containsObject:action])
+			[self printUsage:EX_USAGE];
+		
+		NSArray *actionArguments = nil;
+		if ([arguments count] >= 2)
+			actionArguments = [arguments subarrayWithRange:NSMakeRange(1, [arguments count] - 1)];
+		else
+			actionArguments = [NSArray array];
+		
+		NSArray *actionParts = [[action componentsSeparatedByString:@"-"] valueForKeyPath:@"capitalizedString"];
+		NSMutableString *selectorString = [NSMutableString stringWithString:[actionParts componentsJoinedByString:@""]];
+		[selectorString replaceCharactersInRange:NSMakeRange(0, 1) withString:[[selectorString substringToIndex:1] lowercaseString]];
+		[selectorString appendString:@":"];
+		SEL actionSelector = NSSelectorFromString(selectorString);
+		return (int)[self performSelector:actionSelector withObject:actionArguments];
+	}
+}
+
+// MARK: - Actions
 
 - (NSArray *) allowedActions
 {
@@ -262,77 +338,6 @@ static Class XCBuildConfiguration = Nil;
 	return [self writeProject];
 }
 
-// MARK: -
-// MARK: App run
-
-- (int) application:(DDCliApplication *)app runWithArguments:(NSArray *)arguments
-{
-	if (help)
-		[self printUsage:EX_OK];
-	
-	NSString *currentDirectoryPath = [[NSFileManager defaultManager] currentDirectoryPath];
-	
-	if (!project)
-	{
-		for (NSString *fileName in [[NSFileManager defaultManager] contentsOfDirectoryAtPath:currentDirectoryPath error:NULL])
-		{
-			if ([PBXProject isProjectWrapperExtension:[fileName pathExtension]])
-			{
-				if (!project)
-					[self setProject:fileName];
-				else
-				{
-					ddfprintf(stderr, @"%@: The directory %@ contains more than one Xcode project. You will need to specify the project with the --project option.\n", app, currentDirectoryPath);
-					return EX_USAGE;
-				}
-			}
-		}
-	}
-	
-	if (!project)
-	{
-		ddfprintf(stderr, @"%@: The directory %@ does not contain an Xcode project.\n", app, currentDirectoryPath);
-		return EX_USAGE;
-	}
-	
-	if (targetName)
-	{
-		target = [[project targetNamed:targetName] retain];
-		if (!target)
-			@throw [DDCliParseException parseExceptionWithReason:[NSString stringWithFormat:@"The target %@ does not exist in this project.", targetName] exitCode:EX_DATAERR];
-	}
-	else
-	{
-		target = [[project activeTarget] retain];
-		if (!target)
-			@throw [DDCliParseException parseExceptionWithReason:[NSString stringWithFormat:@"The project %@ does not contain any target.", [project name]] exitCode:EX_DATAERR];
-	}
-	
-	if ([arguments count] < 1)
-	{
-		[self printUsage:EX_USAGE];
-		return EX_USAGE;
-	}
-	else
-	{
-		NSString *action = [arguments objectAtIndex:0];
-		if (![[self allowedActions] containsObject:action])
-			[self printUsage:EX_USAGE];
-		
-		NSArray *actionArguments = nil;
-		if ([arguments count] >= 2)
-			actionArguments = [arguments subarrayWithRange:NSMakeRange(1, [arguments count] - 1)];
-		else
-			actionArguments = [NSArray array];
-		
-		NSArray *actionParts = [[action componentsSeparatedByString:@"-"] valueForKeyPath:@"capitalizedString"];
-		NSMutableString *selectorString = [NSMutableString stringWithString:[actionParts componentsJoinedByString:@""]];
-		[selectorString replaceCharactersInRange:NSMakeRange(0, 1) withString:[[selectorString substringToIndex:1] lowercaseString]];
-		[selectorString appendString:@":"];
-		SEL actionSelector = NSSelectorFromString(selectorString);
-		return (int)[self performSelector:actionSelector withObject:actionArguments];
-	}
-}
 
 /*
 - (void) printBuildPhases
@@ -351,8 +356,7 @@ static Class XCBuildConfiguration = Nil;
 }
 */
 
-// MARK: -
-// MARK: Xcode project manipulation
+// MARK: - Xcode project manipulation
 
 - (id<PBXGroup>) groupNamed:(NSString *)groupName inGroup:(id<PBXGroup>)rootGroup parentGroup:(id<PBXGroup> *) parentGroup
 {
