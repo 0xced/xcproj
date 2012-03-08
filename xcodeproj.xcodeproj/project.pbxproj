@@ -305,7 +305,7 @@
 					"\"$(SRCROOT)\"",
 				);
 				INSTALL_PATH = /usr/bin;
-				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../Library/Xcode/PrivatePlugIns/Xcode3Core.ideplugin/Contents/Frameworks @loader_path/../../Library/PrivateFrameworks/";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../Library/Xcode/PrivatePlugIns/Xcode3Core.ideplugin/Contents/Frameworks @loader_path/../../../PlugIns/Xcode3Core.ideplugin/Contents/Frameworks @loader_path/../../Library/PrivateFrameworks/ @loader_path/../../../OtherFrameworks/ @loader_path/../../../SharedFrameworks/ @loader_path/../../../Frameworks/";
 				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)/Externals/ddcli/lib\"";
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
@@ -328,7 +328,7 @@
 					"\"$(SRCROOT)\"",
 				);
 				INSTALL_PATH = /usr/bin;
-				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../Library/Xcode/PrivatePlugIns/Xcode3Core.ideplugin/Contents/Frameworks @loader_path/../../Library/PrivateFrameworks/";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../Library/Xcode/PrivatePlugIns/Xcode3Core.ideplugin/Contents/Frameworks @loader_path/../../../PlugIns/Xcode3Core.ideplugin/Contents/Frameworks @loader_path/../../Library/PrivateFrameworks/ @loader_path/../../../OtherFrameworks/ @loader_path/../../../SharedFrameworks/ @loader_path/../../../Frameworks/";
 				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)/Externals/ddcli/lib\"";
 				SDKROOT = macosx;
 			};
