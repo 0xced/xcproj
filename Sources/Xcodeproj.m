@@ -72,26 +72,23 @@ static Class XCBuildConfiguration = Nil;
 		exit(EX_SOFTWARE);
 	}
 	
-	for (NSBundle *framework in [NSBundle allFrameworks])
+	void(*IDEInitialize)(NSUInteger initializationOptions, NSError **error) = dlsym(RTLD_DEFAULT, "IDEInitialize");
+	if (IDEInitialize)
 	{
-		if ([[[framework executableURL] lastPathComponent] isEqualToString:@"IDEFoundation"])
+		NSError *error = nil;
+		// -[Xcode3CommandLineBuildTool run] from Xcode3Core.ideplugin calls IDEInitialize(1, &error)
+		IDEInitialize(1, &error);
+		if (error)
 		{
-			void *IDEFoundation = dlopen([[framework executablePath] fileSystemRepresentation], RTLD_LAZY);
-			void(*IDEInitialize)(void) = dlsym(IDEFoundation, "IDEInitialize");
-			if (IDEInitialize)
-				IDEInitialize();
-			dlclose(IDEFoundation);
-			break;
+			ddfprintf(stderr, @"IDEInitialize error: %@\n", error);
+			exit(EX_SOFTWARE);
 		}
 	}
-	
-	// XCInitializeCoreIfNeeded is called with NSClassFromString(@"NSApplication") != nil as argument in +[PBXProject projectWithFile:errorHandler:readOnly:]
-	// At that point, the AppKit framework is loaded, _includeUIPlugins is set to YES and all plugins are loaded, even those with XCPluginHasUI == NO
-	void *DevToolsCore = dlopen([[devToolsCoreBundle executablePath] fileSystemRepresentation], RTLD_LAZY);
-	void(*XCInitializeCoreIfNeeded)(BOOL hasGUI) = dlsym(DevToolsCore, "XCInitializeCoreIfNeeded");
-	if (XCInitializeCoreIfNeeded)
-		XCInitializeCoreIfNeeded(NO);
-	dlclose(DevToolsCore);
+	else
+	{
+		ddfprintf(stderr, @"IDEInitialize function not found.\n");
+		exit(EX_SOFTWARE);
+	}
 	
 	BOOL isSafe = YES;
 	NSDictionary *classInfo = [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"XCDUndocumentedChecker"] objectForKey:@"Classes"];
