@@ -190,7 +190,9 @@ static Class XCBuildConfiguration = Nil;
 	}
 	else
 	{
-		target = [[project activeTarget] retain];
+		NSArray *targets = [project targets];
+		if ([targets count] > 0)
+			target = [[targets objectAtIndex:0] retain];
 		if (!target)
 			@throw [DDCliParseException parseExceptionWithReason:[NSString stringWithFormat:@"The project %@ does not contain any target.", [project name]] exitCode:EX_DATAERR];
 	}

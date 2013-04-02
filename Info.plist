@@ -71,8 +71,6 @@
 				<string>BOOL</string>
 				<key>+projectWithFile:</key>
 				<string>PBXProject</string>
-				<key>-activeTarget</key>
-				<string>PBXTarget</string>
 				<key>-buildConfigurationList</key>
 				<string>XCConfigurationList</string>
 				<key>-expandedValueForString:forBuildParameters:</key>
