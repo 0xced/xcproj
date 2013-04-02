@@ -146,7 +146,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1DEB927408733DD40010E9CD /* Build configuration list for PBXNativeTarget "xcodeproj" */;
 			buildPhases = (
-				DAFF2ABD1305512000584E0E /* Check CLITool+InfoPlist */,
 				8DD76F990486AA7600D96B5E /* Sources */,
 				8DD76F9B0486AA7600D96B5E /* Frameworks */,
 			);
@@ -217,20 +216,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "export PATH=\"/opt/local/bin:$PATH\"\n./Scripts/embed_protocols.py Info.plist Sources/Protocols.m";
-		};
-		DAFF2ABD1305512000584E0E /* Check CLITool+InfoPlist */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Check CLITool+InfoPlist";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "if [ -z \"$CLITOOL_INFOPLIST\" ]; then\n\techo \"error: CLITool+InfoPlist Xcode plugin is not installed, get it at http://github.com/0xced/CLITool-InfoPlist\"\n\texit 1\nfi";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -306,6 +291,12 @@
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../Library/Xcode/PrivatePlugIns/Xcode3Core.ideplugin/Contents/Frameworks @loader_path/../../../PlugIns/Xcode3Core.ideplugin/Contents/Frameworks @loader_path/../../Library/PrivateFrameworks/ @loader_path/../../../OtherFrameworks/ @loader_path/../../../SharedFrameworks/ @loader_path/../../../Frameworks/ @loader_path/../../Toolchains/XcodeDefault.xctoolchain/usr/lib";
 				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)/Externals/ddcli/lib\"";
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = (
+					"-sectcreate",
+					__TEXT,
+					__info_plist,
+					"\"$(INFOPLIST_FILE)\"",
+				);
 				SDKROOT = macosx;
 			};
 			name = Debug;
@@ -328,6 +319,12 @@
 				INSTALL_PATH = /usr/bin;
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../../Library/Xcode/PrivatePlugIns/Xcode3Core.ideplugin/Contents/Frameworks @loader_path/../../../PlugIns/Xcode3Core.ideplugin/Contents/Frameworks @loader_path/../../Library/PrivateFrameworks/ @loader_path/../../../OtherFrameworks/ @loader_path/../../../SharedFrameworks/ @loader_path/../../../Frameworks/ @loader_path/../../Toolchains/XcodeDefault.xctoolchain/usr/lib";
 				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)/Externals/ddcli/lib\"";
+				OTHER_LDFLAGS = (
+					"-sectcreate",
+					__TEXT,
+					__info_plist,
+					"\"$(INFOPLIST_FILE)\"",
+				);
 				SDKROOT = macosx;
 			};
 			name = Release;
