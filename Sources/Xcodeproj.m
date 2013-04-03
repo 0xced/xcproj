@@ -227,7 +227,7 @@ static Class XCBuildConfiguration = Nil;
 
 - (NSArray *) allowedActions
 {
-	return [NSArray arrayWithObjects:@"list-targets", @"list-headers", @"read-build-setting", @"add-xcconfig", @"add-resources-bundle", nil];
+	return [NSArray arrayWithObjects:@"list-targets", @"list-headers", @"read-build-setting", @"add-xcconfig", @"add-resources-bundle", @"touch", nil];
 }
 
 - (void) printUsage:(int)exitCode
@@ -337,6 +337,10 @@ static Class XCBuildConfiguration = Nil;
 	return [self writeProject];
 }
 
+- (int) touch:(NSArray *)arguments
+{
+	return [self writeProject];
+}
 
 /*
 - (void) printBuildPhases
