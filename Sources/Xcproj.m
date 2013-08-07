@@ -1,25 +1,25 @@
 //
-//  Xcodeproj.m
-//  xcodeproj
+//  Xcproj.m
+//  xcproj
 //
 //  Created by Cédric Luthi on 07.02.11.
 //  Copyright Cédric Luthi 2011. All rights reserved.
 //
 
-#import "Xcodeproj.h"
+#import "Xcproj.h"
 
 #import <dlfcn.h>
 #import <objc/runtime.h>
 #import "XCDUndocumentedChecker.h"
 
 
-@interface Xcodeproj ()
+@interface Xcproj ()
 - (void) printUsage:(int)exitCode;
 - (NSArray *) allowedActions;
 @end
 
 
-@implementation Xcodeproj
+@implementation Xcproj
 
 static Class PBXGroup = Nil;
 static Class PBXProject = Nil;
@@ -34,7 +34,7 @@ static Class XCBuildConfiguration = Nil;
 
 + (void) initialize
 {
-	if (self != [Xcodeproj class])
+	if (self != [Xcproj class])
 		return;
 
 	NSString *developerDir = [NSSearchPathForDirectoriesInDomains(NSDeveloperDirectory, NSLocalDomainMask, YES) lastObject];

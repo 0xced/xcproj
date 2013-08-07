@@ -5,13 +5,13 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
-	<string>xcodeproj</string>
+	<string>xcproj</string>
 	<key>CFBundleIdentifier</key>
-	<string>ch.pitaya.xcodeproj</string>
+	<string>ch.pitaya.xcproj</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>xcodeproj</string>
+	<string>xcproj</string>
 	<key>CFBundleShortVersionString</key>
 	<string>0.1</string>
 	<key>CFBundleVersion</key>

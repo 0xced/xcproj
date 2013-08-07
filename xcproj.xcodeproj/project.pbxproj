@@ -24,7 +24,7 @@
 /* Begin PBXBuildFile section */
 		8DD76F9A0486AA7600D96B5E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 08FB7796FE84155DC02AAC07 /* main.m */; settings = {ATTRIBUTES = (); }; };
 		8DD76F9C0486AA7600D96B5E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08FB779EFE84155DC02AAC07 /* Foundation.framework */; };
-		DA1DC01010E59AED005A103B /* Xcodeproj.m in Sources */ = {isa = PBXBuildFile; fileRef = DA1DC00E10E59AED005A103B /* Xcodeproj.m */; };
+		DA1DC01010E59AED005A103B /* Xcproj.m in Sources */ = {isa = PBXBuildFile; fileRef = DA1DC00E10E59AED005A103B /* Xcproj.m */; };
 		DA7A044C134F2EBF00F89E9B /* Protocols.m in Sources */ = {isa = PBXBuildFile; fileRef = DA7A044B134F2EBF00F89E9B /* Protocols.m */; };
 		DA7A0C9C1352F8B500F89E9B /* libddcli.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DA7A0C9B1352F8B500F89E9B /* libddcli.a */; };
 		DAFF25CC1303ECB100584E0E /* XCDUndocumentedChecker.m in Sources */ = {isa = PBXBuildFile; fileRef = DAFF25CB1303ECB100584E0E /* XCDUndocumentedChecker.m */; };
@@ -43,10 +43,10 @@
 /* Begin PBXFileReference section */
 		08FB7796FE84155DC02AAC07 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Sources/main.m; sourceTree = "<group>"; };
 		08FB779EFE84155DC02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
-		32A70AAB03705E1F00C91783 /* xcodeproj_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xcodeproj_Prefix.pch; path = Sources/xcodeproj_Prefix.pch; sourceTree = "<group>"; };
-		8DD76FA10486AA7600D96B5E /* xcodeproj */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = xcodeproj; sourceTree = BUILT_PRODUCTS_DIR; };
-		DA1DC00E10E59AED005A103B /* Xcodeproj.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = Xcodeproj.m; path = Sources/Xcodeproj.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		DA1DC00F10E59AED005A103B /* Xcodeproj.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Xcodeproj.h; path = Sources/Xcodeproj.h; sourceTree = "<group>"; };
+		32A70AAB03705E1F00C91783 /* xcproj_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xcproj_Prefix.pch; path = Sources/xcproj_Prefix.pch; sourceTree = "<group>"; };
+		8DD76FA10486AA7600D96B5E /* xcproj */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = xcproj; sourceTree = BUILT_PRODUCTS_DIR; };
+		DA1DC00E10E59AED005A103B /* Xcproj.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = Xcproj.m; path = Sources/Xcproj.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		DA1DC00F10E59AED005A103B /* Xcproj.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Xcproj.h; path = Sources/Xcproj.h; sourceTree = "<group>"; };
 		DA7A018E134F015F00F89E9B /* PBXContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBXContainer.h; sourceTree = "<group>"; };
 		DA7A018F134F01DE00F89E9B /* PBXGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBXGroup.h; sourceTree = "<group>"; };
 		DA7A0218134F06FF00F89E9B /* PBXReference.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBXReference.h; sourceTree = "<group>"; };
@@ -78,7 +78,7 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		08FB7794FE84155DC02AAC07 /* xcodeproj */ = {
+		08FB7794FE84155DC02AAC07 /* xcproj */ = {
 			isa = PBXGroup;
 			children = (
 				DAFF2AD913055EF500584E0E /* Info.plist */,
@@ -87,17 +87,17 @@
 				08FB779DFE84155DC02AAC07 /* Frameworks */,
 				1AB674ADFE9D54B511CA2CBB /* Products */,
 			);
-			name = xcodeproj;
+			name = xcproj;
 			sourceTree = "<group>";
 		};
 		08FB7795FE84155DC02AAC07 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				32A70AAB03705E1F00C91783 /* xcodeproj_Prefix.pch */,
+				32A70AAB03705E1F00C91783 /* xcproj_Prefix.pch */,
 				08FB7796FE84155DC02AAC07 /* main.m */,
 				DA7A044B134F2EBF00F89E9B /* Protocols.m */,
-				DA1DC00F10E59AED005A103B /* Xcodeproj.h */,
-				DA1DC00E10E59AED005A103B /* Xcodeproj.m */,
+				DA1DC00F10E59AED005A103B /* Xcproj.h */,
+				DA1DC00E10E59AED005A103B /* Xcproj.m */,
 				DAFF25CA1303ECB100584E0E /* XCDUndocumentedChecker.h */,
 				DAFF25CB1303ECB100584E0E /* XCDUndocumentedChecker.m */,
 			);
@@ -116,7 +116,7 @@
 		1AB674ADFE9D54B511CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8DD76FA10486AA7600D96B5E /* xcodeproj */,
+				8DD76FA10486AA7600D96B5E /* xcproj */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -142,9 +142,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		8DD76F960486AA7600D96B5E /* xcodeproj */ = {
+		8DD76F960486AA7600D96B5E /* xcproj */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 1DEB927408733DD40010E9CD /* Build configuration list for PBXNativeTarget "xcodeproj" */;
+			buildConfigurationList = 1DEB927408733DD40010E9CD /* Build configuration list for PBXNativeTarget "xcproj" */;
 			buildPhases = (
 				8DD76F990486AA7600D96B5E /* Sources */,
 				8DD76F9B0486AA7600D96B5E /* Frameworks */,
@@ -154,10 +154,10 @@
 			dependencies = (
 				DA7A01E6134F037300F89E9B /* PBXTargetDependency */,
 			);
-			name = xcodeproj;
+			name = xcproj;
 			productInstallPath = "$(HOME)/bin";
-			productName = xcodeproj;
-			productReference = 8DD76FA10486AA7600D96B5E /* xcodeproj */;
+			productName = xcproj;
+			productReference = 8DD76FA10486AA7600D96B5E /* xcproj */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -168,7 +168,7 @@
 			attributes = {
 				ORGANIZATIONNAME = "Cédric Luthi";
 			};
-			buildConfigurationList = 1DEB927808733DD40010E9CD /* Build configuration list for PBXProject "xcodeproj" */;
+			buildConfigurationList = 1DEB927808733DD40010E9CD /* Build configuration list for PBXProject "xcproj" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
@@ -178,11 +178,11 @@
 				French,
 				German,
 			);
-			mainGroup = 08FB7794FE84155DC02AAC07 /* xcodeproj */;
+			mainGroup = 08FB7794FE84155DC02AAC07 /* xcproj */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				8DD76F960486AA7600D96B5E /* xcodeproj */,
+				8DD76F960486AA7600D96B5E /* xcproj */,
 				DA7A01DA134F033800F89E9B /* Run Scripts */,
 			);
 		};
@@ -225,7 +225,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8DD76F9A0486AA7600D96B5E /* main.m in Sources */,
-				DA1DC01010E59AED005A103B /* Xcodeproj.m in Sources */,
+				DA1DC01010E59AED005A103B /* Xcproj.m in Sources */,
 				DAFF25CC1303ECB100584E0E /* XCDUndocumentedChecker.m in Sources */,
 				DA7A044C134F2EBF00F89E9B /* Protocols.m in Sources */,
 			);
@@ -250,9 +250,9 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = Sources/xcodeproj_Prefix.pch;
+				GCC_PREFIX_HEADER = Sources/xcproj_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
-				PRODUCT_NAME = xcodeproj;
+				PRODUCT_NAME = xcproj;
 			};
 			name = Debug;
 		};
@@ -263,9 +263,9 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEPLOYMENT_POSTPROCESSING = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = Sources/xcodeproj_Prefix.pch;
+				GCC_PREFIX_HEADER = Sources/xcproj_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
-				PRODUCT_NAME = xcodeproj;
+				PRODUCT_NAME = xcproj;
 			};
 			name = Release;
 		};
@@ -340,7 +340,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		1DEB927408733DD40010E9CD /* Build configuration list for PBXNativeTarget "xcodeproj" */ = {
+		1DEB927408733DD40010E9CD /* Build configuration list for PBXNativeTarget "xcproj" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1DEB927508733DD40010E9CD /* Debug */,
@@ -349,7 +349,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		1DEB927808733DD40010E9CD /* Build configuration list for PBXProject "xcodeproj" */ = {
+		1DEB927808733DD40010E9CD /* Build configuration list for PBXProject "xcproj" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1DEB927908733DD40010E9CD /* Debug */,

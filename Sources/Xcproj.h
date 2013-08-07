@@ -1,6 +1,6 @@
 //
-//  Xcodeproj.h
-//  xcodeproj
+//  Xcproj.h
+//  xcproj
 //
 //  Created by Cédric Luthi on 07.02.11.
 //  Copyright Cédric Luthi 2011. All rights reserved.
@@ -10,7 +10,7 @@
 
 #import <DevToolsCore/DevToolsCore.h>
 
-@interface Xcodeproj : NSObject <DDCliApplicationDelegate>
+@interface Xcproj : NSObject <DDCliApplicationDelegate>
 {
 	// Options
 	id<PBXProject> project;

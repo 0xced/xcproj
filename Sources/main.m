@@ -1,16 +1,16 @@
 //
 //  main.m
-//  xcodeproj
+//  xcproj
 //
 //  Created by Cédric Luthi on 07.02.11.
 //  Copyright Cédric Luthi 2011. All rights reserved.
 //
 
-#import "Xcodeproj.h"
+#import "Xcproj.h"
 
 int main(int argc, char *const *argv)
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	return DDCliAppRunWithClass([Xcodeproj class]);
+	return DDCliAppRunWithClass([Xcproj class]);
 	[pool drain];
 }

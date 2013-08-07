@@ -1,6 +1,6 @@
 //
 //  XCDUndocumentedChecker.h
-//  xcodeproj
+//  xcproj
 //
 //  Created by Cédric Luthi on 2011-02-09.
 //  Copyright 2011 Cédric Luthi. All rights reserved.
