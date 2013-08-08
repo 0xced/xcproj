@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		8DD76F9C0486AA7600D96B5E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08FB779EFE84155DC02AAC07 /* Foundation.framework */; };
-		C2405F9C17B4367A00D14EB4 /* Person.h in Headers */ = {isa = PBXBuildFile; fileRef = C2405F9817B4367A00D14EB4 /* Person.h */; };
+		C2405F9C17B4367A00D14EB4 /* Person.h in Headers */ = {isa = PBXBuildFile; fileRef = C2405F9817B4367A00D14EB4 /* Person.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C2405F9D17B4367A00D14EB4 /* Person.m in Sources */ = {isa = PBXBuildFile; fileRef = C2405F9917B4367A00D14EB4 /* Person.m */; };
 		C2405F9E17B4367A00D14EB4 /* Sandbox.m in Sources */ = {isa = PBXBuildFile; fileRef = C2405F9A17B4367A00D14EB4 /* Sandbox.m */; };
 		C2405F9F17B4367A00D14EB4 /* Sandbox_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = C2405F9B17B4367A00D14EB4 /* Sandbox_Prefix.pch */; };
