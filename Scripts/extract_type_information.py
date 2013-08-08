@@ -12,7 +12,7 @@ def buildClasses(headers):
                 protocolMatch = re.match(r"@protocol\s+(\w+)", line)
                 if protocolMatch and line.endswith(";"):
                     protocolMatch = None
-                methodMatch = re.search(r"\s*([+-])\s*\(\s*((\w+)\s?\*?|id\s*<(\w+)>)\s*\)\s*(.*);(\s*//\s*(.*))?", line)
+                methodMatch = re.search(r"^\s*([+-])\s*\(\s*((\w+)\s?\*?|id\s*<(\w+)>)\s*\)\s*(.*);(\s*//\s*(.*))?", line)
                 if protocolMatch:
                     className = protocolMatch.group(1)
                     classes[className] = dict()
