@@ -3,6 +3,6 @@
 
 - (NSString *) absolutePath;
 
-- (NSArray *) settingsArrayForKey:(NSString *)key;
+- (NSArray *) attributes;
 
 @end

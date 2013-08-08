@@ -81,6 +81,11 @@ static Class XCBuildConfiguration = Nil;
 		exit(EX_SOFTWARE);
 	}
 	
+	// Xcode 4 / Xcode 5 compatibility
+	class_addMethod(NSClassFromString(@"PBXBuildFile"), @selector(attributes), imp_implementationWithBlock(^(id<PBXBuildFile> buildFile) {
+		return [buildFile respondsToSelector:@selector(settingsArrayForKey:)] ? [buildFile performSelector:@selector(settingsArrayForKey:) withObject:@"ATTRIBUTES"] : nil;
+	}), "@16@0:8");
+	
 	BOOL isSafe = YES;
 	NSDictionary *classInfo = [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"XCDUndocumentedChecker"] objectForKey:@"Classes"];
 	for (NSString *protocolName in [classInfo allKeys])
@@ -254,7 +259,7 @@ static Class XCBuildConfiguration = Nil;
 	id<PBXBuildPhase> headerBuildPhase = [target defaultHeaderBuildPhase];
 	for (id<PBXBuildFile> buildFile in [headerBuildPhase buildFiles])
 	{
-		NSArray *attributes = [buildFile settingsArrayForKey:@"ATTRIBUTES"];
+		NSArray *attributes = [buildFile attributes];
 		if ([attributes containsObject:headerRole] || [headerRole isEqualToString:@"All"])
 			ddprintf(@"%@\n", [buildFile absolutePath]);
 	}

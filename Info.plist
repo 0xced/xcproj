@@ -26,7 +26,7 @@
 			<dict>
 				<key>-absolutePath</key>
 				<string>NSString</string>
-				<key>-settingsArrayForKey:</key>
+				<key>-attributes</key>
 				<string>NSArray</string>
 			</dict>
 			<key>PBXBuildPhase</key>
