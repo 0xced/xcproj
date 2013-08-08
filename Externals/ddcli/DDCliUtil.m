@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007-2008 Dave Dribin
+ * Copyright (c) 2007-2013 Dave Dribin
  * 
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -22,44 +22,29 @@
  * SOFTWARE.
  */
 
-#import <Foundation/Foundation.h>
+#import "DDCliUtil.h"
 
 
-/**
- * A option parsing exception. This should cause the program to
- * terminate with the given exit code.
- */
-@interface DDCliParseException : NSException
+void ddfprintf(FILE * stream, NSString * format, ...)
 {
-    @private
-    int mExitCode;
+    va_list arguments;
+    va_start(arguments, format);
+    NSString * string = [[NSString alloc] initWithFormat: format
+                                               arguments: arguments];
+    va_end(arguments);
+    
+    fprintf(stream, "%s", [string UTF8String]);
+    [string release];
 }
 
-/**
- * Create a new exception with a given reason and exit code.
- *
- * @param reason Reason for the exception
- * @param exitCode Desired exit code
- * @return Autoreleased exception
- */
-+ (DDCliParseException *) parseExceptionWithReason: (NSString *) reason
-                                          exitCode: (int) exitCode;
-
-/**
- * Create a new exception with a given reason and exit code.
- *
- * @param reason Reason for the exception
- * @param exitCode Desired exit code
- * @return New exception
- */
-- (id) initWithReason: (NSString *) reason
-             exitCode: (int) exitCode;
-
-/**
- * Returns the desired exit code.
- *
- * @return The desired exit code
- */
-- (int) exitCode;
-
-@end
+void ddprintf(NSString * format, ...)
+{
+    va_list arguments;
+    va_start(arguments, format);
+    NSString * string = [[NSString alloc] initWithFormat: format
+                                               arguments: arguments];
+    va_end(arguments);
+    
+    printf("%s", [string UTF8String]);
+    [string release];
+}

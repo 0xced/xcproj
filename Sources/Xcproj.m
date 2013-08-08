@@ -9,6 +9,7 @@
 #import "Xcproj.h"
 
 #import <dlfcn.h>
+#import <mach-o/ldsyms.h>
 #import <objc/runtime.h>
 #import "XCDUndocumentedChecker.h"
 
@@ -36,35 +37,25 @@ static Class XCBuildConfiguration = Nil;
 {
 	if (self != [Xcproj class])
 		return;
-
-	NSString *developerDir = [NSSearchPathForDirectoriesInDomains(NSDeveloperDirectory, NSLocalDomainMask, YES) lastObject];
-	@try
+	
+	NSString *rpath = nil;
+	const struct mach_header_64 *header = &_mh_execute_header;
+	intptr_t cursor = (intptr_t)header + sizeof(struct mach_header_64);
+	struct segment_command_64 *segmentCommand = NULL;
+	for (int i = 0; i < header->ncmds; i++, cursor += segmentCommand->cmdsize)
 	{
-		NSTask *xcode_select = [[[NSTask alloc] init] autorelease];
-		[xcode_select setLaunchPath:@"/usr/bin/xcode-select"];
-		[xcode_select setArguments:[NSArray arrayWithObject:@"-print-path"]];
-		[xcode_select setStandardInput:[NSPipe pipe]]; // Still want logs in Xcode? Use this! http://www.cocoadev.com/index.pl?NSTask
-		[xcode_select setStandardOutput:[NSPipe pipe]];
-		[xcode_select launch];
-		[xcode_select waitUntilExit];
-		NSData *developerDirData = [[[xcode_select standardOutput] fileHandleForReading] readDataToEndOfFile];
-		developerDir = [[[NSString alloc] initWithData:developerDirData encoding:NSUTF8StringEncoding] autorelease];
-		developerDir = [developerDir stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-	}
-	@catch (NSException *exception)
-	{
-		developerDir = @"/Developer";
+		segmentCommand = (struct segment_command_64*)cursor;
+		if (segmentCommand->cmd == LC_RPATH)
+		{
+			struct rpath_command *rpathComand = (struct rpath_command *)segmentCommand;
+			rpath = [[[NSString alloc] initWithUTF8String:((const char*)rpathComand + rpathComand->path.offset)] autorelease];
+			break;
+		}
 	}
 	
-	// Xcode < 4.3
-	NSString *devToolsCorePath = [developerDir stringByAppendingPathComponent:@"Library/Xcode/PrivatePlugIns/Xcode3Core.ideplugin/Contents/Frameworks/DevToolsCore.framework"];
+	NSString *devToolsCorePath = [rpath stringByAppendingPathComponent:@"DevToolsCore.framework"];
 	NSBundle *devToolsCoreBundle = [NSBundle bundleWithPath:devToolsCorePath];
-	if (!devToolsCoreBundle)
-	{
-		// Xcode >= 4.3
-		devToolsCorePath = [developerDir stringByAppendingPathComponent:@"../PlugIns/Xcode3Core.ideplugin/Contents/Frameworks/DevToolsCore.framework"];
-		devToolsCoreBundle = [NSBundle bundleWithPath:devToolsCorePath];
-	}
+	
 	NSError *loadError = nil;
 	if (![devToolsCoreBundle loadAndReturnError:&loadError])
 	{

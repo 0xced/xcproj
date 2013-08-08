@@ -24,9 +24,13 @@
 /* Begin PBXBuildFile section */
 		8DD76F9A0486AA7600D96B5E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 08FB7796FE84155DC02AAC07 /* main.m */; settings = {ATTRIBUTES = (); }; };
 		8DD76F9C0486AA7600D96B5E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08FB779EFE84155DC02AAC07 /* Foundation.framework */; };
+		C269E98D17B3DCCC0099A0C5 /* dd_getopt_long-fbsd.m in Sources */ = {isa = PBXBuildFile; fileRef = C269E98317B3DCCC0099A0C5 /* dd_getopt_long-fbsd.m */; };
+		C269E98E17B3DCCC0099A0C5 /* DDCliApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = C269E98517B3DCCC0099A0C5 /* DDCliApplication.m */; };
+		C269E98F17B3DCCC0099A0C5 /* DDCliParseException.m in Sources */ = {isa = PBXBuildFile; fileRef = C269E98717B3DCCC0099A0C5 /* DDCliParseException.m */; };
+		C269E99017B3DCCC0099A0C5 /* DDCliUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = C269E98917B3DCCC0099A0C5 /* DDCliUtil.m */; };
+		C269E99117B3DCCC0099A0C5 /* DDGetoptLongParser.m in Sources */ = {isa = PBXBuildFile; fileRef = C269E98C17B3DCCC0099A0C5 /* DDGetoptLongParser.m */; };
 		DA1DC01010E59AED005A103B /* Xcproj.m in Sources */ = {isa = PBXBuildFile; fileRef = DA1DC00E10E59AED005A103B /* Xcproj.m */; };
 		DA7A044C134F2EBF00F89E9B /* Protocols.m in Sources */ = {isa = PBXBuildFile; fileRef = DA7A044B134F2EBF00F89E9B /* Protocols.m */; };
-		DA7A0C9C1352F8B500F89E9B /* libddcli.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DA7A0C9B1352F8B500F89E9B /* libddcli.a */; };
 		DAFF25CC1303ECB100584E0E /* XCDUndocumentedChecker.m in Sources */ = {isa = PBXBuildFile; fileRef = DAFF25CB1303ECB100584E0E /* XCDUndocumentedChecker.m */; };
 /* End PBXBuildFile section */
 
@@ -45,6 +49,16 @@
 		08FB779EFE84155DC02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32A70AAB03705E1F00C91783 /* xcproj_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xcproj_Prefix.pch; path = Sources/xcproj_Prefix.pch; sourceTree = "<group>"; };
 		8DD76FA10486AA7600D96B5E /* xcproj */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = xcproj; sourceTree = BUILT_PRODUCTS_DIR; };
+		C269E98317B3DCCC0099A0C5 /* dd_getopt_long-fbsd.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "dd_getopt_long-fbsd.m"; sourceTree = "<group>"; };
+		C269E98417B3DCCC0099A0C5 /* DDCliApplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDCliApplication.h; sourceTree = "<group>"; };
+		C269E98517B3DCCC0099A0C5 /* DDCliApplication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDCliApplication.m; sourceTree = "<group>"; };
+		C269E98617B3DCCC0099A0C5 /* DDCliParseException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDCliParseException.h; sourceTree = "<group>"; };
+		C269E98717B3DCCC0099A0C5 /* DDCliParseException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDCliParseException.m; sourceTree = "<group>"; };
+		C269E98817B3DCCC0099A0C5 /* DDCliUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDCliUtil.h; sourceTree = "<group>"; };
+		C269E98917B3DCCC0099A0C5 /* DDCliUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDCliUtil.m; sourceTree = "<group>"; };
+		C269E98A17B3DCCC0099A0C5 /* DDCommandLineInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDCommandLineInterface.h; sourceTree = "<group>"; };
+		C269E98B17B3DCCC0099A0C5 /* DDGetoptLongParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDGetoptLongParser.h; sourceTree = "<group>"; };
+		C269E98C17B3DCCC0099A0C5 /* DDGetoptLongParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDGetoptLongParser.m; sourceTree = "<group>"; };
 		DA1DC00E10E59AED005A103B /* Xcproj.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = Xcproj.m; path = Sources/Xcproj.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		DA1DC00F10E59AED005A103B /* Xcproj.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Xcproj.h; path = Sources/Xcproj.h; sourceTree = "<group>"; };
 		DA7A018E134F015F00F89E9B /* PBXContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBXContainer.h; sourceTree = "<group>"; };
@@ -52,7 +66,6 @@
 		DA7A0218134F06FF00F89E9B /* PBXReference.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBXReference.h; sourceTree = "<group>"; };
 		DA7A044B134F2EBF00F89E9B /* Protocols.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Protocols.m; path = Sources/Protocols.m; sourceTree = "<group>"; };
 		DA7A08AD134F4C1600F89E9B /* PBXFileReference.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBXFileReference.h; sourceTree = "<group>"; };
-		DA7A0C9B1352F8B500F89E9B /* libddcli.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libddcli.a; path = Externals/ddcli/lib/libddcli.a; sourceTree = "<group>"; };
 		DA7A0D4F135304F000F89E9B /* XCBuildConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XCBuildConfiguration.h; sourceTree = "<group>"; };
 		DA8C9FFC1302AF93008B3560 /* PBXBuildPhase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBXBuildPhase.h; sourceTree = "<group>"; };
 		DA8C9FFD1302AF93008B3560 /* PBXProject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBXProject.h; sourceTree = "<group>"; };
@@ -71,7 +84,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				8DD76F9C0486AA7600D96B5E /* Foundation.framework in Frameworks */,
-				DA7A0C9C1352F8B500F89E9B /* libddcli.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -83,6 +95,7 @@
 			children = (
 				DAFF2AD913055EF500584E0E /* Info.plist */,
 				DA8C9FFB1302AF93008B3560 /* DevToolsCore */,
+				C269E98117B3DCCC0099A0C5 /* Externals */,
 				08FB7795FE84155DC02AAC07 /* Sources */,
 				08FB779DFE84155DC02AAC07 /* Frameworks */,
 				1AB674ADFE9D54B511CA2CBB /* Products */,
@@ -108,7 +121,6 @@
 			isa = PBXGroup;
 			children = (
 				08FB779EFE84155DC02AAC07 /* Foundation.framework */,
-				DA7A0C9B1352F8B500F89E9B /* libddcli.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -119,6 +131,31 @@
 				8DD76FA10486AA7600D96B5E /* xcproj */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		C269E98117B3DCCC0099A0C5 /* Externals */ = {
+			isa = PBXGroup;
+			children = (
+				C269E98217B3DCCC0099A0C5 /* ddcli */,
+			);
+			path = Externals;
+			sourceTree = "<group>";
+		};
+		C269E98217B3DCCC0099A0C5 /* ddcli */ = {
+			isa = PBXGroup;
+			children = (
+				C269E98317B3DCCC0099A0C5 /* dd_getopt_long-fbsd.m */,
+				C269E98417B3DCCC0099A0C5 /* DDCliApplication.h */,
+				C269E98517B3DCCC0099A0C5 /* DDCliApplication.m */,
+				C269E98617B3DCCC0099A0C5 /* DDCliParseException.h */,
+				C269E98717B3DCCC0099A0C5 /* DDCliParseException.m */,
+				C269E98817B3DCCC0099A0C5 /* DDCliUtil.h */,
+				C269E98917B3DCCC0099A0C5 /* DDCliUtil.m */,
+				C269E98A17B3DCCC0099A0C5 /* DDCommandLineInterface.h */,
+				C269E98B17B3DCCC0099A0C5 /* DDGetoptLongParser.h */,
+				C269E98C17B3DCCC0099A0C5 /* DDGetoptLongParser.m */,
+			);
+			path = ddcli;
 			sourceTree = "<group>";
 		};
 		DA8C9FFB1302AF93008B3560 /* DevToolsCore */ = {
@@ -166,6 +203,7 @@
 		08FB7793FE84155DC02AAC07 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastUpgradeCheck = 0500;
 				ORGANIZATIONNAME = "Cédric Luthi";
 			};
 			buildConfigurationList = 1DEB927808733DD40010E9CD /* Build configuration list for PBXProject "xcproj" */;
@@ -224,9 +262,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C269E98D17B3DCCC0099A0C5 /* dd_getopt_long-fbsd.m in Sources */,
 				8DD76F9A0486AA7600D96B5E /* main.m in Sources */,
 				DA1DC01010E59AED005A103B /* Xcproj.m in Sources */,
+				C269E98E17B3DCCC0099A0C5 /* DDCliApplication.m in Sources */,
+				C269E99017B3DCCC0099A0C5 /* DDCliUtil.m in Sources */,
+				C269E99117B3DCCC0099A0C5 /* DDGetoptLongParser.m in Sources */,
 				DAFF25CC1303ECB100584E0E /* XCDUndocumentedChecker.m in Sources */,
+				C269E98F17B3DCCC0099A0C5 /* DDCliParseException.m in Sources */,
 				DA7A044C134F2EBF00F89E9B /* Protocols.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -272,19 +315,17 @@
 		1DEB927908733DD40010E9CD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CURRENT_PROJECT_VERSION = 0.1;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_ENABLE_OBJC_GC = required;
+				"GCC_ENABLE_OBJC_GC[sdk=macosx10.9]" = unsupported;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = (
-					"\"$(SRCROOT)/Externals/ddcli/include\"",
-					"\"$(SRCROOT)\"",
-				);
-				LD_RUNPATH_SEARCH_PATHS = "${DEVELOPER_DIR}/../PlugIns/Xcode3Core.ideplugin/Contents/Frameworks ${DEVELOPER_DIR}/../SharedFrameworks/ ${DEVELOPER_DIR}/../Frameworks/";
-				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)/Externals/ddcli/lib\"";
+				HEADER_SEARCH_PATHS = "\"$(SRCROOT)\"";
+				LD_RUNPATH_SEARCH_PATHS = "${DEVELOPER_DIR}/../PlugIns/Xcode3Core.ideplugin/Contents/Frameworks/ ${DEVELOPER_DIR}/../SharedFrameworks/ ${DEVELOPER_DIR}/../Frameworks/";
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
 					"-sectcreate",
@@ -299,18 +340,16 @@
 		1DEB927A08733DD40010E9CD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CURRENT_PROJECT_VERSION = 0.1;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_ENABLE_OBJC_GC = required;
+				"GCC_ENABLE_OBJC_GC[sdk=macosx10.9]" = unsupported;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = (
-					"\"$(SRCROOT)/Externals/ddcli/include\"",
-					"\"$(SRCROOT)\"",
-				);
-				LD_RUNPATH_SEARCH_PATHS = "${DEVELOPER_DIR}/../PlugIns/Xcode3Core.ideplugin/Contents/Frameworks ${DEVELOPER_DIR}/../SharedFrameworks/ ${DEVELOPER_DIR}/../Frameworks/";
-				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)/Externals/ddcli/lib\"";
+				HEADER_SEARCH_PATHS = "\"$(SRCROOT)\"";
+				LD_RUNPATH_SEARCH_PATHS = "${DEVELOPER_DIR}/../PlugIns/Xcode3Core.ideplugin/Contents/Frameworks/ ${DEVELOPER_DIR}/../SharedFrameworks/ ${DEVELOPER_DIR}/../Frameworks/";
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				OTHER_LDFLAGS = (
 					"-sectcreate",
 					__TEXT,
