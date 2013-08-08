@@ -73,8 +73,6 @@
 				<string>PBXProject</string>
 				<key>-buildConfigurationList</key>
 				<string>XCConfigurationList</string>
-				<key>-expandedValueForString:forBuildParameters:</key>
-				<string>NSString</string>
 				<key>-name</key>
 				<string>NSString</string>
 				<key>-targetNamed:</key>
