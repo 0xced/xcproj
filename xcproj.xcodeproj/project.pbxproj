@@ -6,21 +6,6 @@
 	objectVersion = 46;
 	objects = {
 
-/* Begin PBXAggregateTarget section */
-		DA7A01DA134F033800F89E9B /* Run Scripts */ = {
-			isa = PBXAggregateTarget;
-			buildConfigurationList = DA7A01E3134F033F00F89E9B /* Build configuration list for PBXAggregateTarget "Run Scripts" */;
-			buildPhases = (
-				DA7A01D9134F033800F89E9B /* Extract Type Information */,
-				DA7A0444134F2DEB00F89E9B /* Embed Protocols */,
-			);
-			dependencies = (
-			);
-			name = "Run Scripts";
-			productName = "Run Scripts";
-		};
-/* End PBXAggregateTarget section */
-
 /* Begin PBXBuildFile section */
 		8DD76F9A0486AA7600D96B5E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 08FB7796FE84155DC02AAC07 /* main.m */; settings = {ATTRIBUTES = (); }; };
 		8DD76F9C0486AA7600D96B5E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08FB779EFE84155DC02AAC07 /* Foundation.framework */; };
@@ -30,19 +15,8 @@
 		C269E99017B3DCCC0099A0C5 /* DDCliUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = C269E98917B3DCCC0099A0C5 /* DDCliUtil.m */; };
 		C269E99117B3DCCC0099A0C5 /* DDGetoptLongParser.m in Sources */ = {isa = PBXBuildFile; fileRef = C269E98C17B3DCCC0099A0C5 /* DDGetoptLongParser.m */; };
 		DA1DC01010E59AED005A103B /* Xcproj.m in Sources */ = {isa = PBXBuildFile; fileRef = DA1DC00E10E59AED005A103B /* Xcproj.m */; };
-		DA7A044C134F2EBF00F89E9B /* Protocols.m in Sources */ = {isa = PBXBuildFile; fileRef = DA7A044B134F2EBF00F89E9B /* Protocols.m */; };
 		DAFF25CC1303ECB100584E0E /* XCDUndocumentedChecker.m in Sources */ = {isa = PBXBuildFile; fileRef = DAFF25CB1303ECB100584E0E /* XCDUndocumentedChecker.m */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		DA7A01E5134F037300F89E9B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = DA7A01DA134F033800F89E9B;
-			remoteInfo = "Run Scripts";
-		};
-/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		08FB7796FE84155DC02AAC07 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Sources/main.m; sourceTree = "<group>"; };
@@ -64,7 +38,6 @@
 		DA7A018E134F015F00F89E9B /* PBXContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBXContainer.h; sourceTree = "<group>"; };
 		DA7A018F134F01DE00F89E9B /* PBXGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBXGroup.h; sourceTree = "<group>"; };
 		DA7A0218134F06FF00F89E9B /* PBXReference.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBXReference.h; sourceTree = "<group>"; };
-		DA7A044B134F2EBF00F89E9B /* Protocols.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Protocols.m; path = Sources/Protocols.m; sourceTree = "<group>"; };
 		DA7A08AD134F4C1600F89E9B /* PBXFileReference.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBXFileReference.h; sourceTree = "<group>"; };
 		DA7A0D4F135304F000F89E9B /* XCBuildConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XCBuildConfiguration.h; sourceTree = "<group>"; };
 		DA8C9FFC1302AF93008B3560 /* PBXBuildPhase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBXBuildPhase.h; sourceTree = "<group>"; };
@@ -108,7 +81,6 @@
 			children = (
 				32A70AAB03705E1F00C91783 /* xcproj_Prefix.pch */,
 				08FB7796FE84155DC02AAC07 /* main.m */,
-				DA7A044B134F2EBF00F89E9B /* Protocols.m */,
 				DA1DC00F10E59AED005A103B /* Xcproj.h */,
 				DA1DC00E10E59AED005A103B /* Xcproj.m */,
 				DAFF25CA1303ECB100584E0E /* XCDUndocumentedChecker.h */,
@@ -189,7 +161,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				DA7A01E6134F037300F89E9B /* PBXTargetDependency */,
 			);
 			name = xcproj;
 			productInstallPath = "$(HOME)/bin";
@@ -221,41 +192,9 @@
 			projectRoot = "";
 			targets = (
 				8DD76F960486AA7600D96B5E /* xcproj */,
-				DA7A01DA134F033800F89E9B /* Run Scripts */,
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		DA7A01D9134F033800F89E9B /* Extract Type Information */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Extract Type Information";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "export PATH=\"/opt/local/bin:$PATH\"\n./Scripts/extract_type_information.py Info.plist DevToolsCore/*";
-		};
-		DA7A0444134F2DEB00F89E9B /* Embed Protocols */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Embed Protocols";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "export PATH=\"/opt/local/bin:$PATH\"\n./Scripts/embed_protocols.py Info.plist Sources/Protocols.m";
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		8DD76F990486AA7600D96B5E /* Sources */ = {
@@ -270,19 +209,10 @@
 				C269E99117B3DCCC0099A0C5 /* DDGetoptLongParser.m in Sources */,
 				DAFF25CC1303ECB100584E0E /* XCDUndocumentedChecker.m in Sources */,
 				C269E98F17B3DCCC0099A0C5 /* DDCliParseException.m in Sources */,
-				DA7A044C134F2EBF00F89E9B /* Protocols.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		DA7A01E6134F037300F89E9B /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = DA7A01DA134F033800F89E9B /* Run Scripts */;
-			targetProxy = DA7A01E5134F037300F89E9B /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		1DEB927508733DD40010E9CD /* Debug */ = {
@@ -360,22 +290,6 @@
 			};
 			name = Release;
 		};
-		DA7A01DB134F033800F89E9B /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				PRODUCT_NAME = "Run Scripts";
-				SDKROOT = macosx;
-			};
-			name = Debug;
-		};
-		DA7A01DC134F033800F89E9B /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				PRODUCT_NAME = "Run Scripts";
-				SDKROOT = macosx;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -393,15 +307,6 @@
 			buildConfigurations = (
 				1DEB927908733DD40010E9CD /* Debug */,
 				1DEB927A08733DD40010E9CD /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		DA7A01E3134F033F00F89E9B /* Build configuration list for PBXAggregateTarget "Run Scripts" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				DA7A01DB134F033800F89E9B /* Debug */,
-				DA7A01DC134F033800F89E9B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

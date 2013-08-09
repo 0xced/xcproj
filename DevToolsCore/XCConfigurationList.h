@@ -1,7 +1,8 @@
 #import "PBXFileReference.h"
+#import "XCBuildConfiguration.h"
 
 @protocol XCConfigurationList <NSObject>
 
-- (NSArray *) buildConfigurations; // XCBuildConfiguration
+- (NSArray<XCBuildConfiguration> *) buildConfigurations;
 
 @end

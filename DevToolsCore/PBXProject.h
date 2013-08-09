@@ -6,7 +6,7 @@
 + (BOOL) isProjectWrapperExtension:(NSString *)extension;
 + (id<PBXProject>) projectWithFile:(NSString *)projectAbsolutePath;
 
-- (NSArray *) targets; // PBXTarget
+- (NSArray<PBXTarget> *) targets;
 - (id<PBXTarget>) targetNamed:(NSString *)targetName;
 
 - (NSString *) name;

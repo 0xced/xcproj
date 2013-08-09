@@ -87,11 +87,20 @@ static Class XCBuildConfiguration = Nil;
 	}), "@16@0:8");
 	
 	BOOL isSafe = YES;
-	NSDictionary *classInfo = [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"XCDUndocumentedChecker"] objectForKey:@"Classes"];
-	for (NSString *protocolName in [classInfo allKeys])
+	NSArray *protocols = @[@protocol(PBXBuildFile),
+	                       @protocol(PBXBuildPhase),
+	                       @protocol(PBXContainer),
+	                       @protocol(PBXFileReference),
+	                       @protocol(PBXGroup),
+	                       @protocol(PBXProject),
+	                       @protocol(PBXReference),
+	                       @protocol(PBXTarget),
+	                       @protocol(XCBuildConfiguration),
+	                       @protocol(XCConfigurationList)];
+	
+	for (Protocol *protocol in protocols)
 	{
 		NSError *classError = nil;
-		Protocol *protocol = NSProtocolFromString(protocolName);
 		Class class = XCDClassFromProtocol(protocol, &classError);
 		if (class)
 			[self setValue:class forKey:[NSString stringWithCString:protocol_getName(protocol) encoding:NSUTF8StringEncoding]];

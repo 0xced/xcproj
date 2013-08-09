@@ -4,7 +4,7 @@
 
 + (id<PBXBuildPhase>) buildPhase;
 
-- (NSArray *) buildFiles; // PBXBuildFile
+- (NSArray<PBXBuildFile> *) buildFiles;
 
 - (BOOL) addReference:(id<PBXFileReference>)reference;
 - (BOOL) containsFileReferenceIdenticalTo:(id<PBXFileReference>)reference;

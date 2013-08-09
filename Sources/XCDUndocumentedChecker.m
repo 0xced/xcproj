@@ -10,6 +10,7 @@
 
 #import <objc/message.h>
 #import <objc/runtime.h>
+extern const char *_protocol_getMethodTypeEncoding(Protocol *p, SEL sel, BOOL isRequiredMethod, BOOL isInstanceMethod);
 
 NSString *const XCDUndocumentedCheckerErrorDomain             = @"XCDUndocumentedChecker";
 NSString *const XCDUndocumentedCheckerMismatchingHierarchyKey = @"MismatchingHierarchy";
@@ -20,6 +21,19 @@ NSString *const XCDUndocumentedCheckerMethodNameKey           = @"MethodName";
 NSString *const XCDUndocumentedCheckerProtocolSignatureKey    = @"ProtocolSignature";
 NSString *const XCDUndocumentedCheckerClassSignatureKey       = @"ClassSignature";
 
+/*
+{ className -> { methodSignature -> returnInfo } }
+E.g.
+{
+  "PBXBuildPhase" ->
+  {
+    "+buildPhase" -> "PBXBuildPhase";
+    "-buildFiles" -> "NSArray.PBXBuildFile";
+  }
+}
+*/
+static NSMutableDictionary *classInfo = nil;
+
 static void XCDUndocumentedChecker_forwardInvocation(id self, SEL _cmd, NSInvocation *invocation)
 {
 	NSString *returnClassName = nil;
@@ -27,7 +41,6 @@ static void XCDUndocumentedChecker_forwardInvocation(id self, SEL _cmd, NSInvoca
 	Class class = object_getClass([invocation target]);
 	while (!returnClassName && class)
 	{
-		NSDictionary *classInfo = [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"XCDUndocumentedChecker"] objectForKey:@"Classes"];
 		NSDictionary *methodInfo = [classInfo objectForKey:NSStringFromClass(class)];
 		NSString *returnInfo = [methodInfo objectForKey:[class_isMetaClass(class) ? @"+" : @"-" stringByAppendingString:NSStringFromSelector([invocation selector])]];
 		NSArray *returnComponents = [returnInfo componentsSeparatedByString:@"."];
@@ -84,6 +97,11 @@ static void XCDUndocumentedChecker_forwardInvocation(id self, SEL _cmd, NSInvoca
 
 Class XCDClassFromProtocol(Protocol *protocol, NSError **error)
 {
+	static dispatch_once_t onceToken;
+	dispatch_once(&onceToken, ^{
+		classInfo = [NSMutableDictionary new];
+	});
+	
 	BOOL hasError = NO;
 	if (error)
 		*error = nil;
@@ -145,8 +163,7 @@ Class XCDClassFromProtocol(Protocol *protocol, NSError **error)
 	NSMutableArray *methodsNotFound = [NSMutableArray array];
 	NSMutableArray *methodsMismatch = [NSMutableArray array];
 	
-	NSDictionary *classInfo = [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"XCDUndocumentedChecker"] objectForKey:@"Classes"];
-	NSDictionary *methodInfo = [classInfo objectForKey:className];
+	classInfo[className] = [NSMutableDictionary dictionary];
 	
 	for (unsigned methodKind = 0; methodKind <= 1; methodKind++)
 	{
@@ -171,7 +188,8 @@ Class XCDClassFromProtocol(Protocol *protocol, NSError **error)
 		
 		for (unsigned int i = 0; i < protocolMethodCount; i++)
 		{
-			NSString *methodName = [isInstanceMethod ? @"-" : @"+" stringByAppendingFormat:@"%s", sel_getName(protocolMethods[i].name)];
+			SEL selector = protocolMethods[i].name;
+			NSString *methodName = [isInstanceMethod ? @"-" : @"+" stringByAppendingFormat:@"%s", sel_getName(selector)];
 			NSString *methodSignature = [methodSignatures objectForKey:methodName];
 			NSString *expectedSignature = [NSString stringWithUTF8String:protocolMethods[i].types];
 			BOOL signatureMatch = [expectedSignature isEqualToString:methodSignature];
@@ -197,10 +215,18 @@ Class XCDClassFromProtocol(Protocol *protocol, NSError **error)
 				}
 			}
 			
-			NSString *returnInfo = [methodInfo objectForKey:methodName];
-			NSString *returnClassName = [[returnInfo componentsSeparatedByString:@"."] objectAtIndex:0];
+			NSString *typeEncoding = @(_protocol_getMethodTypeEncoding(protocol, selector, YES, isInstanceMethod) ?: "");
+			if ([typeEncoding hasPrefix:@"@\""])
+			{
+				// Parses extended type encoding, e.g. `@"NSString"16@0:8`, `@"<PBXProject>"24@0:8@"NSString"16`, `@"NSArray<PBXBuildFile>"16@0:8`
+				NSString *returnInfo = [typeEncoding componentsSeparatedByString:@"\""][1];
+				returnInfo = [returnInfo stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"<>"]];
+				returnInfo = [returnInfo stringByReplacingOccurrencesOfString:@"<" withString:@"."];
+				classInfo[className][methodName] = returnInfo;
+			}
+			
 			methodName = [methodName substringFromIndex:1];
-			if (!returnClassName)
+			if (typeEncoding.length == 0)
 			{
 				fprintf(stderr, "WARNING: No return type information found for %c[%s %s]\n", isInstanceMethod ? '-' : '+', [className UTF8String], [methodName UTF8String]);
 			}
