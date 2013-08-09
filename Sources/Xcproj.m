@@ -13,13 +13,6 @@
 #import <objc/runtime.h>
 #import "XCDUndocumentedChecker.h"
 
-
-@interface Xcproj ()
-- (void) printUsage:(int)exitCode;
-- (NSArray *) allowedActions;
-@end
-
-
 @implementation Xcproj
 
 static Class PBXGroup = Nil;
