@@ -242,7 +242,24 @@ static Class XCBuildConfiguration = Nil;
 
 - (void) printUsage:(int)exitCode
 {
-	ddprintf(@"Usage: %@ ...\n", [[NSBundle mainBundle] objectForInfoDictionaryKey:(id)kCFBundleExecutableKey]);
+	ddprintf(@"Usage: %@ [options] <action> [arguments]\n", [[NSBundle mainBundle] objectForInfoDictionaryKey:(id)kCFBundleExecutableKey]);
+	ddprintf(@"\nOptions:\n"
+	         @" -h, --help        This help text\n"
+	         @" -p, --project     Path to an Xcode project (*.xcodeproj file). If not specified, the project in the current working directory is used \n"
+	         @" -t, --target      Name of the target. If not specified, the first target is used\n"
+	         @"\nActions:\n"
+	         @" * list-targets\n"
+	         @"     List all the targets in the project\n\n"
+	         @" * list-headers [All|Public|Project|Private] (default=Public)\n"
+	         @"     List headers from the `Copy Headers` build phase\n\n"
+	         @" * read-build-setting <build_setting>\n"
+	         @"     Evaluate a build setting and print its value. If the build setting does not exist, nothing is printed\n\n"
+	         @" * add-xcconfig <xcconfig_path>\n"
+	         @"     Add an xcconfig file to the project and base all configurations on it\n\n"
+	         @" * add-resources-bundle <bundle_path>\n"
+	         @"     Add a bundle to the project and in the `Copy Bundle Resources` build phase\n\n"
+	         @" * touch\n"
+	         @"     Rewrite the project file\n");
 	exit(exitCode);
 }
 
