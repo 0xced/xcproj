@@ -66,9 +66,19 @@ static Class XCBuildConfiguration = Nil;
 	void(*IDEInitialize)(NSUInteger initializationOptions, NSError **error) = dlsym(RTLD_DEFAULT, "IDEInitialize");
 	if (IDEInitialize)
 	{
+		// Temporary redirect stderr to /dev/null in order not to print plugin loading errors
+		// Adapted from http://stackoverflow.com/questions/4832603/how-could-i-temporary-redirect-stdout-to-a-file-in-a-c-program/4832902#4832902
+		fflush(stderr);
+		int saved_stderr = dup(STDERR_FILENO);
+		int dev_null = open("/dev/null", O_WRONLY);
+		dup2(dev_null, STDERR_FILENO);
+		close(dev_null);
 		NSError *error = nil;
 		// -[Xcode3CommandLineBuildTool run] from Xcode3Core.ideplugin calls IDEInitialize(1, &error)
 		IDEInitialize(1, &error);
+		fflush(stderr);
+		dup2(saved_stderr, STDERR_FILENO);
+		close(saved_stderr);
 		if (error)
 		{
 			ddfprintf(stderr, @"IDEInitialize error: %@\n", error);
