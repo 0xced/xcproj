@@ -117,7 +117,7 @@ static Class XCBuildConfiguration = Nil;
 		else
 		{
 			isSafe = NO;
-			ddfprintf(stdout, @"%@\n%@\n", [classError localizedDescription], [classError userInfo]);
+			ddfprintf(stderr, @"%@\n%@\n", [classError localizedDescription], [classError userInfo]);
 		}
 	}
 	
