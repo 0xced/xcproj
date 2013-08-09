@@ -172,6 +172,9 @@ static Class XCBuildConfiguration = Nil;
 	if (help)
 		[self printUsage:EX_OK];
 	
+	if ([arguments count] < 1)
+		[self printUsage:EX_USAGE];
+	
 	NSString *currentDirectoryPath = [[NSFileManager defaultManager] currentDirectoryPath];
 	
 	if (!project)
@@ -212,30 +215,22 @@ static Class XCBuildConfiguration = Nil;
 			@throw [DDCliParseException parseExceptionWithReason:[NSString stringWithFormat:@"The project %@ does not contain any target.", [project name]] exitCode:EX_DATAERR];
 	}
 	
-	if ([arguments count] < 1)
-	{
+	NSString *action = [arguments objectAtIndex:0];
+	if (![[self allowedActions] containsObject:action])
 		[self printUsage:EX_USAGE];
-		return EX_USAGE;
-	}
+	
+	NSArray *actionArguments = nil;
+	if ([arguments count] >= 2)
+		actionArguments = [arguments subarrayWithRange:NSMakeRange(1, [arguments count] - 1)];
 	else
-	{
-		NSString *action = [arguments objectAtIndex:0];
-		if (![[self allowedActions] containsObject:action])
-			[self printUsage:EX_USAGE];
-		
-		NSArray *actionArguments = nil;
-		if ([arguments count] >= 2)
-			actionArguments = [arguments subarrayWithRange:NSMakeRange(1, [arguments count] - 1)];
-		else
-			actionArguments = [NSArray array];
-		
-		NSArray *actionParts = [[action componentsSeparatedByString:@"-"] valueForKeyPath:@"capitalizedString"];
-		NSMutableString *selectorString = [NSMutableString stringWithString:[actionParts componentsJoinedByString:@""]];
-		[selectorString replaceCharactersInRange:NSMakeRange(0, 1) withString:[[selectorString substringToIndex:1] lowercaseString]];
-		[selectorString appendString:@":"];
-		SEL actionSelector = NSSelectorFromString(selectorString);
-		return (int)[self performSelector:actionSelector withObject:actionArguments];
-	}
+		actionArguments = [NSArray array];
+	
+	NSArray *actionParts = [[action componentsSeparatedByString:@"-"] valueForKeyPath:@"capitalizedString"];
+	NSMutableString *selectorString = [NSMutableString stringWithString:[actionParts componentsJoinedByString:@""]];
+	[selectorString replaceCharactersInRange:NSMakeRange(0, 1) withString:[[selectorString substringToIndex:1] lowercaseString]];
+	[selectorString appendString:@":"];
+	SEL actionSelector = NSSelectorFromString(selectorString);
+	return (int)[self performSelector:actionSelector withObject:actionArguments];
 }
 
 // MARK: - Actions
