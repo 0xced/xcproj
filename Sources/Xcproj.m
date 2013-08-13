@@ -14,6 +14,14 @@
 #import "XCDUndocumentedChecker.h"
 
 @implementation Xcproj
+{
+	// Options
+	id<PBXProject> _project;
+	NSString *_targetName;
+	BOOL _help;
+	
+	id<PBXTarget> _target;
+}
 
 static Class PBXGroup = Nil;
 static Class PBXProject = Nil;
@@ -145,24 +153,24 @@ static Class XCBuildConfiguration = Nil;
 	if (![[NSFileManager defaultManager] fileExistsAtPath:projectPath])
 		@throw [DDCliParseException parseExceptionWithReason:[NSString stringWithFormat:@"The project %@ does not exist in this directory.", projectName] exitCode:EX_NOINPUT];
 	
-	[project release];
-	project = [[PBXProject projectWithFile:projectPath] retain];
+	[_project release];
+	_project = [[PBXProject projectWithFile:projectPath] retain];
 }
 
-- (void) setTarget:(NSString *)aTargetName
+- (void) setTarget:(NSString *)targetName
 {
-	if (targetName == aTargetName)
+	if (_targetName == targetName)
 		return;
 	
-	[targetName release];
-	targetName = [aTargetName retain];
+	[_targetName release];
+	_targetName = [targetName retain];
 }
 
 // MARK: - App run
 
 - (int) application:(DDCliApplication *)app runWithArguments:(NSArray *)arguments
 {
-	if (help)
+	if (_help)
 		[self printUsage:EX_OK];
 	
 	if ([arguments count] < 1)
@@ -170,13 +178,13 @@ static Class XCBuildConfiguration = Nil;
 	
 	NSString *currentDirectoryPath = [[NSFileManager defaultManager] currentDirectoryPath];
 	
-	if (!project)
+	if (!_project)
 	{
 		for (NSString *fileName in [[NSFileManager defaultManager] contentsOfDirectoryAtPath:currentDirectoryPath error:NULL])
 		{
 			if ([PBXProject isProjectWrapperExtension:[fileName pathExtension]])
 			{
-				if (!project)
+				if (!_project)
 					[self setProject:fileName];
 				else
 				{
@@ -187,25 +195,25 @@ static Class XCBuildConfiguration = Nil;
 		}
 	}
 	
-	if (!project)
+	if (!_project)
 	{
 		ddfprintf(stderr, @"%@: The directory %@ does not contain an Xcode project.\n", app, currentDirectoryPath);
 		return EX_USAGE;
 	}
 	
-	if (targetName)
+	if (_targetName)
 	{
-		target = [[project targetNamed:targetName] retain];
-		if (!target)
-			@throw [DDCliParseException parseExceptionWithReason:[NSString stringWithFormat:@"The target %@ does not exist in this project.", targetName] exitCode:EX_DATAERR];
+		_target = [[_project targetNamed:_targetName] retain];
+		if (!_target)
+			@throw [DDCliParseException parseExceptionWithReason:[NSString stringWithFormat:@"The target %@ does not exist in this project.", _targetName] exitCode:EX_DATAERR];
 	}
 	else
 	{
-		NSArray *targets = [project targets];
+		NSArray *targets = [_project targets];
 		if ([targets count] > 0)
-			target = [[targets objectAtIndex:0] retain];
-		if (!target)
-			@throw [DDCliParseException parseExceptionWithReason:[NSString stringWithFormat:@"The project %@ does not contain any target.", [project name]] exitCode:EX_DATAERR];
+			_target = [[targets objectAtIndex:0] retain];
+		if (!_target)
+			@throw [DDCliParseException parseExceptionWithReason:[NSString stringWithFormat:@"The project %@ does not contain any target.", [_project name]] exitCode:EX_DATAERR];
 	}
 	
 	NSString *action = [arguments objectAtIndex:0];
@@ -261,10 +269,10 @@ static Class XCBuildConfiguration = Nil;
 	if ([arguments count] > 0)
 		[self printUsage:EX_USAGE];
 	
-	for (id<PBXTarget> aTarget in [project targets])
-		ddprintf(@"%@\n", [aTarget name]);
+	for (id<PBXTarget> target in [_project targets])
+		ddprintf(@"%@\n", [target name]);
 	
-	return [[project targets] count] > 0 ? EX_OK : EX_SOFTWARE;
+	return [[_project targets] count] > 0 ? EX_OK : EX_SOFTWARE;
 }
 
 - (int) listHeaders:(NSArray *)arguments
@@ -280,7 +288,7 @@ static Class XCBuildConfiguration = Nil;
 	if (![allowedValues containsObject:headerRole])
 		@throw [DDCliParseException parseExceptionWithReason:[NSString stringWithFormat:@"list-headers argument must be one of {%@}.", [allowedValues componentsJoinedByString:@", "]] exitCode:EX_USAGE];
 	
-	id<PBXBuildPhase> headerBuildPhase = [target defaultHeaderBuildPhase];
+	id<PBXBuildPhase> headerBuildPhase = [_target defaultHeaderBuildPhase];
 	for (id<PBXBuildFile> buildFile in [headerBuildPhase buildFiles])
 	{
 		NSArray *attributes = [buildFile attributes];
@@ -298,7 +306,7 @@ static Class XCBuildConfiguration = Nil;
 	
 	NSString *buildSetting = [arguments objectAtIndex:0];
 	NSString *settingString = [NSString stringWithFormat:@"$(%@)", buildSetting];
-	NSString *expandedString = [target expandedValueForString:settingString forBuildParameters:nil];
+	NSString *expandedString = [_target expandedValueForString:settingString forBuildParameters:nil];
 	if ([expandedString length] > 0)
 		ddprintf(@"%@\n", expandedString);
 	
@@ -307,10 +315,10 @@ static Class XCBuildConfiguration = Nil;
 
 - (int) writeProject
 {
-	BOOL written = [project writeToFileSystemProjectFile:YES userFile:NO checkNeedsRevert:NO];
+	BOOL written = [_project writeToFileSystemProjectFile:YES userFile:NO checkNeedsRevert:NO];
 	if (!written)
 	{
-		ddfprintf(stderr, @"Could not write '%@' to file system.", project);
+		ddfprintf(stderr, @"Could not write '%@' to file system.", _project);
 		return EX_IOERR;
 	}
 	return EX_OK;
@@ -332,7 +340,7 @@ static Class XCBuildConfiguration = Nil;
 	if (![XCBuildConfiguration fileReference:xcconfig isValidBaseConfigurationFile:&error])
 		@throw [DDCliParseException parseExceptionWithReason:[NSString stringWithFormat:@"The configuration file %@ is not valid. %@", xcconfigPath, [error localizedDescription]] exitCode:EX_USAGE];
 	
-	id<XCConfigurationList> buildConfigurationList = [project buildConfigurationList];
+	id<XCConfigurationList> buildConfigurationList = [_project buildConfigurationList];
 	NSArray *buildConfigurations = [buildConfigurationList buildConfigurations];
 	for (id<XCBuildConfiguration> configuration in buildConfigurations)
 		[configuration setBaseConfigurationReference:xcconfig];
@@ -410,7 +418,7 @@ static Class XCBuildConfiguration = Nil;
 
 - (id<PBXGroup>) groupNamed:(NSString *)groupName parentGroup:(id<PBXGroup> *) parentGroup
 {
-	return [self groupNamed:groupName inGroup:[project rootGroup] parentGroup:parentGroup];
+	return [self groupNamed:groupName inGroup:[_project rootGroup] parentGroup:parentGroup];
 }
 
 - (void) addGroupNamed:(NSString *)groupName beforeGroupNamed:(NSString *)otherGroupName
@@ -449,10 +457,10 @@ static Class XCBuildConfiguration = Nil;
 	if (![filePath hasPrefix:@"/"])
 		filePath = [[[NSFileManager defaultManager] currentDirectoryPath] stringByAppendingPathComponent:filePath];
 	
-	id<PBXFileReference> fileReference = [project fileReferenceForPath:filePath];
+	id<PBXFileReference> fileReference = [_project fileReferenceForPath:filePath];
 	if (!fileReference)
 	{
-		NSArray *references = [[project rootGroup] addFiles:[NSArray arrayWithObject:filePath] copy:NO createGroupsRecursively:NO];
+		NSArray *references = [[_project rootGroup] addFiles:[NSArray arrayWithObject:filePath] copy:NO createGroupsRecursively:NO];
 		fileReference = [references lastObject];
 	}
 	return fileReference;
@@ -462,7 +470,7 @@ static Class XCBuildConfiguration = Nil;
 {
 	id<PBXGroup> group = [self groupNamed:groupName parentGroup:NULL];
 	if (!group)
-		group = [project rootGroup];
+		group = [_project rootGroup];
 	
 	if ([group containsItem:fileReference])
 		return YES;
@@ -475,13 +483,13 @@ static Class XCBuildConfiguration = Nil;
 - (BOOL) addFileReference:(id<PBXFileReference>)fileReference toBuildPhase:(NSString *)buildPhaseName
 {
 	Class buildPhaseClass = NSClassFromString([NSString stringWithFormat:@"PBX%@BuildPhase", buildPhaseName]);
-	id<PBXBuildPhase> buildPhase = [target buildPhaseOfClass:buildPhaseClass];
+	id<PBXBuildPhase> buildPhase = [_target buildPhaseOfClass:buildPhaseClass];
 	if (!buildPhase)
 	{
 		if ([buildPhaseClass respondsToSelector:@selector(buildPhase)])
 		{
 			buildPhase = [buildPhaseClass performSelector:@selector(buildPhase)];
-			[target addBuildPhase:buildPhase];
+			[_target addBuildPhase:buildPhase];
 		}
 	}
 	

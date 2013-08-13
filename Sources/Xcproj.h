@@ -11,14 +11,6 @@
 #import <DevToolsCore/DevToolsCore.h>
 
 @interface Xcproj : NSObject <DDCliApplicationDelegate>
-{
-	// Options
-	id<PBXProject> project;
-	NSString *targetName;
-	BOOL help;
-	
-	id<PBXTarget> target;
-}
 
 - (void) addGroupNamed:(NSString *)groupName beforeGroupNamed:(NSString *)otherGroupName;
 - (void) addGroupNamed:(NSString *)groupName inGroupNamed:(NSString *)otherGroupName;
