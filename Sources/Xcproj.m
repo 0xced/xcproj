@@ -18,7 +18,6 @@
 	// Options
 	id<PBXProject> _project;
 	NSString *_targetName;
-	BOOL _help;
 	
 	id<PBXTarget> _target;
 }
@@ -34,9 +33,10 @@ static Class XCBuildConfiguration = Nil;
 + (void) setXCBuildConfiguration:(Class)class { XCBuildConfiguration = class; }
 + (void) setValue:(id)value forUndefinedKey:(NSString *)key { /* ignore */ }
 
-+ (void) initialize
++ (void) initializeXcproj
 {
-	if (self != [Xcproj class])
+	static BOOL initialized = NO;
+	if (initialized)
 		return;
 	
 	NSString *rpath = nil;
@@ -124,6 +124,8 @@ static Class XCBuildConfiguration = Nil;
 	
 	if (!isSafe)
 		exit(EX_SOFTWARE);
+	
+	initialized = YES;
 }
 
 // MARK: - Options
@@ -143,6 +145,8 @@ static Class XCBuildConfiguration = Nil;
 
 - (void) setProject:(NSString *)projectName
 {
+	[self.class initializeXcproj];
+	
 	if (![PBXProject isProjectWrapperExtension:[projectName pathExtension]])
 		@throw [DDCliParseException parseExceptionWithReason:[NSString stringWithFormat:@"The project name %@ does not have a valid extension.", projectName] exitCode:EX_USAGE];
 	
@@ -166,15 +170,20 @@ static Class XCBuildConfiguration = Nil;
 	_targetName = [targetName retain];
 }
 
+- (void) setHelp:(NSNumber *)help
+{
+	if ([help boolValue])
+		[self printUsage:EX_OK];
+}
+
 // MARK: - App run
 
 - (int) application:(DDCliApplication *)app runWithArguments:(NSArray *)arguments
 {
-	if (_help)
-		[self printUsage:EX_OK];
-	
 	if ([arguments count] < 1)
 		[self printUsage:EX_USAGE];
+	
+	[self.class initializeXcproj];
 	
 	NSString *currentDirectoryPath = [[NSFileManager defaultManager] currentDirectoryPath];
 	
