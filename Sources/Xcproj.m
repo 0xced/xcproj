@@ -138,6 +138,7 @@ static Class XCBuildConfiguration = Nil;
 		{@"project",   'p',   DDGetoptRequiredArgument},
 		{@"target",    't',   DDGetoptRequiredArgument},
 		{@"help",      'h',   DDGetoptNoArgument},
+		{@"version",   'V',   DDGetoptNoArgument},
 		{nil,           0,    0},
 	};
 	[optionsParser addOptionsFromTable:optionTable];
@@ -174,6 +175,15 @@ static Class XCBuildConfiguration = Nil;
 {
 	if ([help boolValue])
 		[self printUsage:EX_OK];
+}
+
+- (void) setVersion:(NSNumber *)version
+{
+	if ([version boolValue])
+	{
+		ddprintf(@"%@\n", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"]);
+		exit(EX_OK);
+	}
 }
 
 // MARK: - App run
@@ -254,7 +264,8 @@ static Class XCBuildConfiguration = Nil;
 {
 	ddprintf(@"Usage: %@ [options] <action> [arguments]\n", [[NSBundle mainBundle] objectForInfoDictionaryKey:(id)kCFBundleExecutableKey]);
 	ddprintf(@"\nOptions:\n"
-	         @" -h, --help        This help text\n"
+	         @" -h, --help        Show this help text and exit\n"
+	         @" -V, --version     Show program version and exit\n"
 	         @" -p, --project     Path to an Xcode project (*.xcodeproj file). If not specified, the project in the current working directory is used \n"
 	         @" -t, --target      Name of the target. If not specified, the first target is used\n"
 	         @"\nActions:\n"
