@@ -57,7 +57,7 @@ The DevToolsCore framework failed to load: DevToolsCore.framework not found
 ```
 To fix this problem, just rebuild **xcproj**.
 
-* When transitioning from Xcode 4 to Xcode 5, you will get this error:
+* When transitioning from Xcode 4 to Xcode 5, you will get this error: 
 * ```
 The DevToolsCore framework failed to load: Error Domain=NSCocoaErrorDomain Code=3586 "The bundle “Xcode Core Framework” couldn’t be loaded because it isn’t compatible with the current application." (dlopen_preflight(/Applications/Xcode.app/Contents/PlugIns/Xcode3Core.ideplugin/Contents/Frameworks/DevToolsCore.framework/DevToolsCore): no suitable image found.  Did find:
 	/Applications/Xcode.app/Contents/PlugIns/Xcode3Core.ideplugin/Contents/Frameworks/DevToolsCore.framework/DevToolsCore: GC capability mismatch) UserInfo=0x400323aa0 {NSLocalizedFailureReason=The bundle isn’t compatible with this application., NSLocalizedRecoverySuggestion=Try installing a newer version of the bundle., NSFilePath=/Applications/Xcode.app/Contents/PlugIns/Xcode3Core.ideplugin/Contents/Frameworks/DevToolsCore.framework/DevToolsCore, NSDebugDescription=dlopen_preflight(/Applications/Xcode.app/Contents/PlugIns/Xcode3Core.ideplugin/Contents/Frameworks/DevToolsCore.framework/DevToolsCore): no suitable image found.  Did find:
