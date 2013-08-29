@@ -49,9 +49,22 @@ Actions:
 
 ## Limitations
 
-* **xcproj** relies on the DevToolsCore private framework. Although great care has been taken, it might stop working anytime.
+* **xcproj** relies on the DevToolsCore private framework. Although great care has been taken, it might stop working when you upgrage Xcode.
 
-* The **xcproj** binary is bound to the Xcode version that compiled it. If you delete, move or rename the Xcode version that compiled the binary, **xcproj** will fail with the following error: `The DevToolsCore framework failed to load: DevToolsCore.framework not found`
+* The **xcproj** binary is bound to the Xcode version that compiled it. If you delete, move or rename the Xcode version that compiled the binary, **xcproj** will fail with the following error: 
+* ```
+The DevToolsCore framework failed to load: DevToolsCore.framework not found
+```
+To fix this problem, just rebuild **xcproj**.
+
+* When transitioning from Xcode 4 to Xcode 5, you will get this error:
+* ```
+The DevToolsCore framework failed to load: Error Domain=NSCocoaErrorDomain Code=3586 "The bundle “Xcode Core Framework” couldn’t be loaded because it isn’t compatible with the current application." (dlopen_preflight(/Applications/Xcode.app/Contents/PlugIns/Xcode3Core.ideplugin/Contents/Frameworks/DevToolsCore.framework/DevToolsCore): no suitable image found.  Did find:
+	/Applications/Xcode.app/Contents/PlugIns/Xcode3Core.ideplugin/Contents/Frameworks/DevToolsCore.framework/DevToolsCore: GC capability mismatch) UserInfo=0x400323aa0 {NSLocalizedFailureReason=The bundle isn’t compatible with this application., NSLocalizedRecoverySuggestion=Try installing a newer version of the bundle., NSFilePath=/Applications/Xcode.app/Contents/PlugIns/Xcode3Core.ideplugin/Contents/Frameworks/DevToolsCore.framework/DevToolsCore, NSDebugDescription=dlopen_preflight(/Applications/Xcode.app/Contents/PlugIns/Xcode3Core.ideplugin/Contents/Frameworks/DevToolsCore.framework/DevToolsCore): no suitable image found.  Did find:
+	/Applications/Xcode.app/Contents/PlugIns/Xcode3Core.ideplugin/Contents/Frameworks/DevToolsCore.framework/DevToolsCore: GC capability mismatch, NSBundlePath=/Applications/Xcode.app/Contents/PlugIns/Xcode3Core.ideplugin/Contents/Frameworks/DevToolsCore.framework, NSLocalizedDescription=The bundle “Xcode Core Framework” couldn’t be loaded because it isn’t compatible with the current application.}
+```
+This is because Xcode 4 requires garbage collection and Xcode 5 is built with ARC. Again, to fix this problem, just rebuild **xcproj**.  
+Note that if Xcode 4 and Xcode 5 are installed at different paths, **xcproj** will work fine.
 
 ## Contact
 
