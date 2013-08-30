@@ -4,6 +4,14 @@
 
 ## Installation
 
+### Homebrew
+
+```
+brew install xcproj
+```
+
+### Manually
+
 To install the `xcproj` tool in `/usr/local/bin` run the following command, with `sudo` if required:
 
 ```
