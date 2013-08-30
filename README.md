@@ -57,7 +57,7 @@ Actions:
 
 ## Limitations
 
-* **xcproj** relies on the DevToolsCore private framework. Although great care has been taken, it might stop working when you upgrage Xcode.
+* **xcproj** relies on the DevToolsCore private framework. Although great care has been taken, it might stop working when you upgrade Xcode.
 
 * The **xcproj** binary is bound to the Xcode version that compiled it. If you delete, move or rename the Xcode version that compiled the binary, **xcproj** will fail with the following error:
 *  
