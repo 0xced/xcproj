@@ -62,7 +62,10 @@ Actions:
 * The **xcproj** binary is bound to the Xcode version that compiled it. If you delete, move or rename the Xcode version that compiled the binary, **xcproj** will fail with the following error:
 *  
 ```
-The DevToolsCore framework failed to load: DevToolsCore.framework not found
+dyld: Library not loaded: @rpath/DVTFoundation.framework/Versions/A/DVTFoundation
+    Referenced from: /usr/local/bin/xcproj
+    Reason: image not found
+Trace/BPT trap: 5
 ```
 To fix this problem, just rebuild **xcproj**.
 
