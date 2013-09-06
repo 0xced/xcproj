@@ -39,6 +39,7 @@ static Class XCBuildConfiguration = Nil;
 	if (initialized)
 		return;
 	
+	NSMutableArray *rpaths = [NSMutableArray array];
 	NSString *rpath = nil;
 	const struct mach_header_64 *header = &_mh_execute_header;
 	intptr_t cursor = (intptr_t)header + sizeof(struct mach_header_64);
@@ -50,18 +51,34 @@ static Class XCBuildConfiguration = Nil;
 		{
 			struct rpath_command *rpathComand = (struct rpath_command *)segmentCommand;
 			rpath = [[[NSString alloc] initWithUTF8String:((const char*)rpathComand + rpathComand->path.offset)] autorelease];
-			break;
+			[rpaths addObject:rpath];
 		}
 	}
 	
-	NSString *devToolsCorePath = [rpath stringByAppendingPathComponent:@"DevToolsCore.framework"];
-	NSBundle *devToolsCoreBundle = [NSBundle bundleWithPath:devToolsCorePath];
-	
-	NSError *loadError = nil;
-	if (![devToolsCoreBundle loadAndReturnError:&loadError])
+	// @rpath shared libraries retrieved with otool -L `xcode-select -print-path`/usr/bin/xcodebuild | grep @rpath
+	for (NSString *framework in @[ @"DVTFoundation.framework", @"IDEFoundation.framework", @"Xcode3Core.ideplugin" ])
 	{
-		ddfprintf(stderr, @"The DevToolsCore framework failed to load: %@\n", devToolsCoreBundle ? loadError : @"DevToolsCore.framework not found");
-		exit(EX_SOFTWARE);
+		BOOL loaded = NO;
+		for (NSString *rpath in rpaths)
+		{
+			NSString *frameworkPath = [rpath stringByAppendingPathComponent:framework];
+			NSBundle *frameworkBundle = [NSBundle bundleWithPath:frameworkPath];
+			if (frameworkBundle)
+			{
+				NSError *loadError = nil;
+				loaded = [frameworkBundle loadAndReturnError:&loadError];
+				if (!loaded)
+				{
+					ddfprintf(stderr, @"The %@ %@ failed to load: %@\n", [framework stringByDeletingPathExtension], [framework pathExtension], loadError);
+					exit(EX_SOFTWARE);
+				}
+			}
+		}
+		if (!loaded)
+		{
+			ddfprintf(stderr, @"%@ not found. It probably means that you have deleted, moved or renamed the Xcode copy that compiled `xcproj`.\nSimply recompiling `xcproj` should fix this problem.\n", framework);
+			exit(EX_SOFTWARE);
+		}
 	}
 	
 	void(*IDEInitialize)(NSUInteger initializationOptions, NSError **error) = dlsym(RTLD_DEFAULT, "IDEInitialize");
