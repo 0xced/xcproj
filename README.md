@@ -45,6 +45,9 @@ Actions:
  * read-build-setting <build_setting>
      Evaluate a build setting and print its value. If the build setting does not exist, nothing is printed
 
+ * write-build-setting <build_setting> <value>
+     Assign a value to a build setting. If the build setting does not exist, it is added to the target
+
  * add-xcconfig <xcconfig_path>
      Add an xcconfig file to the project and base all configurations on it
 

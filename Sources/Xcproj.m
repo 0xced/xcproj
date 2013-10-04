@@ -274,7 +274,7 @@ static Class XCBuildConfiguration = Nil;
 
 - (NSArray *) allowedActions
 {
-	return [NSArray arrayWithObjects:@"list-targets", @"list-headers", @"read-build-setting", @"add-xcconfig", @"add-resources-bundle", @"touch", nil];
+	return [NSArray arrayWithObjects:@"list-targets", @"list-headers", @"read-build-setting", @"write-build-setting", @"add-xcconfig", @"add-resources-bundle", @"touch", nil];
 }
 
 - (void) printUsage:(int)exitCode
@@ -292,6 +292,8 @@ static Class XCBuildConfiguration = Nil;
 	         @"     List headers from the `Copy Headers` build phase\n\n"
 	         @" * read-build-setting <build_setting>\n"
 	         @"     Evaluate a build setting and print its value. If the build setting does not exist, nothing is printed\n\n"
+	         @" * write-build-setting <build_setting> <value>\n"
+	         @"     Assign a value to a build setting. If the build setting does not exist, it is added to the target\n\n"
 	         @" * add-xcconfig <xcconfig_path>\n"
 	         @"     Add an xcconfig file to the project and base all configurations on it\n\n"
 	         @" * add-resources-bundle <bundle_path>\n"
@@ -348,6 +350,18 @@ static Class XCBuildConfiguration = Nil;
 		ddprintf(@"%@\n", expandedString);
 	
 	return EX_OK;
+}
+
+- (int) writeBuildSetting:(NSArray *)arguments
+{
+	if ([arguments count] != 2)
+		[self printUsage:EX_USAGE];
+	
+	NSString *buildSetting = arguments[0];
+	NSString *value = arguments[1];
+	[_target setBuildSetting:value forKeyPath:buildSetting];
+	
+	return [self writeProject];
 }
 
 - (int) writeProject

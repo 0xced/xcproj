@@ -9,6 +9,8 @@
 
 - (NSString *) expandedValueForString:(NSString *)string forBuildParameters:(id)buildParameters;
 
+- (void)setBuildSetting:(id)buildSetting forKeyPath:(NSString *)keyPath;
+
 - (id<PBXBuildPhase>) buildPhaseOfClass:(Class)buildPhaseClass;
 - (void) addBuildPhase:(id<PBXBuildPhase>)buildPhase;
 - (id<PBXBuildPhase>) defaultFrameworksBuildPhase;
