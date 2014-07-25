@@ -8,6 +8,7 @@
 
 #import "XCDUndocumentedChecker.h"
 
+#import <dlfcn.h>
 #import <objc/message.h>
 #import <objc/runtime.h>
 extern const char *_protocol_getMethodTypeEncoding(Protocol *p, SEL sel, BOOL isRequiredMethod, BOOL isInstanceMethod);
@@ -234,6 +235,13 @@ Class XCDClassFromProtocol(Protocol *protocol, NSError **error)
 			{
 				NSString *forwardMethodName = [@"XCDUndocumentedChecker_" stringByAppendingString:methodName];
 				Method method = class_getMethod(class, NSSelectorFromString(methodName));
+				if ([NSProcessInfo.processInfo.environment[@"DEBUG_METHOD_IMP"] boolValue])
+				{
+					Dl_info info;
+					if (dladdr(method_getImplementation(method), &info))
+						printf("%s: %c[%s %s]\n", info.dli_fname, isInstanceMethod ? '-' : '+', [className UTF8String], [methodName UTF8String]);
+				}
+				
 				BOOL added = class_addMethod(isInstanceMethod ? class : object_getClass(class), NSSelectorFromString(forwardMethodName), _objc_msgForward, method_getTypeEncoding(method));
 				if (added)
 				{
