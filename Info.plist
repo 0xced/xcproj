@@ -13,10 +13,8 @@
 	<key>CFBundleName</key>
 	<string>xcproj</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.1</string>
+	<string>0.1.2</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
-	<key>LSMinimumSystemVersion</key>
-	<string>10.8</string>
 </dict>
 </plist>
