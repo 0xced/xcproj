@@ -223,6 +223,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				COPY_PHASE_STRIP = NO;
+				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -237,6 +238,7 @@
 			baseConfigurationReference = C24A73F617DFE2EE00DB4344 /* xcproj.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEPLOYMENT_POSTPROCESSING = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -258,12 +260,6 @@
 				LD_RUNPATH_SEARCH_PATHS = "${DEVELOPER_DIR}/../Frameworks ${DEVELOPER_DIR}/../SharedFrameworks ${DEVELOPER_DIR}/../PlugIns";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = (
-					"-sectcreate",
-					__TEXT,
-					__info_plist,
-					"\"$(INFOPLIST_FILE)\"",
-				);
 				SDKROOT = macosx;
 			};
 			name = Debug;
@@ -278,12 +274,6 @@
 				HEADER_SEARCH_PATHS = "\"$(SRCROOT)\"";
 				LD_RUNPATH_SEARCH_PATHS = "${DEVELOPER_DIR}/../Frameworks ${DEVELOPER_DIR}/../SharedFrameworks ${DEVELOPER_DIR}/../PlugIns";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
-				OTHER_LDFLAGS = (
-					"-sectcreate",
-					__TEXT,
-					__info_plist,
-					"\"$(INFOPLIST_FILE)\"",
-				);
 				SDKROOT = macosx;
 			};
 			name = Release;
