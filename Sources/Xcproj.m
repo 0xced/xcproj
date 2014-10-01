@@ -140,7 +140,10 @@ static Class XCBuildConfiguration = Nil;
 		}
 	}
 	
-	if ([NSProcessInfo.processInfo.environment[@"WORKAROUND_RADAR_18512876"] boolValue])
+	NSString *xmlPlist = @"<?xml version=\"1.0\" encoding=\"UTF-8\"?><plist version=\"1.0\"><string>&#x1F680;</string></plist>";
+	NSData *xmlPlistData = [xmlPlist dataUsingEncoding:NSUTF8StringEncoding];
+	BOOL shouldWorkaroundRadar18512876 = ![@"\U0001F680" isEqual:[NSPropertyListSerialization propertyListWithData:xmlPlistData options:0 format:NULL error:NULL]];
+	if (shouldWorkaroundRadar18512876)
 	{
 		Method plistWithDescriptionData = class_getClassMethod([NSDictionary class], @selector(plistWithDescriptionData:));
 		method_setImplementation(plistWithDescriptionData, imp_implementationWithBlock(^(id _self, NSData *data) {

@@ -126,11 +126,6 @@
             value = "YES"
             isEnabled = "NO">
          </EnvironmentVariable>
-         <EnvironmentVariable
-            key = "WORKAROUND_RADAR_18512876"
-            value = "YES"
-            isEnabled = "NO">
-         </EnvironmentVariable>
       </EnvironmentVariables>
       <AdditionalOptions>
       </AdditionalOptions>
