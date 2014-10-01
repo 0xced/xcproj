@@ -12,6 +12,7 @@
 #import <mach-o/ldsyms.h>
 #import <objc/runtime.h>
 #import "XCDUndocumentedChecker.h"
+#import "XMLPlistDecoder.h"
 
 @implementation Xcproj
 {
@@ -137,6 +138,14 @@ static Class XCBuildConfiguration = Nil;
 			isSafe = NO;
 			ddfprintf(stderr, @"%@\n%@\n", [classError localizedDescription], [classError userInfo]);
 		}
+	}
+	
+	if ([NSProcessInfo.processInfo.environment[@"WORKAROUND_RADAR_18512876"] boolValue])
+	{
+		Method plistWithDescriptionData = class_getClassMethod([NSDictionary class], @selector(plistWithDescriptionData:));
+		method_setImplementation(plistWithDescriptionData, imp_implementationWithBlock(^(id _self, NSData *data) {
+			return [XMLPlistDecoder plistWithData:data];
+		}));
 	}
 	
 	if (!isSafe)
