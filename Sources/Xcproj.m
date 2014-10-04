@@ -110,11 +110,6 @@ static Class XCBuildConfiguration = Nil;
 		exit(EX_SOFTWARE);
 	}
 	
-	// Xcode 4 / Xcode 5 compatibility
-	class_addMethod(NSClassFromString(@"PBXBuildFile"), @selector(attributes), imp_implementationWithBlock(^(id<PBXBuildFile> buildFile) {
-		return [buildFile respondsToSelector:@selector(settingsArrayForKey:)] ? [buildFile performSelector:@selector(settingsArrayForKey:) withObject:@"ATTRIBUTES"] : nil;
-	}), "@16@0:8");
-	
 	BOOL isSafe = YES;
 	NSArray *protocols = @[@protocol(PBXBuildFile),
 	                       @protocol(PBXBuildPhase),

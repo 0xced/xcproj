@@ -2,6 +2,10 @@
 
 **xcproj** is a command line tool for manipulating Xcode project files. It doesn’t do much yet. It also serves as a testbed for [XCDUndocumentedChecker](https://github.com/0xced/xcproj/blob/develop/Sources/XCDUndocumentedChecker.m).
 
+## Requirements
+
+xcproj works with Xcode 5 and 6. Xcode 4 support has been discontinued.
+
 ## Installation
 
 ### Homebrew
@@ -68,16 +72,6 @@ Actions:
 DVTFoundation.framework not found. It probably means that you have deleted, moved or renamed the Xcode copy that compiled `xcproj`.
 Simply recompiling `xcproj` should fix this problem.
 ```
-
-* When transitioning from Xcode 4 to Xcode 5, you will get this error:
-*  
-```
-The DVTFoundation framework failed to load: Error Domain=NSCocoaErrorDomain Code=3586 "The bundle “DVTFoundation” couldn’t be loaded because it isn’t compatible with the current application." (dlopen_preflight(/Applications/Xcode.app/Contents/SharedFrameworks/DVTFoundation.framework/DVTFoundation): no suitable image found.  Did find:
-	/Applications/Xcode.app/Contents/SharedFrameworks/DVTFoundation.framework/DVTFoundation: GC capability mismatch) UserInfo=0x40032bda0 {NSLocalizedFailureReason=The bundle isn’t compatible with this application., NSLocalizedRecoverySuggestion=Try installing a newer version of the bundle., NSFilePath=/Applications/Xcode.app/Contents/SharedFrameworks/DVTFoundation.framework/DVTFoundation, NSDebugDescription=dlopen_preflight(/Applications/Xcode.app/Contents/SharedFrameworks/DVTFoundation.framework/DVTFoundation): no suitable image found.  Did find:
-	/Applications/Xcode.app/Contents/SharedFrameworks/DVTFoundation.framework/DVTFoundation: GC capability mismatch, NSBundlePath=/Applications/Xcode.app/Contents/SharedFrameworks/DVTFoundation.framework, NSLocalizedDescription=The bundle “DVTFoundation” couldn’t be loaded because it isn’t compatible with the current application.}
-```
-This is because Xcode 4 requires garbage collection and Xcode 5 is built with ARC. Again, to fix this problem, just recompile **xcproj**.  
-Note that if Xcode 4 and Xcode 5 are installed at different paths, **xcproj** will work fine.
 
 ## Contact
 
