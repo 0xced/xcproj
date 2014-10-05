@@ -66,13 +66,6 @@ Actions:
 
 * **xcproj** relies on the DevToolsCore private framework. Although great care has been taken, it might stop working when you upgrade Xcode.
 
-* The **xcproj** binary is bound to the Xcode version that compiled it. If you delete, move or rename the Xcode version that compiled the binary, **xcproj** will fail with the following error and explicit recovery suggestion:
-* 
-```
-DVTFoundation.framework not found. It probably means that you have deleted, moved or renamed the Xcode copy that compiled `xcproj`.
-Simply recompiling `xcproj` should fix this problem.
-```
-
 ## Contact
 
 Cédric Luthi

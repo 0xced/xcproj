@@ -9,7 +9,6 @@
 #import "Xcproj.h"
 
 #import <dlfcn.h>
-#import <mach-o/ldsyms.h>
 #import <objc/runtime.h>
 #import "XCDUndocumentedChecker.h"
 #import "XMLPlistDecoder.h"
@@ -34,36 +33,45 @@ static Class XCBuildConfiguration = Nil;
 + (void) setXCBuildConfiguration:(Class)class { XCBuildConfiguration = class; }
 + (void) setValue:(id)value forUndefinedKey:(NSString *)key { /* ignore */ }
 
+static NSBundle * XcodeBundle(void)
+{
+	NSString *xcodeAppPath = NSProcessInfo.processInfo.environment[@"XCODE_APP_PATH"];
+	NSBundle *xcodeBundle = [NSBundle bundleWithPath:xcodeAppPath];
+	if (!xcodeBundle)
+	{
+		NSURL *xcodeURL = [[NSWorkspace sharedWorkspace] URLForApplicationWithBundleIdentifier:@"com.apple.dt.xcode"];
+		xcodeBundle = [NSBundle bundleWithPath:xcodeURL.path];
+		if (!xcodeBundle)
+		{
+			xcodeBundle = [NSBundle bundleWithPath:@"/Applications/Xcode.app"];
+		}
+	}
+	return xcodeBundle;
+}
+
 + (void) initializeXcproj
 {
 	static BOOL initialized = NO;
 	if (initialized)
 		return;
 	
-	NSMutableArray *rpaths = [NSMutableArray array];
-	NSString *rpath = nil;
-	const struct mach_header_64 *header = &_mh_execute_header;
-	intptr_t cursor = (intptr_t)header + sizeof(struct mach_header_64);
-	struct segment_command_64 *segmentCommand = NULL;
-	for (int i = 0; i < header->ncmds; i++, cursor += segmentCommand->cmdsize)
+	NSBundle *xcodeBundle = XcodeBundle();
+	if (!xcodeBundle)
 	{
-		segmentCommand = (struct segment_command_64*)cursor;
-		if (segmentCommand->cmd == LC_RPATH)
-		{
-			struct rpath_command *rpathComand = (struct rpath_command *)segmentCommand;
-			rpath = [[[NSString alloc] initWithUTF8String:((const char*)rpathComand + rpathComand->path.offset)] autorelease];
-			[rpaths addObject:rpath];
-		}
+		ddfprintf(stderr, @"Xcode.app not found.\n");
+		exit(EX_CONFIG);
 	}
 	
-	// @rpath shared libraries retrieved with otool -L `xcode-select -print-path`/usr/bin/xcodebuild | grep @rpath
-	for (NSString *framework in @[ @"DVTFoundation.framework", @"IDEFoundation.framework", @"Xcode3Core.ideplugin" ])
+	NSURL *xcodeContentsURL = [[xcodeBundle privateFrameworksURL] URLByDeletingLastPathComponent];
+	
+	for (NSString *framework in @[ @"DevToolsCore.framework" ])
 	{
 		BOOL loaded = NO;
-		for (NSString *rpath in rpaths)
+		NSArray *xcodeSubdirectories = [[NSFileManager defaultManager] contentsOfDirectoryAtURL:xcodeContentsURL includingPropertiesForKeys:nil options:0 error:NULL];
+		for (NSURL *frameworksDirectoryURL in xcodeSubdirectories)
 		{
-			NSString *frameworkPath = [rpath stringByAppendingPathComponent:framework];
-			NSBundle *frameworkBundle = [NSBundle bundleWithPath:frameworkPath];
+			NSURL *frameworkURL = [frameworksDirectoryURL URLByAppendingPathComponent:framework];
+			NSBundle *frameworkBundle = [NSBundle bundleWithURL:frameworkURL];
 			if (frameworkBundle)
 			{
 				NSError *loadError = nil;
@@ -74,16 +82,20 @@ static Class XCBuildConfiguration = Nil;
 					exit(EX_SOFTWARE);
 				}
 			}
+			
+			if (loaded)
+				break;
 		}
+		
 		if (!loaded)
 		{
-			ddfprintf(stderr, @"%@ not found. It probably means that you have deleted, moved or renamed the Xcode copy that compiled `xcproj`.\nSimply recompiling `xcproj` should fix this problem.\n", framework);
+			ddfprintf(stderr, @"%@ not found in %@/*\n", framework, xcodeContentsURL.path);
 			exit(EX_SOFTWARE);
 		}
 	}
 	
-	void(*IDEInitialize)(NSUInteger initializationOptions, NSError **error) = dlsym(RTLD_DEFAULT, "IDEInitialize");
-	if (IDEInitialize)
+	void(*XCInitializeCoreIfNeeded)(int initializationOptions) = dlsym(RTLD_DEFAULT, "XCInitializeCoreIfNeeded");
+	if (XCInitializeCoreIfNeeded)
 	{
 		// Temporary redirect stderr to /dev/null in order not to print plugin loading errors
 		// Adapted from http://stackoverflow.com/questions/4832603/how-could-i-temporary-redirect-stdout-to-a-file-in-a-c-program/4832902#4832902
@@ -92,21 +104,15 @@ static Class XCBuildConfiguration = Nil;
 		int dev_null = open("/dev/null", O_WRONLY);
 		dup2(dev_null, STDERR_FILENO);
 		close(dev_null);
-		NSError *error = nil;
-		// -[Xcode3CommandLineBuildTool run] from Xcode3Core.ideplugin calls IDEInitialize(1, &error)
-		IDEInitialize(1, &error);
+		// DevToolsCore`+[PBXProject projectWithFile:errorHandler:readOnly:] calls XCInitializeCoreIfNeeded(NSClassFromString(@"NSApplication") == nil)
+		XCInitializeCoreIfNeeded(1);
 		fflush(stderr);
 		dup2(saved_stderr, STDERR_FILENO);
 		close(saved_stderr);
-		if (error)
-		{
-			ddfprintf(stderr, @"IDEInitialize error: %@\n", error);
-			exit(EX_SOFTWARE);
-		}
 	}
 	else
 	{
-		ddfprintf(stderr, @"IDEInitialize function not found.\n");
+		ddfprintf(stderr, @"XCInitializeCoreIfNeeded function not found.\n");
 		exit(EX_SOFTWARE);
 	}
 	
@@ -337,7 +343,7 @@ static Class XCBuildConfiguration = Nil;
 	id<PBXBuildPhase> headerBuildPhase = [_target defaultHeaderBuildPhase];
 	for (id<PBXBuildFile> buildFile in [headerBuildPhase buildFiles])
 	{
-		NSArray *attributes = [buildFile attributes];
+		NSArray *attributes = [buildFile settingsArrayForKey:@"ATTRIBUTES"];
 		if ([attributes containsObject:headerRole] || [headerRole isEqualToString:@"All"])
 			ddprintf(@"%@\n", [buildFile absolutePath]);
 	}
@@ -351,8 +357,7 @@ static Class XCBuildConfiguration = Nil;
 		[self printUsage:EX_USAGE];
 	
 	NSString *buildSetting = [arguments objectAtIndex:0];
-	NSString *settingString = [NSString stringWithFormat:@"$(%@)", buildSetting];
-	NSString *expandedString = [_target expandedValueForString:settingString forBuildParameters:nil];
+	NSString *expandedString = [_target expandedCurrentValueForBuildSetting:buildSetting];
 	if ([expandedString length] > 0)
 		ddprintf(@"%@\n", expandedString);
 	

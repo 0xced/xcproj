@@ -15,6 +15,7 @@
 		C269E98F17B3DCCC0099A0C5 /* DDCliParseException.m in Sources */ = {isa = PBXBuildFile; fileRef = C269E98717B3DCCC0099A0C5 /* DDCliParseException.m */; };
 		C269E99017B3DCCC0099A0C5 /* DDCliUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = C269E98917B3DCCC0099A0C5 /* DDCliUtil.m */; };
 		C269E99117B3DCCC0099A0C5 /* DDGetoptLongParser.m in Sources */ = {isa = PBXBuildFile; fileRef = C269E98C17B3DCCC0099A0C5 /* DDGetoptLongParser.m */; };
+		C2CDDAD819E1D89E00DD1CBA /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C2CDDAD719E1D89E00DD1CBA /* AppKit.framework */; };
 		DA1DC01010E59AED005A103B /* Xcproj.m in Sources */ = {isa = PBXBuildFile; fileRef = DA1DC00E10E59AED005A103B /* Xcproj.m */; };
 		DAFF25CC1303ECB100584E0E /* XCDUndocumentedChecker.m in Sources */ = {isa = PBXBuildFile; fileRef = DAFF25CB1303ECB100584E0E /* XCDUndocumentedChecker.m */; };
 /* End PBXBuildFile section */
@@ -36,6 +37,7 @@
 		C269E98A17B3DCCC0099A0C5 /* DDCommandLineInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDCommandLineInterface.h; sourceTree = "<group>"; };
 		C269E98B17B3DCCC0099A0C5 /* DDGetoptLongParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDGetoptLongParser.h; sourceTree = "<group>"; };
 		C269E98C17B3DCCC0099A0C5 /* DDGetoptLongParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDGetoptLongParser.m; sourceTree = "<group>"; };
+		C2CDDAD719E1D89E00DD1CBA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		DA1DC00E10E59AED005A103B /* Xcproj.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = Xcproj.m; path = Sources/Xcproj.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		DA1DC00F10E59AED005A103B /* Xcproj.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Xcproj.h; path = Sources/Xcproj.h; sourceTree = "<group>"; };
 		DA7A018E134F015F00F89E9B /* PBXContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBXContainer.h; sourceTree = "<group>"; };
@@ -59,6 +61,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C2CDDAD819E1D89E00DD1CBA /* AppKit.framework in Frameworks */,
 				8DD76F9C0486AA7600D96B5E /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -97,6 +100,7 @@
 		08FB779DFE84155DC02AAC07 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				C2CDDAD719E1D89E00DD1CBA /* AppKit.framework */,
 				08FB779EFE84155DC02AAC07 /* Foundation.framework */,
 			);
 			name = Frameworks;
@@ -258,7 +262,6 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "\"$(SRCROOT)\"";
-				LD_RUNPATH_SEARCH_PATHS = "${DEVELOPER_DIR}/../Frameworks ${DEVELOPER_DIR}/../SharedFrameworks ${DEVELOPER_DIR}/../PlugIns";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
@@ -272,7 +275,6 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "\"$(SRCROOT)\"";
-				LD_RUNPATH_SEARCH_PATHS = "${DEVELOPER_DIR}/../Frameworks ${DEVELOPER_DIR}/../SharedFrameworks ${DEVELOPER_DIR}/../PlugIns";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				SDKROOT = macosx;
 			};
