@@ -66,7 +66,7 @@ static NSBundle * XcodeBundle(void)
 	
 	NSURL *xcodeContentsURL = [[xcodeBundle privateFrameworksURL] URLByDeletingLastPathComponent];
 	
-	for (NSString *framework in @[ @"DevToolsCore.framework" ])
+	for (NSString *framework in @[ @"DVTFoundation.framework", @"DVTSourceControl.framework", @"IDEFoundation.framework", @"Xcode3Core.ideplugin" ])
 	{
 		BOOL loaded = NO;
 		NSArray *xcodeSubdirectories = [[NSFileManager defaultManager] contentsOfDirectoryAtURL:xcodeContentsURL includingPropertiesForKeys:nil options:0 error:NULL];
@@ -96,27 +96,34 @@ static NSBundle * XcodeBundle(void)
 		}
 	}
 	
-	void(*XCInitializeCoreIfNeeded)(int initializationOptions) = dlsym(RTLD_DEFAULT, "XCInitializeCoreIfNeeded");
-	if (XCInitializeCoreIfNeeded)
+	void(*IDEInitialize)(int initializationOptions, NSError **error) = dlsym(RTLD_DEFAULT, "IDEInitialize");
+	if (!IDEInitialize)
 	{
-		// Temporary redirect stderr to /dev/null in order not to print plugin loading errors
-		// Adapted from http://stackoverflow.com/questions/4832603/how-could-i-temporary-redirect-stdout-to-a-file-in-a-c-program/4832902#4832902
-		fflush(stderr);
-		int saved_stderr = dup(STDERR_FILENO);
-		int dev_null = open("/dev/null", O_WRONLY);
-		dup2(dev_null, STDERR_FILENO);
-		close(dev_null);
-		// DevToolsCore`+[PBXProject projectWithFile:errorHandler:readOnly:] calls XCInitializeCoreIfNeeded(NSClassFromString(@"NSApplication") == nil)
-		XCInitializeCoreIfNeeded(1);
-		fflush(stderr);
-		dup2(saved_stderr, STDERR_FILENO);
-		close(saved_stderr);
+		ddfprintf(stderr, @"IDEInitialize function not found.\n");
+		exit(EX_SOFTWARE);
 	}
-	else
+	
+	void(*XCInitializeCoreIfNeeded)(int initializationOptions) = dlsym(RTLD_DEFAULT, "XCInitializeCoreIfNeeded");
+	if (!XCInitializeCoreIfNeeded)
 	{
 		ddfprintf(stderr, @"XCInitializeCoreIfNeeded function not found.\n");
 		exit(EX_SOFTWARE);
 	}
+	
+	// Temporary redirect stderr to /dev/null in order not to print plugin loading errors
+	// Adapted from http://stackoverflow.com/questions/4832603/how-could-i-temporary-redirect-stdout-to-a-file-in-a-c-program/4832902#4832902
+	fflush(stderr);
+	int saved_stderr = dup(STDERR_FILENO);
+	int dev_null = open("/dev/null", O_WRONLY);
+	dup2(dev_null, STDERR_FILENO);
+	close(dev_null);
+	// Xcode3Core.ideplugin`-[Xcode3CommandLineBuildTool run] calls IDEInitialize(NSClassFromString(@"NSApplication") == nil, &error)
+	IDEInitialize(1, NULL);
+	// DevToolsCore`+[PBXProject projectWithFile:errorHandler:readOnly:] calls XCInitializeCoreIfNeeded(NSClassFromString(@"NSApplication") == nil)
+	XCInitializeCoreIfNeeded(1);
+	fflush(stderr);
+	dup2(saved_stderr, STDERR_FILENO);
+	close(saved_stderr);
 	
 	BOOL isSafe = YES;
 	NSArray *protocols = @[@protocol(PBXBuildFile),
@@ -349,7 +356,7 @@ static NSBundle * XcodeBundle(void)
 	id<PBXBuildPhase> headerBuildPhase = [_target defaultHeaderBuildPhase];
 	for (id<PBXBuildFile> buildFile in [headerBuildPhase buildFiles])
 	{
-		NSArray *attributes = [buildFile settingsArrayForKey:@"ATTRIBUTES"];
+		NSArray *attributes = [buildFile attributes];
 		if ([attributes containsObject:headerRole] || [headerRole isEqualToString:@"All"])
 			ddprintf(@"%@\n", [buildFile absolutePath]);
 	}
@@ -363,7 +370,8 @@ static NSBundle * XcodeBundle(void)
 		[self printUsage:EX_USAGE];
 	
 	NSString *buildSetting = [arguments objectAtIndex:0];
-	NSString *expandedString = [_target expandedCurrentValueForBuildSetting:buildSetting];
+	NSString *settingString = [NSString stringWithFormat:@"$(%@)", buildSetting];
+	NSString *expandedString = [_target expandedValueForString:settingString forBuildParameters:nil];
 	if ([expandedString length] > 0)
 		ddprintf(@"%@\n", expandedString);
 	

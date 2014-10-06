@@ -7,7 +7,7 @@
 
 - (id<XCConfigurationList>) buildConfigurationList;
 
-- (NSString *) expandedCurrentValueForBuildSetting:(NSString *)buildSetting;
+- (NSString *) expandedValueForString:(NSString *)string forBuildParameters:(id)buildParameters;
 
 - (void)setBuildSetting:(id)buildSetting forKeyPath:(NSString *)keyPath;
 
