@@ -19,13 +19,13 @@ brew install xcproj
 To install the `xcproj` tool in `/usr/local/bin` run the following command, with `sudo` if required:
 
 ```
-xcodebuild -scheme xcproj install DSTROOT=/
+xcodebuild -target xcproj install DSTROOT=/
 ```
 
 If you want to install `xcproj` in a custom location, e.g. `~/bin`, run the following command:
 
 ```
-xcodebuild -scheme xcproj install DSTROOT=/ INSTALL_PATH=~/bin
+xcodebuild -target xcproj install DSTROOT=/ INSTALL_PATH=~/bin
 ```
 
 ## Usage
