@@ -33,6 +33,8 @@ static Class XCBuildConfiguration = Nil;
 + (void) setXCBuildConfiguration:(Class)class { XCBuildConfiguration = class; }
 + (void) setValue:(id)value forUndefinedKey:(NSString *)key { /* ignore */ }
 
+static id (*plistWithDescriptionDataIMP)(id, SEL, NSData *);
+
 static NSBundle * XcodeBundle(void)
 {
 	NSString *xcodeAppPath = NSProcessInfo.processInfo.environment[@"XCODE_APP_PATH"];
@@ -147,8 +149,12 @@ static NSBundle * XcodeBundle(void)
 	if (shouldWorkaroundRadar18512876)
 	{
 		Method plistWithDescriptionData = class_getClassMethod([NSDictionary class], @selector(plistWithDescriptionData:));
+		plistWithDescriptionDataIMP = (__typeof__(plistWithDescriptionDataIMP))method_getImplementation(plistWithDescriptionData);
 		method_setImplementation(plistWithDescriptionData, imp_implementationWithBlock(^(id _self, NSData *data) {
-			return [XMLPlistDecoder plistWithData:data];
+			if (data.length >= 5 && [[data subdataWithRange:NSMakeRange(0, 5)] isEqualToData:[@"<?xml" dataUsingEncoding:NSASCIIStringEncoding]])
+				return [XMLPlistDecoder plistWithData:data];
+			else
+				return plistWithDescriptionDataIMP(_self, @selector(plistWithDescriptionData:), data);
 		}));
 	}
 	

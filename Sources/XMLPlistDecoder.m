@@ -94,9 +94,6 @@ static id ObjectFromElement(NSXMLElement *element)
 
 + (id) plistWithData:(NSData *)data
 {
-	if (data.length >= 5 && ![[data subdataWithRange:NSMakeRange(0, 5)] isEqualToData:[@"<?xml" dataUsingEncoding:NSASCIIStringEncoding]])
-		return [NSPropertyListSerialization propertyListWithData:data options:0 format:NULL error:NULL];
-	
 	NSXMLDocument *document = [[NSXMLDocument alloc] initWithData:data options:0 error:NULL];
 	if (!document)
 		return nil;
