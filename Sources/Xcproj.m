@@ -33,24 +33,33 @@ static Class XCBuildConfiguration = Nil;
 + (void) setXCBuildConfiguration:(Class)class { XCBuildConfiguration = class; }
 + (void) setValue:(id)value forUndefinedKey:(NSString *)key { /* ignore */ }
 
+static NSString *XcodeBundleIdentifier = @"com.apple.dt.Xcode";
+
+static NSBundle * XcodeBundleAtPath(NSString *path)
+{
+	NSBundle *xcodeBundle = [NSBundle bundleWithPath:path];
+	return [xcodeBundle.bundleIdentifier isEqualToString:XcodeBundleIdentifier] ? xcodeBundle : nil;
+}
+
 static NSBundle * XcodeBundle(void)
 {
 	NSString *xcodeAppPath = NSProcessInfo.processInfo.environment[@"XCODE_APP_PATH"];
-	NSBundle *xcodeBundle = [NSBundle bundleWithPath:xcodeAppPath];
+	NSBundle *xcodeBundle = XcodeBundleAtPath(xcodeAppPath);
 	if (!xcodeBundle)
 	{
-		NSURL *xcodeURL = [[NSWorkspace sharedWorkspace] URLForApplicationWithBundleIdentifier:@"com.apple.dt.xcode"];
-		xcodeBundle = [NSBundle bundleWithPath:xcodeURL.path];
-		if (!xcodeBundle)
-		{
-			xcodeBundle = [NSBundle bundleWithPath:@"/Applications/Xcode.app"];
-		}
+		NSURL *xcodeURL = [[NSWorkspace sharedWorkspace] URLForApplicationWithBundleIdentifier:XcodeBundleIdentifier];
+		xcodeBundle = XcodeBundleAtPath(xcodeURL.path);
 	}
 	
 	if (!xcodeBundle)
 	{
 		ddfprintf(stderr, @"Xcode.app not found.\n");
 		exit(EX_CONFIG);
+	}
+	
+	if (xcodeAppPath && ![[xcodeAppPath stringByResolvingSymlinksInPath] isEqualToString:xcodeBundle.bundlePath])
+	{
+		ddfprintf(stderr, @"WARNING: '%@' does not point to an Xcode app, using '%@'\n", xcodeAppPath, xcodeBundle.bundlePath);
 	}
 	
 	return xcodeBundle;
