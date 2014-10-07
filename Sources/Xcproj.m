@@ -69,7 +69,9 @@ static void LoadXcodeFrameworks(NSBundle *xcodeBundle)
 {
 	NSURL *xcodeContentsURL = [[xcodeBundle privateFrameworksURL] URLByDeletingLastPathComponent];
 	
-	for (NSString *framework in @[ @"DVTFoundation.framework", @"DVTSourceControl.framework", @"IDEFoundation.framework", @"Xcode3Core.ideplugin" ])
+	// Xcode 5 requires DVTFoundation, CSServiceClient, IDEFoundation and Xcode3Core
+	// Xcode 6 requires DVTFoundation, DVTSourceControl, IDEFoundation and Xcode3Core
+	for (NSString *framework in @[ @"DVTFoundation.framework", @"DVTSourceControl.framework", @"CSServiceClient.framework", @"IDEFoundation.framework", @"Xcode3Core.ideplugin" ])
 	{
 		BOOL loaded = NO;
 		NSArray *xcodeSubdirectories = [[NSFileManager defaultManager] contentsOfDirectoryAtURL:xcodeContentsURL includingPropertiesForKeys:nil options:0 error:NULL];
@@ -90,12 +92,6 @@ static void LoadXcodeFrameworks(NSBundle *xcodeBundle)
 			
 			if (loaded)
 				break;
-		}
-		
-		if (!loaded)
-		{
-			ddfprintf(stderr, @"%@ not found in %@/*\n", framework, xcodeContentsURL.path);
-			exit(EX_SOFTWARE);
 		}
 	}
 }
