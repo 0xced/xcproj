@@ -214,6 +214,9 @@ static void WorkaroundRadar18512876(void)
 	
 	[_project release];
 	_project = [[PBXProject projectWithFile:projectPath] retain];
+	
+	if (!_project)
+		@throw [DDCliParseException parseExceptionWithReason:[NSString stringWithFormat:@"The '%@' project is corrupted.", projectName] exitCode:EX_DATAERR];
 }
 
 - (void) setTarget:(NSString *)targetName
