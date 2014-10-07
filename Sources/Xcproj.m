@@ -33,8 +33,6 @@ static Class XCBuildConfiguration = Nil;
 + (void) setXCBuildConfiguration:(Class)class { XCBuildConfiguration = class; }
 + (void) setValue:(id)value forUndefinedKey:(NSString *)key { /* ignore */ }
 
-static id (*plistWithDescriptionDataIMP)(id, SEL, NSData *);
-
 static NSBundle * XcodeBundle(void)
 {
 	NSString *xcodeAppPath = NSProcessInfo.processInfo.environment[@"XCODE_APP_PATH"];
@@ -48,22 +46,18 @@ static NSBundle * XcodeBundle(void)
 			xcodeBundle = [NSBundle bundleWithPath:@"/Applications/Xcode.app"];
 		}
 	}
-	return xcodeBundle;
-}
-
-+ (void) initializeXcproj
-{
-	static BOOL initialized = NO;
-	if (initialized)
-		return;
 	
-	NSBundle *xcodeBundle = XcodeBundle();
 	if (!xcodeBundle)
 	{
 		ddfprintf(stderr, @"Xcode.app not found.\n");
 		exit(EX_CONFIG);
 	}
 	
+	return xcodeBundle;
+}
+
+static void LoadXcodeFrameworks(NSBundle *xcodeBundle)
+{
 	NSURL *xcodeContentsURL = [[xcodeBundle privateFrameworksURL] URLByDeletingLastPathComponent];
 	
 	for (NSString *framework in @[ @"DVTFoundation.framework", @"DVTSourceControl.framework", @"IDEFoundation.framework", @"Xcode3Core.ideplugin" ])
@@ -95,7 +89,10 @@ static NSBundle * XcodeBundle(void)
 			exit(EX_SOFTWARE);
 		}
 	}
-	
+}
+
+static void InitializeXcodeFrameworks(void)
+{
 	void(*IDEInitialize)(int initializationOptions, NSError **error) = dlsym(RTLD_DEFAULT, "IDEInitialize");
 	if (!IDEInitialize)
 	{
@@ -124,6 +121,35 @@ static NSBundle * XcodeBundle(void)
 	fflush(stderr);
 	dup2(saved_stderr, STDERR_FILENO);
 	close(saved_stderr);
+}
+
+static void WorkaroundRadar18512876(void)
+{
+	NSString *xmlPlist = @"<?xml version=\"1.0\" encoding=\"UTF-8\"?><plist version=\"1.0\"><string>&#x1F680;</string></plist>";
+	NSData *xmlPlistData = [xmlPlist dataUsingEncoding:NSUTF8StringEncoding];
+	BOOL shouldWorkaroundRadar18512876 = ![@"\U0001F680" isEqual:[NSPropertyListSerialization propertyListWithData:xmlPlistData options:0 format:NULL error:NULL]];
+	if (shouldWorkaroundRadar18512876)
+	{
+		Method plistWithDescriptionData = class_getClassMethod([NSDictionary class], @selector(plistWithDescriptionData:));
+		id (*plistWithDescriptionDataIMP)(id, SEL, NSData *) = (__typeof__(plistWithDescriptionDataIMP))method_getImplementation(plistWithDescriptionData);
+		method_setImplementation(plistWithDescriptionData, imp_implementationWithBlock(^(id _self, NSData *data) {
+			if (data.length >= 5 && [[data subdataWithRange:NSMakeRange(0, 5)] isEqualToData:[@"<?xml" dataUsingEncoding:NSASCIIStringEncoding]])
+				return [XMLPlistDecoder plistWithData:data];
+			else
+				return plistWithDescriptionDataIMP(_self, @selector(plistWithDescriptionData:), data);
+		}));
+	}
+}
+
++ (void) initializeXcproj
+{
+	static BOOL initialized = NO;
+	if (initialized)
+		return;
+	
+	LoadXcodeFrameworks(XcodeBundle());
+	InitializeXcodeFrameworks();
+	WorkaroundRadar18512876();
 	
 	BOOL isSafe = YES;
 	NSArray *protocols = @[@protocol(PBXBuildFile),
@@ -148,21 +174,6 @@ static NSBundle * XcodeBundle(void)
 			isSafe = NO;
 			ddfprintf(stderr, @"%@\n%@\n", [classError localizedDescription], [classError userInfo]);
 		}
-	}
-	
-	NSString *xmlPlist = @"<?xml version=\"1.0\" encoding=\"UTF-8\"?><plist version=\"1.0\"><string>&#x1F680;</string></plist>";
-	NSData *xmlPlistData = [xmlPlist dataUsingEncoding:NSUTF8StringEncoding];
-	BOOL shouldWorkaroundRadar18512876 = ![@"\U0001F680" isEqual:[NSPropertyListSerialization propertyListWithData:xmlPlistData options:0 format:NULL error:NULL]];
-	if (shouldWorkaroundRadar18512876)
-	{
-		Method plistWithDescriptionData = class_getClassMethod([NSDictionary class], @selector(plistWithDescriptionData:));
-		plistWithDescriptionDataIMP = (__typeof__(plistWithDescriptionDataIMP))method_getImplementation(plistWithDescriptionData);
-		method_setImplementation(plistWithDescriptionData, imp_implementationWithBlock(^(id _self, NSData *data) {
-			if (data.length >= 5 && [[data subdataWithRange:NSMakeRange(0, 5)] isEqualToData:[@"<?xml" dataUsingEncoding:NSASCIIStringEncoding]])
-				return [XMLPlistDecoder plistWithData:data];
-			else
-				return plistWithDescriptionDataIMP(_self, @selector(plistWithDescriptionData:), data);
-		}));
 	}
 	
 	if (!isSafe)
