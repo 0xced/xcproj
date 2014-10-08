@@ -61,7 +61,7 @@ typedef struct
     /**
      * The long option without the double dash ("--").  This is required.
      */
-    NSString * longOption;
+    char * longOption;
     /** A single character for the short option.  Maybe be null or 0. */
     int shortOption;
     /** Argument options for this option. */

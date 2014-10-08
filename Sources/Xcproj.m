@@ -194,10 +194,10 @@ static void WorkaroundRadar18512876(void)
 	DDGetoptOption optionTable[] = 
 	{
 		// Long        Short  Argument options
-		{@"project",   'p',   DDGetoptRequiredArgument},
-		{@"target",    't',   DDGetoptRequiredArgument},
-		{@"help",      'h',   DDGetoptNoArgument},
-		{@"version",   'V',   DDGetoptNoArgument},
+		{"project",   'p',   DDGetoptRequiredArgument},
+		{"target",    't',   DDGetoptRequiredArgument},
+		{"help",      'h',   DDGetoptNoArgument},
+		{"version",   'V',   DDGetoptNoArgument},
 		{nil,           0,    0},
 	};
 	[optionsParser addOptionsFromTable:optionTable];

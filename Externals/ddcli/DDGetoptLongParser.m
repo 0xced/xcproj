@@ -109,9 +109,9 @@ dd_getopt_long_only(int nargc, char * const *nargv, const char *options,
     while ((currentOption->longOption != nil) ||
            (currentOption->shortOption != 0))
     {
-        [self addLongOption: currentOption->longOption
+        [self addLongOption: [NSString stringWithUTF8String:currentOption->longOption]
                 shortOption: currentOption->shortOption
-                        key: [self optionToKey: currentOption->longOption]
+                        key: [self optionToKey: [NSString stringWithUTF8String:currentOption->longOption] ]
             argumentOptions: currentOption->argumentOptions];
         currentOption++;
     }
@@ -184,9 +184,9 @@ dd_getopt_long_only(int nargc, char * const *nargv, const char *options,
 - (NSArray *)parseOptionsWithArguments:(NSArray *)arguments
                                command:(NSString *)command;
 {
-    int argc = [arguments count];
+    NSUInteger argc = [arguments count];
     char ** argv = alloca(sizeof(char *) * ( argc + 1 ) );
-    int i;
+    NSUInteger i;
     for (i = 0; i < argc; i++)
     {
         NSString * argument = [arguments objectAtIndex: i];
