@@ -55,7 +55,7 @@ static void XCDUndocumentedChecker_forwardInvocation(id self, SEL _cmd, NSInvoca
 	NSUInteger methodReturnLength = [methodSignature methodReturnLength];
 	@try
 	{
-		id result = nil;
+		__unsafe_unretained id result = nil;
 		SEL selector = NSSelectorFromString([@"XCDUndocumentedChecker_" stringByAppendingString:NSStringFromSelector([invocation selector])]);
 		BOOL returnsObject = [methodSignature methodReturnType][0] == _C_ID;
 		[invocation setSelector:selector];
@@ -128,7 +128,7 @@ Class XCDClassFromProtocol(Protocol *protocol, NSError **error)
 	
 	NSMutableArray *hierarchyMismatch = [NSMutableArray array];
 	unsigned int protocolCount = 0;
-	Protocol **adoptedProtocols = protocol_copyProtocolList(protocol, &protocolCount);
+	__unsafe_unretained Protocol **adoptedProtocols = protocol_copyProtocolList(protocol, &protocolCount);
 	for (unsigned int i = 0; i < protocolCount; i++)
 	{
 		Protocol *adoptedProtocol = adoptedProtocols[i];

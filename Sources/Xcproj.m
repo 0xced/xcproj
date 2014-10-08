@@ -217,8 +217,7 @@ static void WorkaroundRadar18512876(void)
 	if (![[NSFileManager defaultManager] fileExistsAtPath:projectPath])
 		@throw [DDCliParseException parseExceptionWithReason:[NSString stringWithFormat:@"The project %@ does not exist in this directory.", projectName] exitCode:EX_NOINPUT];
 	
-	[_project release];
-	_project = [[PBXProject projectWithFile:projectPath] retain];
+	_project = [PBXProject projectWithFile:projectPath];
 	
 	if (!_project)
 		@throw [DDCliParseException parseExceptionWithReason:[NSString stringWithFormat:@"The '%@' project is corrupted.", projectName] exitCode:EX_DATAERR];
@@ -229,8 +228,7 @@ static void WorkaroundRadar18512876(void)
 	if (_targetName == targetName)
 		return;
 	
-	[_targetName release];
-	_targetName = [targetName retain];
+	_targetName = targetName;
 }
 
 - (void) setHelp:(NSNumber *)help
@@ -284,7 +282,7 @@ static void WorkaroundRadar18512876(void)
 	
 	if (_targetName)
 	{
-		_target = [[_project targetNamed:_targetName] retain];
+		_target = [_project targetNamed:_targetName];
 		if (!_target)
 			@throw [DDCliParseException parseExceptionWithReason:[NSString stringWithFormat:@"The target %@ does not exist in this project.", _targetName] exitCode:EX_DATAERR];
 	}
@@ -292,7 +290,7 @@ static void WorkaroundRadar18512876(void)
 	{
 		NSArray *targets = [_project targets];
 		if ([targets count] > 0)
-			_target = [[targets objectAtIndex:0] retain];
+			_target = [targets objectAtIndex:0];
 		if (!_target)
 			@throw [DDCliParseException parseExceptionWithReason:[NSString stringWithFormat:@"The project %@ does not contain any target.", [_project name]] exitCode:EX_DATAERR];
 	}

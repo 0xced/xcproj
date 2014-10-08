@@ -10,7 +10,8 @@
 
 int main(int argc, char *const *argv)
 {
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	return DDCliAppRunWithClass([Xcproj class]);
-	[pool drain];
+	@autoreleasepool
+	{
+		return DDCliAppRunWithClass([Xcproj class]);
+	}
 }
