@@ -310,7 +310,7 @@ static void WorkaroundRadar18512876(void)
 	[selectorString replaceCharactersInRange:NSMakeRange(0, 1) withString:[[selectorString substringToIndex:1] lowercaseString]];
 	[selectorString appendString:@":"];
 	SEL actionSelector = NSSelectorFromString(selectorString);
-	return (int)[self performSelector:actionSelector withObject:actionArguments];
+	return [[self performSelector:actionSelector withObject:actionArguments] intValue];
 }
 
 // MARK: - Actions
@@ -346,7 +346,7 @@ static void WorkaroundRadar18512876(void)
 	exit(exitCode);
 }
 
-- (int) listTargets:(NSArray *)arguments
+- (NSNumber *) listTargets:(NSArray *)arguments
 {
 	if ([arguments count] > 0)
 		[self printUsage:EX_USAGE];
@@ -354,10 +354,10 @@ static void WorkaroundRadar18512876(void)
 	for (id<PBXTarget> target in [_project targets])
 		ddprintf(@"%@\n", [target name]);
 	
-	return [[_project targets] count] > 0 ? EX_OK : EX_SOFTWARE;
+	return [[_project targets] count] > 0 ? @(EX_OK) : @(EX_SOFTWARE);
 }
 
-- (int) listHeaders:(NSArray *)arguments
+- (NSNumber *) listHeaders:(NSArray *)arguments
 {
 	if ([arguments count] > 1)
 		[self printUsage:EX_USAGE];
@@ -378,10 +378,10 @@ static void WorkaroundRadar18512876(void)
 			ddprintf(@"%@\n", [buildFile absolutePath]);
 	}
 	
-	return EX_OK;
+	return @(EX_OK);
 }
 
-- (int) readBuildSetting:(NSArray *)arguments
+- (NSNumber *) readBuildSetting:(NSArray *)arguments
 {
 	if ([arguments count] != 1)
 		[self printUsage:EX_USAGE];
@@ -392,10 +392,10 @@ static void WorkaroundRadar18512876(void)
 	if ([expandedString length] > 0)
 		ddprintf(@"%@\n", expandedString);
 	
-	return EX_OK;
+	return @(EX_OK);
 }
 
-- (int) writeBuildSetting:(NSArray *)arguments
+- (NSNumber *) writeBuildSetting:(NSArray *)arguments
 {
 	if ([arguments count] != 2)
 		[self printUsage:EX_USAGE];
@@ -407,18 +407,18 @@ static void WorkaroundRadar18512876(void)
 	return [self writeProject];
 }
 
-- (int) writeProject
+- (NSNumber *) writeProject
 {
 	BOOL written = [_project writeToFileSystemProjectFile:YES userFile:NO checkNeedsRevert:NO];
 	if (!written)
 	{
 		ddfprintf(stderr, @"Could not write '%@' to file system.", _project);
-		return EX_IOERR;
+		return @(EX_IOERR);
 	}
-	return EX_OK;
+	return @(EX_OK);
 }
 
-- (int) addXcconfig:(NSArray *)arguments
+- (NSNumber *) addXcconfig:(NSArray *)arguments
 {
 	if ([arguments count] != 1)
 		[self printUsage:EX_USAGE];
@@ -445,7 +445,7 @@ static void WorkaroundRadar18512876(void)
 	return [self writeProject];
 }
 
-- (int) addResourcesBundle:(NSArray *)arguments
+- (NSNumber *) addResourcesBundle:(NSArray *)arguments
 {
 	[self addGroupNamed:@"Bundles" inGroupNamed:@"Frameworks"];
 	
@@ -459,7 +459,7 @@ static void WorkaroundRadar18512876(void)
 	return [self writeProject];
 }
 
-- (int) touch:(NSArray *)arguments
+- (NSNumber *) touch:(NSArray *)arguments
 {
 	return [self writeProject];
 }
