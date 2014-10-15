@@ -43,7 +43,7 @@ static NSBundle * XcodeBundleAtPath(NSString *path)
 
 static NSBundle * XcodeBundle(void)
 {
-	NSString *xcodeAppPath = NSProcessInfo.processInfo.environment[@"XCODE_APP_PATH"];
+	NSString *xcodeAppPath = NSProcessInfo.processInfo.environment[@"XCPROJ_XCODE_APP_PATH"];
 	NSBundle *xcodeBundle = XcodeBundleAtPath(xcodeAppPath);
 	if (!xcodeBundle)
 	{
