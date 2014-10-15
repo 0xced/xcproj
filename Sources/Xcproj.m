@@ -69,9 +69,20 @@ static void LoadXcodeFrameworks(NSBundle *xcodeBundle)
 {
 	NSURL *xcodeContentsURL = [[xcodeBundle privateFrameworksURL] URLByDeletingLastPathComponent];
 	
-	// Xcode 5 requires DVTFoundation, CSServiceClient, IDEFoundation and Xcode3Core
-	// Xcode 6 requires DVTFoundation, DVTSourceControl, IDEFoundation and Xcode3Core
-	for (NSString *framework in @[ @"DVTFoundation.framework", @"DVTSourceControl.framework", @"CSServiceClient.framework", @"IDEFoundation.framework", @"Xcode3Core.ideplugin" ])
+	NSString *xcodeFrameworks = NSProcessInfo.processInfo.environment[@"XCPROJ_XCODE_FRAMEWORKS"];
+	NSArray *frameworks;
+	if (xcodeFrameworks)
+	{
+		frameworks = [xcodeFrameworks componentsSeparatedByString:@":"];
+	}
+	else
+	{
+		// Xcode 5 requires DVTFoundation, CSServiceClient, IDEFoundation and Xcode3Core
+		// Xcode 6 requires DVTFoundation, DVTSourceControl, IDEFoundation and Xcode3Core
+		frameworks = @[ @"DVTFoundation.framework", @"DVTSourceControl.framework", @"CSServiceClient.framework", @"IDEFoundation.framework", @"Xcode3Core.ideplugin" ];
+	}
+	
+	for (NSString *framework in frameworks)
 	{
 		BOOL loaded = NO;
 		NSArray *xcodeSubdirectories = [[NSFileManager defaultManager] contentsOfDirectoryAtURL:xcodeContentsURL includingPropertiesForKeys:nil options:0 error:NULL];
