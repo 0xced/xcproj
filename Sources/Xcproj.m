@@ -18,6 +18,7 @@
 	// Options
 	id<PBXProject> _project;
 	NSString *_targetName;
+	NSString *_configurationName;
 	
 	id<PBXTarget> _target;
 }
@@ -26,11 +27,13 @@ static Class PBXGroup = Nil;
 static Class PBXProject = Nil;
 static Class PBXReference = Nil;
 static Class XCBuildConfiguration = Nil;
+static Class IDEMutableBuildParameters = Nil;
 
-+ (void) setPBXGroup:(Class)class             { PBXGroup = class; }
-+ (void) setPBXProject:(Class)class           { PBXProject = class; }
-+ (void) setPBXReference:(Class)class         { PBXReference = class; }
-+ (void) setXCBuildConfiguration:(Class)class { XCBuildConfiguration = class; }
++ (void) setPBXGroup:(Class)class                  { PBXGroup = class; }
++ (void) setPBXProject:(Class)class                { PBXProject = class; }
++ (void) setPBXReference:(Class)class              { PBXReference = class; }
++ (void) setXCBuildConfiguration:(Class)class      { XCBuildConfiguration = class; }
++ (void) setIDEMutableBuildParameters:(Class)class { IDEMutableBuildParameters = class; }
 + (void) setValue:(id)value forUndefinedKey:(NSString *)key { /* ignore */ }
 
 static NSString *XcodeBundleIdentifier = @"com.apple.dt.Xcode";
@@ -177,7 +180,8 @@ static void WorkaroundRadar18512876(void)
 	                       @protocol(PBXReference),
 	                       @protocol(PBXTarget),
 	                       @protocol(XCBuildConfiguration),
-	                       @protocol(XCConfigurationList)];
+	                       @protocol(XCConfigurationList),
+	                       @protocol(IDEMutableBuildParameters)];
 	
 	for (Protocol *protocol in protocols)
 	{
@@ -204,11 +208,12 @@ static void WorkaroundRadar18512876(void)
 {
 	DDGetoptOption optionTable[] = 
 	{
-		// Long        Short  Argument options
-		{"project",   'p',   DDGetoptRequiredArgument},
-		{"target",    't',   DDGetoptRequiredArgument},
-		{"help",      'h',   DDGetoptNoArgument},
-		{"version",   'V',   DDGetoptNoArgument},
+		// Long           Short  Argument options
+		{"project",       'p',   DDGetoptRequiredArgument},
+		{"target",        't',   DDGetoptRequiredArgument},
+		{"configuration", 'c',   DDGetoptRequiredArgument},
+		{"help",          'h',   DDGetoptNoArgument},
+		{"version",       'V',   DDGetoptNoArgument},
 		{nil,           0,    0},
 	};
 	[optionsParser addOptionsFromTable:optionTable];
@@ -240,6 +245,14 @@ static void WorkaroundRadar18512876(void)
 		return;
 	
 	_targetName = targetName;
+}
+
+- (void) setConfiguration:(NSString *)confiturationName
+{
+	if (_configurationName == confiturationName)
+		return;
+	
+	_configurationName = confiturationName;
 }
 
 - (void) setHelp:(NSNumber *)help
@@ -300,15 +313,22 @@ static void WorkaroundRadar18512876(void)
 	else
 	{
 		NSArray *targets = [_project targets];
-		if ([targets count] > 0)
-			_target = [targets objectAtIndex:0];
-		if (!_target)
+		if ([targets count] == 0)
 			@throw [DDCliParseException parseExceptionWithReason:[NSString stringWithFormat:@"The project %@ does not contain any target.", [_project name]] exitCode:EX_DATAERR];
+	}
+	
+	if (_configurationName)
+	{
+		if (![[[_project buildConfigurationList] buildConfigurationNames] containsObject:_configurationName])
+			@throw [DDCliParseException parseExceptionWithReason:[NSString stringWithFormat:@"The project %@ does not contain a configuration named \"%@\".", [_project name], _configurationName] exitCode:EX_DATAERR];
 	}
 	
 	NSString *action = [arguments objectAtIndex:0];
 	if (![[self allowedActions] containsObject:action])
 		[self printUsage:EX_USAGE];
+	
+	if ([@[ @"list-headers", @"add-resources-bundle" ] containsObject:action] && !_target)
+		@throw [DDCliParseException parseExceptionWithReason:[NSString stringWithFormat:@"The \"%@\" action requires a target to be specified.", action] exitCode:EX_USAGE];
 	
 	NSArray *actionArguments = nil;
 	if ([arguments count] >= 2)
@@ -335,10 +355,11 @@ static void WorkaroundRadar18512876(void)
 {
 	ddprintf(@"Usage: %@ [options] <action> [arguments]\n", [[NSBundle mainBundle] objectForInfoDictionaryKey:(id)kCFBundleExecutableKey]);
 	ddprintf(@"\nOptions:\n"
-	         @" -h, --help        Show this help text and exit\n"
-	         @" -V, --version     Show program version and exit\n"
-	         @" -p, --project     Path to an Xcode project (*.xcodeproj file). If not specified, the project in the current working directory is used \n"
-	         @" -t, --target      Name of the target. If not specified, the first target is used\n"
+	         @" -h, --help              Show this help text and exit\n"
+	         @" -V, --version           Show program version and exit\n"
+	         @" -p, --project           Path to an Xcode project (*.xcodeproj file). If not specified, the project in the current working directory is used\n"
+	         @" -t, --target            Name of the target. If not specified, the action is performed at the project level. Required for the `list-headers` and `add-resources-bundle` actions\n"
+	         @" -c, --configuration     Name of the configuration. If not specified, the default configuration (i.e. for command-line builds) is used\n"
 	         @"\nActions:\n"
 	         @" * list-targets\n"
 	         @"     List all the targets in the project\n\n"
@@ -399,7 +420,15 @@ static void WorkaroundRadar18512876(void)
 	
 	NSString *buildSetting = [arguments objectAtIndex:0];
 	NSString *settingString = [NSString stringWithFormat:@"$(%@)", buildSetting];
-	NSString *expandedString = [_target expandedValueForString:settingString forBuildParameters:nil];
+	id<IDEMutableBuildParameters> buildParameters = [IDEMutableBuildParameters new];
+	NSString *configurationName = _configurationName ?: [[_project buildConfigurationList] defaultConfigurationName];
+	[buildParameters setConfigurationName:configurationName];
+	NSString *expandedString;
+	if (_target)
+		expandedString = [_target expandedValueForString:settingString forBuildParameters:buildParameters];
+	else
+		expandedString = [_project expandedValueForString:settingString forBuildParameters:buildParameters withFallbackConfigurationName:nil];
+	
 	if ([expandedString length] > 0)
 		ddprintf(@"%@\n", expandedString);
 	
@@ -413,7 +442,28 @@ static void WorkaroundRadar18512876(void)
 	
 	NSString *buildSetting = arguments[0];
 	NSString *value = arguments[1];
-	[_target setBuildSetting:value forKeyPath:buildSetting];
+	if (_target)
+	{
+		[_target setBuildSetting:value forKeyPath:buildSetting];
+	}
+	else
+	{
+		for (id<XCBuildConfiguration> buildConfiguration in [[_project buildConfigurationList] buildConfigurations])
+		{
+			if (_configurationName)
+			{
+				if ([[buildConfiguration name] isEqualToString:_configurationName])
+				{
+					[buildConfiguration setBuildSetting:value forKeyPath:buildSetting];
+					break;
+				}
+			}
+			else
+			{
+				[buildConfiguration setBuildSetting:value forKeyPath:buildSetting];
+			}
+		}
+	}
 	
 	return [self writeProject];
 }

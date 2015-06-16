@@ -1,6 +1,7 @@
 #import "PBXFileReference.h"
+#import "PBXBuildStyle.h"
 
-@protocol XCBuildConfiguration <NSObject>
+@protocol XCBuildConfiguration <PBXBuildStyle, NSObject>
 
 + (BOOL) fileReference:(id<PBXFileReference>)reference isValidBaseConfigurationFile:(NSError **)error;
 

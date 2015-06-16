@@ -9,6 +9,7 @@
 #import "DDCommandLineInterface.h"
 
 #import <DevToolsCore/DevToolsCore.h>
+#import <IDEFoundation/IDEFoundation.h>
 
 @interface Xcproj : NSObject <DDCliApplicationDelegate>
 

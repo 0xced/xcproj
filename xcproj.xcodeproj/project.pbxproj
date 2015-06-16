@@ -25,6 +25,9 @@
 		08FB779EFE84155DC02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32A70AAB03705E1F00C91783 /* xcproj_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xcproj_Prefix.pch; path = Sources/xcproj_Prefix.pch; sourceTree = "<group>"; };
 		8DD76FA10486AA7600D96B5E /* xcproj */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = xcproj; sourceTree = BUILT_PRODUCTS_DIR; };
+		C20F5C151A92A57A004ADE6B /* IDEMutableBuildParameters.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IDEMutableBuildParameters.h; sourceTree = "<group>"; };
+		C20F5C161A92A5F4004ADE6B /* IDEFoundation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IDEFoundation.h; sourceTree = "<group>"; };
+		C20F5C171A93505D004ADE6B /* PBXBuildStyle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PBXBuildStyle.h; sourceTree = "<group>"; };
 		C215308419DBE040002524A7 /* XMLPlistDecoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = XMLPlistDecoder.h; path = Sources/XMLPlistDecoder.h; sourceTree = "<group>"; };
 		C215308519DBE040002524A7 /* XMLPlistDecoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = XMLPlistDecoder.m; path = Sources/XMLPlistDecoder.m; sourceTree = "<group>"; };
 		C269E98317B3DCCC0099A0C5 /* dd_getopt_long-fbsd.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "dd_getopt_long-fbsd.m"; sourceTree = "<group>"; };
@@ -74,6 +77,7 @@
 			children = (
 				DAFF2AD913055EF500584E0E /* Info.plist */,
 				DA8C9FFB1302AF93008B3560 /* DevToolsCore */,
+				C20F5C141A92A57A004ADE6B /* IDEFoundation */,
 				C269E98117B3DCCC0099A0C5 /* Externals */,
 				08FB7795FE84155DC02AAC07 /* Sources */,
 				08FB779DFE84155DC02AAC07 /* Frameworks */,
@@ -114,6 +118,15 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		C20F5C141A92A57A004ADE6B /* IDEFoundation */ = {
+			isa = PBXGroup;
+			children = (
+				C20F5C151A92A57A004ADE6B /* IDEMutableBuildParameters.h */,
+				C20F5C161A92A5F4004ADE6B /* IDEFoundation.h */,
+			);
+			path = IDEFoundation;
+			sourceTree = "<group>";
+		};
 		C269E98117B3DCCC0099A0C5 /* Externals */ = {
 			isa = PBXGroup;
 			children = (
@@ -145,6 +158,7 @@
 				DA8CA0041302B0D9008B3560 /* DevToolsCore.h */,
 				DA8CA0301302B27C008B3560 /* PBXBuildFile.h */,
 				DA8C9FFC1302AF93008B3560 /* PBXBuildPhase.h */,
+				C20F5C171A93505D004ADE6B /* PBXBuildStyle.h */,
 				DA7A018E134F015F00F89E9B /* PBXContainer.h */,
 				DA7A08AD134F4C1600F89E9B /* PBXFileReference.h */,
 				DA7A018F134F01DE00F89E9B /* PBXGroup.h */,
