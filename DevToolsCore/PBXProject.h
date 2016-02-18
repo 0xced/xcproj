@@ -13,7 +13,7 @@
 
 - (id<XCConfigurationList>) buildConfigurationList;
 
-- (NSString *) expandedValueForString:(NSString *)string forBuildParameters:(id<IDEMutableBuildParameters>)buildParameters withFallbackConfigurationName:(NSString *)fallbackConfigurationName;
+- (NSString *) expandedValueForString:(NSString *)string forBuildParameters:(id<IDEMutableBuildParameters>)buildParameters;
 
 - (BOOL) writeToFileSystemProjectFile:(BOOL)projectWrite userFile:(BOOL)userWrite checkNeedsRevert:(BOOL)checkNeedsRevert;
 

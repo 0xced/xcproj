@@ -428,7 +428,7 @@ static void WorkaroundRadar18512876(void)
 	if (_target)
 		expandedString = [_target expandedValueForString:settingString forBuildParameters:buildParameters];
 	else
-		expandedString = [_project expandedValueForString:settingString forBuildParameters:buildParameters withFallbackConfigurationName:nil];
+		expandedString = [_project expandedValueForString:settingString forBuildParameters:buildParameters];
 	
 	if ([expandedString length] > 0)
 		ddprintf(@"%@\n", expandedString);
