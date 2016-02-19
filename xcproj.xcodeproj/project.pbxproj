@@ -85,6 +85,7 @@
 			);
 			name = xcproj;
 			sourceTree = "<group>";
+			usesTabs = 1;
 		};
 		08FB7795FE84155DC02AAC07 /* Sources */ = {
 			isa = PBXGroup;
