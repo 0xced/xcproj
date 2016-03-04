@@ -25,7 +25,7 @@
 		08FB779EFE84155DC02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32A70AAB03705E1F00C91783 /* xcproj_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xcproj_Prefix.pch; path = Sources/xcproj_Prefix.pch; sourceTree = "<group>"; };
 		8DD76FA10486AA7600D96B5E /* xcproj */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = xcproj; sourceTree = BUILT_PRODUCTS_DIR; };
-		C20F5C151A92A57A004ADE6B /* IDEMutableBuildParameters.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IDEMutableBuildParameters.h; sourceTree = "<group>"; };
+		C20F5C151A92A57A004ADE6B /* IDEBuildParameters.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IDEBuildParameters.h; sourceTree = "<group>"; };
 		C20F5C161A92A5F4004ADE6B /* IDEFoundation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IDEFoundation.h; sourceTree = "<group>"; };
 		C20F5C171A93505D004ADE6B /* PBXBuildStyle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PBXBuildStyle.h; sourceTree = "<group>"; };
 		C215308419DBE040002524A7 /* XMLPlistDecoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = XMLPlistDecoder.h; path = Sources/XMLPlistDecoder.h; sourceTree = "<group>"; };
@@ -122,7 +122,7 @@
 		C20F5C141A92A57A004ADE6B /* IDEFoundation */ = {
 			isa = PBXGroup;
 			children = (
-				C20F5C151A92A57A004ADE6B /* IDEMutableBuildParameters.h */,
+				C20F5C151A92A57A004ADE6B /* IDEBuildParameters.h */,
 				C20F5C161A92A5F4004ADE6B /* IDEFoundation.h */,
 			);
 			path = IDEFoundation;

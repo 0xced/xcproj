@@ -27,13 +27,13 @@ static Class PBXGroup = Nil;
 static Class PBXProject = Nil;
 static Class PBXReference = Nil;
 static Class XCBuildConfiguration = Nil;
-static Class IDEMutableBuildParameters = Nil;
+static Class IDEBuildParameters = Nil;
 
 + (void) setPBXGroup:(Class)class                  { PBXGroup = class; }
 + (void) setPBXProject:(Class)class                { PBXProject = class; }
 + (void) setPBXReference:(Class)class              { PBXReference = class; }
 + (void) setXCBuildConfiguration:(Class)class      { XCBuildConfiguration = class; }
-+ (void) setIDEMutableBuildParameters:(Class)class { IDEMutableBuildParameters = class; }
++ (void) setIDEBuildParameters:(Class)class        { IDEBuildParameters = class; }
 + (void) setValue:(id)value forUndefinedKey:(NSString *)key { /* ignore */ }
 
 static NSString *XcodeBundleIdentifier = @"com.apple.dt.Xcode";
@@ -202,7 +202,7 @@ static void WorkaroundRadar18512876(void)
 	                       @protocol(PBXTarget),
 	                       @protocol(XCBuildConfiguration),
 	                       @protocol(XCConfigurationList),
-	                       @protocol(IDEMutableBuildParameters)];
+	                       @protocol(IDEBuildParameters)];
 	
 	for (Protocol *protocol in protocols)
 	{
@@ -441,9 +441,8 @@ static void WorkaroundRadar18512876(void)
 	
 	NSString *buildSetting = [arguments objectAtIndex:0];
 	NSString *settingString = [NSString stringWithFormat:@"$(%@)", buildSetting];
-	id<IDEMutableBuildParameters> buildParameters = [IDEMutableBuildParameters new];
 	NSString *configurationName = _configurationName ?: [[_project buildConfigurationList] defaultConfigurationName];
-	[buildParameters setConfigurationName:configurationName];
+	id<IDEBuildParameters> buildParameters = [[IDEBuildParameters alloc] initForBuildWithConfigurationName:configurationName];
 	NSString *expandedString;
 	if (_target)
 		expandedString = [_target expandedValueForString:settingString forBuildParameters:buildParameters];
