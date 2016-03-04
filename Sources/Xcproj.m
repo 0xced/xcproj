@@ -50,6 +50,25 @@ static NSBundle * XcodeBundle(void)
 	NSBundle *xcodeBundle = XcodeBundleAtPath(xcodeAppPath);
 	if (!xcodeBundle)
 	{
+		NSTask *task = [NSTask new];
+		task.launchPath = @"/usr/bin/xcode-select";
+		task.arguments = @[@"--print-path"];
+		task.standardOutput = [NSPipe new];
+
+		[task launch];
+		[task waitUntilExit];
+
+		if (task.terminationStatus == 0)
+		{
+			NSData *outputData = [[task.standardOutput fileHandleForReading] readDataToEndOfFile];
+			NSString *outputString = [[NSString alloc] initWithData:outputData encoding:NSUTF8StringEncoding];
+			NSString *xcodePath = [[outputString stringByDeletingLastPathComponent] stringByDeletingLastPathComponent];
+			xcodeBundle = XcodeBundleAtPath(xcodePath);
+		}
+	}
+
+	if (!xcodeBundle)
+	{
 		NSURL *xcodeURL = [[NSWorkspace sharedWorkspace] URLForApplicationWithBundleIdentifier:XcodeBundleIdentifier];
 		xcodeBundle = XcodeBundleAtPath(xcodeURL.path);
 	}
