@@ -82,7 +82,8 @@ static void LoadXcodeFrameworks(NSBundle *xcodeBundle)
 	{
 		// Xcode 5 requires DVTFoundation, CSServiceClient, IDEFoundation and Xcode3Core
 		// Xcode 6 requires DVTFoundation, DVTSourceControl, IDEFoundation and Xcode3Core
-		frameworks = @[ @"DVTFoundation.framework", @"DVTSourceControl.framework", @"CSServiceClient.framework", @"IDEFoundation.framework", @"Xcode3Core.ideplugin" ];
+		// Xcode 7 requires DVTFoundation, DVTSourceControl, IBFoundation, IBAutolayoutFoundation, IDEFoundation and Xcode3Core
+		frameworks = @[ @"DVTFoundation.framework", @"DVTSourceControl.framework", @"CSServiceClient.framework", @"IBFoundation.framework", @"IBAutolayoutFoundation.framework", @"IDEFoundation.framework", @"Xcode3Core.ideplugin" ];
 	}
 	
 	for (NSString *framework in frameworks)
@@ -136,7 +137,7 @@ static void InitializeXcodeFrameworks(void)
 	// Xcode3Core.ideplugin`-[Xcode3CommandLineBuildTool run] calls IDEInitialize(NSClassFromString(@"NSApplication") == nil, &error)
 	IDEInitialize(1, NULL);
 	// DevToolsCore`+[PBXProject projectWithFile:errorHandler:readOnly:] calls XCInitializeCoreIfNeeded(NSClassFromString(@"NSApplication") == nil)
-	XCInitializeCoreIfNeeded(1);
+	XCInitializeCoreIfNeeded(0);
 	fflush(stderr);
 	dup2(saved_stderr, STDERR_FILENO);
 	close(saved_stderr);
