@@ -140,13 +140,6 @@ static void InitializeXcodeFrameworks(void)
 		exit(EX_SOFTWARE);
 	}
 	
-	void(*XCInitializeCoreIfNeeded)(int initializationOptions) = dlsym(RTLD_DEFAULT, "XCInitializeCoreIfNeeded");
-	if (!XCInitializeCoreIfNeeded)
-	{
-		ddfprintf(stderr, @"XCInitializeCoreIfNeeded function not found.\n");
-		exit(EX_SOFTWARE);
-	}
-	
 	// Temporary redirect stderr to /dev/null in order not to print plugin loading errors
 	// Adapted from http://stackoverflow.com/questions/4832603/how-could-i-temporary-redirect-stdout-to-a-file-in-a-c-program/4832902#4832902
 	fflush(stderr);
@@ -154,10 +147,8 @@ static void InitializeXcodeFrameworks(void)
 	int dev_null = open("/dev/null", O_WRONLY);
 	dup2(dev_null, STDERR_FILENO);
 	close(dev_null);
-	// Xcode3Core.ideplugin`-[Xcode3CommandLineBuildTool run] calls IDEInitialize(NSClassFromString(@"NSApplication") == nil, &error)
+	// Xcode3Core.ideplugin`-[Xcode3CommandLineBuildTool run] calls IDEInitialize(1, &error)
 	IDEInitialize(1, NULL);
-	// DevToolsCore`+[PBXProject projectWithFile:errorHandler:readOnly:] calls XCInitializeCoreIfNeeded(NSClassFromString(@"NSApplication") == nil)
-	XCInitializeCoreIfNeeded(0);
 	fflush(stderr);
 	dup2(saved_stderr, STDERR_FILENO);
 	close(saved_stderr);
