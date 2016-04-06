@@ -19,6 +19,7 @@ extern NSString *const XCDUndocumentedCheckerMismatchingHierarchyKey;
 extern NSString *const XCDUndocumentedCheckerMissingMethodsKey;
 extern NSString *const XCDUndocumentedCheckerMismatchingMethodsKey;
 extern NSString *const XCDUndocumentedCheckerClassNameKey;
+extern NSString *const XCDUndocumentedCheckerClassBundleKey;
 extern NSString *const XCDUndocumentedCheckerMethodNameKey;
 extern NSString *const XCDUndocumentedCheckerProtocolSignatureKey;
 extern NSString *const XCDUndocumentedCheckerClassSignatureKey;

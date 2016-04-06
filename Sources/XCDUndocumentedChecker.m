@@ -18,6 +18,7 @@ NSString *const XCDUndocumentedCheckerMismatchingHierarchyKey = @"MismatchingHie
 NSString *const XCDUndocumentedCheckerMissingMethodsKey       = @"MissingMethods";
 NSString *const XCDUndocumentedCheckerMismatchingMethodsKey   = @"MismatchingMethods";
 NSString *const XCDUndocumentedCheckerClassNameKey            = @"ClassName";
+NSString *const XCDUndocumentedCheckerClassBundleKey          = @"ClassBundle";
 NSString *const XCDUndocumentedCheckerMethodNameKey           = @"MethodName";
 NSString *const XCDUndocumentedCheckerProtocolSignatureKey    = @"ProtocolSignature";
 NSString *const XCDUndocumentedCheckerClassSignatureKey       = @"ClassSignature";
@@ -181,7 +182,8 @@ Class XCDClassFromProtocol(Protocol *protocol, NSError **error)
 			{
 				NSDictionary *errorInfo = @{
 					NSLocalizedDescriptionKey: [NSString stringWithFormat:@"%@ already implements the forwardInvocation: method.", className],
-					XCDUndocumentedCheckerClassNameKey: className
+					XCDUndocumentedCheckerClassNameKey: className,
+					XCDUndocumentedCheckerClassBundleKey: [NSBundle bundleForClass:class]
 				};
 				*error = [NSError errorWithDomain:XCDUndocumentedCheckerErrorDomain code:XCDUndocumentedCheckerUnsupportedClass userInfo:errorInfo];
 			}
@@ -204,7 +206,8 @@ Class XCDClassFromProtocol(Protocol *protocol, NSError **error)
 				{
 					methodError = @{
 						XCDUndocumentedCheckerMethodNameKey: methodName,
-						XCDUndocumentedCheckerClassNameKey: className
+						XCDUndocumentedCheckerClassNameKey: className,
+						XCDUndocumentedCheckerClassBundleKey: [NSBundle bundleForClass:class]
 					};
 					[methodsNotFound addObject:methodError];
 				}
@@ -214,7 +217,8 @@ Class XCDClassFromProtocol(Protocol *protocol, NSError **error)
 						XCDUndocumentedCheckerProtocolSignatureKey: expectedSignature,
 						XCDUndocumentedCheckerClassSignatureKey: methodSignature,
 						XCDUndocumentedCheckerMethodNameKey: methodName,
-						XCDUndocumentedCheckerClassNameKey: className
+						XCDUndocumentedCheckerClassNameKey: className,
+						XCDUndocumentedCheckerClassBundleKey: [NSBundle bundleForClass:class]
 					};
 					[methodsMismatch addObject:methodError];
 				}
