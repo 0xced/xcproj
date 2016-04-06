@@ -43,8 +43,9 @@ static void XCDUndocumentedChecker_forwardInvocation(id self, SEL _cmd, NSInvoca
 	Class class = object_getClass([invocation target]);
 	while (!returnClassName && class)
 	{
-		NSDictionary *methodInfo = [classInfo objectForKey:NSStringFromClass(class)];
-		NSString *returnInfo = [methodInfo objectForKey:[class_isMetaClass(class) ? @"+" : @"-" stringByAppendingString:NSStringFromSelector([invocation selector])]];
+		NSDictionary *methodInfo = classInfo[NSStringFromClass(class)];
+		NSString *methodName = [class_isMetaClass(class) ? @"+" : @"-" stringByAppendingString:NSStringFromSelector([invocation selector])];
+		NSString *returnInfo = methodInfo[methodName];
 		NSArray *returnComponents = [returnInfo componentsSeparatedByString:@"."];
 		returnClassName = [returnComponents objectAtIndex:0];
 		if ([returnComponents count] == 2)
@@ -108,7 +109,7 @@ Class XCDClassFromProtocol(Protocol *protocol, NSError **error)
 	if (error)
 		*error = nil;
 	
-	NSString *className = protocol ? [NSString stringWithCString:protocol_getName(protocol) encoding:NSUTF8StringEncoding] : @"nil";
+	NSString *className = protocol ? @(protocol_getName(protocol)) : @"nil";
 	Class class = NSClassFromString(className);
 	if (!class)
 	{
@@ -154,9 +155,8 @@ Class XCDClassFromProtocol(Protocol *protocol, NSError **error)
 		methods = class_copyMethodList(isInstanceMethod ? class : object_getClass(class), &methodCount);
 		for (unsigned int i = 0; i < methodCount; i++)
 		{
-			const char *methodName = sel_getName(method_getName(methods[i]));
-			const char *typeEncoding = method_getTypeEncoding(methods[i]);
-			[methodSignatures setObject:[NSString stringWithUTF8String:typeEncoding] forKey:[NSString stringWithFormat:@"%c%s", isInstanceMethod ? '-':'+', methodName]];
+			NSString *methodName = [NSString stringWithFormat:@"%c%s", isInstanceMethod ? '-':'+', sel_getName(method_getName(methods[i]))];
+			methodSignatures[methodName] = @(method_getTypeEncoding(methods[i]));
 		}
 		free(methods);
 	}
@@ -195,8 +195,8 @@ Class XCDClassFromProtocol(Protocol *protocol, NSError **error)
 		{
 			SEL selector = protocolMethods[i].name;
 			NSString *methodName = [isInstanceMethod ? @"-" : @"+" stringByAppendingFormat:@"%s", sel_getName(selector)];
-			NSString *methodSignature = [methodSignatures objectForKey:methodName];
-			NSString *expectedSignature = [NSString stringWithUTF8String:protocolMethods[i].types];
+			NSString *methodSignature = methodSignatures[methodName];
+			NSString *expectedSignature = @(protocolMethods[i].types);
 			BOOL signatureMatch = [expectedSignature isEqualToString:methodSignature];
 			if (!signatureMatch)
 			{
@@ -265,15 +265,15 @@ Class XCDClassFromProtocol(Protocol *protocol, NSError **error)
 	{
 		NSMutableDictionary *errorInfo = [NSMutableDictionary dictionary];
 		if ([methodsNotFound count] > 0)
-			[errorInfo setObject:methodsNotFound forKey:XCDUndocumentedCheckerMissingMethodsKey];
+			errorInfo[XCDUndocumentedCheckerMissingMethodsKey] = methodsNotFound;
 		if ([methodsMismatch count] > 0)
-			[errorInfo setObject:methodsMismatch forKey:XCDUndocumentedCheckerMismatchingMethodsKey];
+			errorInfo[XCDUndocumentedCheckerMismatchingMethodsKey] = methodsMismatch;
 		if ([hierarchyMismatch count] > 0)
-			[errorInfo setObject:hierarchyMismatch forKey:XCDUndocumentedCheckerMismatchingHierarchyKey];
+			errorInfo[XCDUndocumentedCheckerMismatchingHierarchyKey] = hierarchyMismatch;
 		
 		if ([errorInfo count] > 0)
 		{
-			[errorInfo setObject:[NSString stringWithFormat:@"Methods of class %@ do not match %@ protocol", className, NSStringFromProtocol(protocol)] forKey:NSLocalizedDescriptionKey];
+			errorInfo[NSLocalizedDescriptionKey] = [NSString stringWithFormat:@"Methods of class %@ do not match %@ protocol", className, NSStringFromProtocol(protocol)];
 			*error = [NSError errorWithDomain:XCDUndocumentedCheckerErrorDomain code:XCDUndocumentedCheckerMethodMismatch userInfo:errorInfo];
 		}
 	}
