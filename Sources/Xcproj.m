@@ -27,13 +27,13 @@ static Class PBXGroup = Nil;
 static Class PBXProject = Nil;
 static Class PBXReference = Nil;
 static Class XCBuildConfiguration = Nil;
-static Class IDEMutableBuildParameters = Nil;
+static Class IDEBuildParameters = Nil;
 
 + (void) setPBXGroup:(Class)class                  { PBXGroup = class; }
 + (void) setPBXProject:(Class)class                { PBXProject = class; }
 + (void) setPBXReference:(Class)class              { PBXReference = class; }
 + (void) setXCBuildConfiguration:(Class)class      { XCBuildConfiguration = class; }
-+ (void) setIDEMutableBuildParameters:(Class)class { IDEMutableBuildParameters = class; }
++ (void) setIDEBuildParameters:(Class)class        { IDEBuildParameters = class; }
 + (void) setValue:(id)value forUndefinedKey:(NSString *)key { /* ignore */ }
 
 static NSString *XcodeBundleIdentifier = @"com.apple.dt.Xcode";
@@ -48,6 +48,25 @@ static NSBundle * XcodeBundle(void)
 {
 	NSString *xcodeAppPath = NSProcessInfo.processInfo.environment[@"XCPROJ_XCODE_APP_PATH"];
 	NSBundle *xcodeBundle = XcodeBundleAtPath(xcodeAppPath);
+	if (!xcodeBundle)
+	{
+		NSTask *task = [NSTask new];
+		task.launchPath = @"/usr/bin/xcode-select";
+		task.arguments = @[@"--print-path"];
+		task.standardOutput = [NSPipe new];
+
+		[task launch];
+		[task waitUntilExit];
+
+		if (task.terminationStatus == 0)
+		{
+			NSData *outputData = [[task.standardOutput fileHandleForReading] readDataToEndOfFile];
+			NSString *outputString = [[NSString alloc] initWithData:outputData encoding:NSUTF8StringEncoding];
+			NSString *xcodePath = [[outputString stringByDeletingLastPathComponent] stringByDeletingLastPathComponent];
+			xcodeBundle = XcodeBundleAtPath(xcodePath);
+		}
+	}
+
 	if (!xcodeBundle)
 	{
 		NSURL *xcodeURL = [[NSWorkspace sharedWorkspace] URLForApplicationWithBundleIdentifier:XcodeBundleIdentifier];
@@ -82,7 +101,9 @@ static void LoadXcodeFrameworks(NSBundle *xcodeBundle)
 	{
 		// Xcode 5 requires DVTFoundation, CSServiceClient, IDEFoundation and Xcode3Core
 		// Xcode 6 requires DVTFoundation, DVTSourceControl, IDEFoundation and Xcode3Core
-		frameworks = @[ @"DVTFoundation.framework", @"DVTSourceControl.framework", @"CSServiceClient.framework", @"IDEFoundation.framework", @"Xcode3Core.ideplugin" ];
+		// Xcode 7 requires DVTFoundation, DVTSourceControl, IBFoundation, IBAutolayoutFoundation, IDEFoundation and Xcode3Core
+		// Xcode 7.3 requires DVTFoundation, DVTSourceControl, DVTServices, DVTPortal, IBFoundation, IBAutolayoutFoundation, IDEFoundation and Xcode3Core
+		frameworks = @[ @"DVTFoundation.framework", @"DVTSourceControl.framework", @"DVTServices.framework", @"DVTPortal.framework", @"CSServiceClient.framework", @"IBFoundation.framework", @"IBAutolayoutFoundation.framework", @"IDEFoundation.framework", @"Xcode3Core.ideplugin" ];
 	}
 	
 	for (NSString *framework in frameworks)
@@ -119,13 +140,6 @@ static void InitializeXcodeFrameworks(void)
 		exit(EX_SOFTWARE);
 	}
 	
-	void(*XCInitializeCoreIfNeeded)(int initializationOptions) = dlsym(RTLD_DEFAULT, "XCInitializeCoreIfNeeded");
-	if (!XCInitializeCoreIfNeeded)
-	{
-		ddfprintf(stderr, @"XCInitializeCoreIfNeeded function not found.\n");
-		exit(EX_SOFTWARE);
-	}
-	
 	// Temporary redirect stderr to /dev/null in order not to print plugin loading errors
 	// Adapted from http://stackoverflow.com/questions/4832603/how-could-i-temporary-redirect-stdout-to-a-file-in-a-c-program/4832902#4832902
 	fflush(stderr);
@@ -133,10 +147,8 @@ static void InitializeXcodeFrameworks(void)
 	int dev_null = open("/dev/null", O_WRONLY);
 	dup2(dev_null, STDERR_FILENO);
 	close(dev_null);
-	// Xcode3Core.ideplugin`-[Xcode3CommandLineBuildTool run] calls IDEInitialize(NSClassFromString(@"NSApplication") == nil, &error)
+	// Xcode3Core.ideplugin`-[Xcode3CommandLineBuildTool run] calls IDEInitialize(1, &error)
 	IDEInitialize(1, NULL);
-	// DevToolsCore`+[PBXProject projectWithFile:errorHandler:readOnly:] calls XCInitializeCoreIfNeeded(NSClassFromString(@"NSApplication") == nil)
-	XCInitializeCoreIfNeeded(1);
 	fflush(stderr);
 	dup2(saved_stderr, STDERR_FILENO);
 	close(saved_stderr);
@@ -181,7 +193,7 @@ static void WorkaroundRadar18512876(void)
 	                       @protocol(PBXTarget),
 	                       @protocol(XCBuildConfiguration),
 	                       @protocol(XCConfigurationList),
-	                       @protocol(IDEMutableBuildParameters)];
+	                       @protocol(IDEBuildParameters)];
 	
 	for (Protocol *protocol in protocols)
 	{
@@ -420,14 +432,13 @@ static void WorkaroundRadar18512876(void)
 	
 	NSString *buildSetting = [arguments objectAtIndex:0];
 	NSString *settingString = [NSString stringWithFormat:@"$(%@)", buildSetting];
-	id<IDEMutableBuildParameters> buildParameters = [IDEMutableBuildParameters new];
 	NSString *configurationName = _configurationName ?: [[_project buildConfigurationList] defaultConfigurationName];
-	[buildParameters setConfigurationName:configurationName];
+	id<IDEBuildParameters> buildParameters = [[IDEBuildParameters alloc] initForBuildWithConfigurationName:configurationName];
 	NSString *expandedString;
 	if (_target)
 		expandedString = [_target expandedValueForString:settingString forBuildParameters:buildParameters];
 	else
-		expandedString = [_project expandedValueForString:settingString forBuildParameters:buildParameters withFallbackConfigurationName:nil];
+		expandedString = [_project expandedValueForString:settingString forBuildParameters:buildParameters];
 	
 	if ([expandedString length] > 0)
 		ddprintf(@"%@\n", expandedString);
