@@ -113,9 +113,10 @@ Class XCDClassFromProtocol(Protocol *protocol, NSError **error)
 	{
 		if (error)
 		{
-			NSDictionary *errorInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-			                           [NSString stringWithFormat:@"Class %@ not found", className], NSLocalizedDescriptionKey,
-			                           className, XCDUndocumentedCheckerClassNameKey, nil];
+			NSDictionary *errorInfo = @{
+				NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Class %@ not found", className],
+				XCDUndocumentedCheckerClassNameKey: className
+			};
 			*error = [NSError errorWithDomain:XCDUndocumentedCheckerErrorDomain code:XCDUndocumentedCheckerClassNotFound userInfo:errorInfo];
 		}
 		return Nil;
@@ -178,9 +179,10 @@ Class XCDClassFromProtocol(Protocol *protocol, NSError **error)
 		{
 			if (error)
 			{
-				NSDictionary *errorInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-				                           [NSString stringWithFormat:@"%@ already implements the forwardInvocation: method.", className], NSLocalizedDescriptionKey,
-				                           className, XCDUndocumentedCheckerClassNameKey, nil];
+				NSDictionary *errorInfo = @{
+					NSLocalizedDescriptionKey: [NSString stringWithFormat:@"%@ already implements the forwardInvocation: method.", className],
+					XCDUndocumentedCheckerClassNameKey: className
+				};
 				*error = [NSError errorWithDomain:XCDUndocumentedCheckerErrorDomain code:XCDUndocumentedCheckerUnsupportedClass userInfo:errorInfo];
 			}
 			free(protocolMethods);
@@ -200,18 +202,20 @@ Class XCDClassFromProtocol(Protocol *protocol, NSError **error)
 				NSDictionary *methodError = nil;
 				if (!methodSignature)
 				{
-					methodError = [NSDictionary dictionaryWithObjectsAndKeys:
-					               methodName, XCDUndocumentedCheckerMethodNameKey,
-					               className, XCDUndocumentedCheckerClassNameKey, nil];
+					methodError = @{
+						XCDUndocumentedCheckerMethodNameKey: methodName,
+						XCDUndocumentedCheckerClassNameKey: className
+					};
 					[methodsNotFound addObject:methodError];
 				}
 				else
 				{
-					methodError = [NSDictionary dictionaryWithObjectsAndKeys:
-					               expectedSignature, XCDUndocumentedCheckerProtocolSignatureKey,
-					               methodSignature, XCDUndocumentedCheckerClassSignatureKey,
-					               methodName, XCDUndocumentedCheckerMethodNameKey,
-					               className, XCDUndocumentedCheckerClassNameKey, nil];
+					methodError = @{
+						XCDUndocumentedCheckerProtocolSignatureKey: expectedSignature,
+						XCDUndocumentedCheckerClassSignatureKey: methodSignature,
+						XCDUndocumentedCheckerMethodNameKey: methodName,
+						XCDUndocumentedCheckerClassNameKey: className
+					};
 					[methodsMismatch addObject:methodError];
 				}
 			}
