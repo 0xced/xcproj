@@ -12,6 +12,7 @@
 #import <objc/runtime.h>
 #import "XCDUndocumentedChecker.h"
 #import "XMLPlistDecoder.h"
+#import "XcodeVersionCompatibility.h"
 
 @implementation Xcproj
 {
@@ -179,6 +180,7 @@ static void WorkaroundRadar18512876(void)
 		return;
 	
 	LoadXcodeFrameworks(XcodeBundle());
+	InitializeXcodeVersionCompatibility();
 	InitializeXcodeFrameworks();
 	WorkaroundRadar18512876();
 	
