@@ -14,6 +14,8 @@
 #import "XMLPlistDecoder.h"
 #import "XcodeVersionCompatibility.h"
 
+static NSString * const FrameworksToLoad = @"FrameworksToLoad";
+
 @implementation Xcproj
 {
 	// Options
@@ -90,28 +92,33 @@ static NSBundle * XcodeBundle(void)
 	return xcodeBundle;
 }
 
-static void LoadXcodeFrameworks(NSBundle *xcodeBundle)
+static NSString *DependentFramework(NSError *error)
+{
+	NSRegularExpression *notLoadedRegularExpression = [NSRegularExpression regularExpressionWithPattern:@"Library not loaded: @rpath/([^/]+)/" options:(NSRegularExpressionOptions)0 error:NULL];
+	
+	while (error)
+	{
+		NSString *debugDescription = error.userInfo[@"NSDebugDescription"];
+		if (debugDescription)
+		{
+			NSTextCheckingResult *match = [notLoadedRegularExpression firstMatchInString:debugDescription options:(NSMatchingOptions)0 range:NSMakeRange(0, debugDescription.length)];
+			if (match)
+			{
+				return [debugDescription substringWithRange:[match rangeAtIndex:1]];
+			}
+		}
+		error = error.userInfo[NSUnderlyingErrorKey];
+	}
+	return nil;
+}
+
+static void LoadXcodeFrameworks(NSBundle *xcodeBundle, NSArray *frameworks)
 {
 	NSURL *xcodeContentsURL = [[xcodeBundle privateFrameworksURL] URLByDeletingLastPathComponent];
-	
-	NSString *xcodeFrameworks = NSProcessInfo.processInfo.environment[@"XCPROJ_XCODE_FRAMEWORKS"];
-	NSArray *frameworks;
-	if (xcodeFrameworks)
-	{
-		frameworks = [xcodeFrameworks componentsSeparatedByString:@":"];
-	}
-	else
-	{
-		// Xcode 5 requires DVTFoundation, CSServiceClient, IDEFoundation and Xcode3Core
-		// Xcode 6 requires DVTFoundation, DVTSourceControl, IDEFoundation and Xcode3Core
-		// Xcode 7 requires DVTFoundation, DVTSourceControl, IBFoundation, IBAutolayoutFoundation, IDEFoundation and Xcode3Core
-		// Xcode 7.3 requires DVTFoundation, DVTSourceControl, DVTServices, DVTPortal, IBFoundation, IBAutolayoutFoundation, IDEFoundation and Xcode3Core
-		frameworks = @[ @"DVTFoundation.framework", @"DVTSourceControl.framework", @"DVTServices.framework", @"DVTPortal.framework", @"CSServiceClient.framework", @"IBFoundation.framework", @"IBAutolayoutFoundation.framework", @"IDEFoundation.framework", @"Xcode3Core.ideplugin" ];
-	}
-	
 	for (NSString *framework in frameworks)
 	{
 		BOOL loaded = NO;
+		BOOL abort = NO;
 		NSArray *xcodeSubdirectories = [[NSFileManager defaultManager] contentsOfDirectoryAtURL:xcodeContentsURL includingPropertiesForKeys:nil options:0 error:NULL];
 		for (NSURL *frameworksDirectoryURL in xcodeSubdirectories)
 		{
@@ -123,20 +130,31 @@ static void LoadXcodeFrameworks(NSBundle *xcodeBundle)
 				loaded = [frameworkBundle loadAndReturnError:&loadError];
 				if (!loaded)
 				{
-					ddfprintf(stderr, @"The %@ %@ failed to load: %@\n", [framework stringByDeletingPathExtension], [framework pathExtension], loadError);
-					exit(EX_SOFTWARE);
+					NSString *dependentFramework = DependentFramework(loadError);
+					if (dependentFramework)
+					{
+						LoadXcodeFrameworks(xcodeBundle, [@[ dependentFramework ] arrayByAddingObjectsFromArray:frameworks]);
+						abort = YES;
+					}
+					else
+					{
+						ddfprintf(stderr, @"The %@ %@ failed to load: %@\n", [framework stringByDeletingPathExtension], [framework pathExtension], loadError);
+						exit(EX_SOFTWARE);
+					}
 				}
 			}
 			
-			if (loaded)
+			if (loaded || abort)
 				break;
 		}
+		if (abort)
+			break;
 	}
 }
 
 static void InitializeXcodeFrameworks(void)
 {
-	void(*IDEInitialize)(int initializationOptions, NSError **error) = dlsym(RTLD_DEFAULT, "IDEInitialize");
+	BOOL(*IDEInitialize)(int initializationOptions, NSError **error) = dlsym(RTLD_DEFAULT, "IDEInitialize");
 	if (!IDEInitialize)
 	{
 		ddfprintf(stderr, @"IDEInitialize function not found.\n");
@@ -151,10 +169,28 @@ static void InitializeXcodeFrameworks(void)
 	dup2(dev_null, STDERR_FILENO);
 	close(dev_null);
 	// Xcode3Core.ideplugin`-[Xcode3CommandLineBuildTool run] calls IDEInitialize(1, &error)
-	IDEInitialize(1, NULL);
+	NSError *error;
+	BOOL initialized = IDEInitialize(1, &error);
 	fflush(stderr);
 	dup2(saved_stderr, STDERR_FILENO);
 	close(saved_stderr);
+	
+	if (!initialized)
+	{
+		NSString *dependentFramework = DependentFramework(error);
+		NSUserDefaults *standardUserDefaults = [NSUserDefaults standardUserDefaults];
+		NSArray *frameworksToLoad = [standardUserDefaults objectForKey:FrameworksToLoad];
+		if (dependentFramework && ![frameworksToLoad containsObject:dependentFramework])
+		{
+			[standardUserDefaults setObject:[frameworksToLoad arrayByAddingObject:dependentFramework] forKey:FrameworksToLoad];
+			ddfprintf(stderr, @"Please try to relaunch %@ (%@ was added to the list of frameworks to load)\n\n%@\n", NSProcessInfo.processInfo.processName, dependentFramework, error);
+		}
+		else
+		{
+			ddfprintf(stderr, @"IDEInitialize failed: %@\n", error);
+		}
+		exit(EX_SOFTWARE);
+	}
 }
 
 static void WorkaroundRadar18512876(void)
@@ -181,7 +217,12 @@ static void WorkaroundRadar18512876(void)
 	if (initialized)
 		return;
 	
-	LoadXcodeFrameworks(XcodeBundle());
+	NSUserDefaults *standardUserDefaults = [NSUserDefaults standardUserDefaults];
+	
+	NSArray *frameworksToLoad = @[ @"IDEFoundation.framework", @"Xcode3Core.ideplugin", @"IBAutolayoutFoundation.framework" ];
+	[standardUserDefaults registerDefaults:@{ FrameworksToLoad: frameworksToLoad }];
+	
+	LoadXcodeFrameworks(XcodeBundle(), [standardUserDefaults objectForKey:FrameworksToLoad]);
 	InitializeXcodeVersionCompatibility();
 	InitializeXcodeFrameworks();
 	WorkaroundRadar18512876();
